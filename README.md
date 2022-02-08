@@ -31,6 +31,6 @@ void main()
 
 	int channel = audioSystem.Play(soundHandle); 
 
-	audioSystem.Stop(musicChannelHandle); 
+	audioSystem.Stop(soundHandle); 
 }
 ```
