@@ -29,8 +29,7 @@ WaveFile::WaveFile(const char* a_FilePath)
     fopen_s(&m_File, a_FilePath, "rb");
     if (!m_File)
     {
-        std::string s = std::string("<Wav> Failed opening file: " + std::string(a_FilePath) + ".");
-        logger::log_error(s.c_str());
+        logger::log_error("<Wav> Failed opening file: \"%s\".", a_FilePath);
         return;
     }
 
@@ -40,8 +39,7 @@ WaveFile::WaveFile(const char* a_FilePath)
     // Should be RIFF.
     if (strcmp(reinterpret_cast<const char*>(m_WavFile.chunkId), "RIFF") != 0)
     {
-        std::string s = std::string("<Wav> File: " + std::string(a_FilePath) + " is not a RIFF file. (" + std::string(reinterpret_cast<char const*>(m_WavFile.chunkId)) + ")");
-        logger::log_error(s.c_str());
+        logger::log_error("<Wav> (\"%s\") is not a RIFF file. (%s)." , a_FilePath, m_WavFile.chunkId);
         return;
     }
 
@@ -52,8 +50,7 @@ WaveFile::WaveFile(const char* a_FilePath)
     fread(&m_WavFile.format, sizeof(m_WavFile.format), 1, m_File);
     if (strcmp(reinterpret_cast<const char*>(m_WavFile.format), "WAVE") != 0)
     {
-        std::string s = std::string("<Wav> File: " + std::string(a_FilePath) + " is not a WAV file. (" + std::string(reinterpret_cast<char const*>(m_WavFile.format)) + ")");
-        logger::log_error(s.c_str());
+        logger::log_error("<Wav> (\"%s\") is not a WAV file. (%s).", a_FilePath, m_WavFile.format);
         return;
     }
 
@@ -61,8 +58,7 @@ WaveFile::WaveFile(const char* a_FilePath)
     fread(&m_WavFile.subchunk1Id, sizeof(m_WavFile.subchunk1Id), 1, m_File);
     if (strcmp(reinterpret_cast<const char*>(m_WavFile.subchunk1Id), "fmt ") != 0)
     {
-        std::string s = std::string("<Wav> File: " + std::string(a_FilePath) + " has no FMT chunk. (" + std::string(reinterpret_cast<char const*>(m_WavFile.subchunk1Id)) + ")");
-        logger::log_error(s.c_str());
+        logger::log_error("<Wav> (\"%s\") has no FMT chunk. (%s).", a_FilePath, m_WavFile.subchunk1Id);
         return;
     }
 
@@ -110,42 +106,27 @@ WaveFile::WaveFile(const char* a_FilePath)
     //}
 
 #ifdef LOG_INFO
-    std::string s = std::string("(" + std::string(a_FilePath) + ") chunkId: " + std::string(&m_WavFile.chunkId[0], &m_WavFile.chunkId[0] + std::size(m_WavFile.chunkId)));
-    logger::log_info(s.c_str());
-    s = std::string("(" + std::string(a_FilePath) + ") chunkSize: " + std::to_string(m_WavFile.chunkSize));
-    logger::log_info(s.c_str());
-    s = std::string("(" + std::string(a_FilePath) + ") format: " + std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)));
-    logger::log_info(s.c_str());
+    logger::log_info("<Wav> (\"%s\") chunkId: %s.", a_FilePath, std::string(&m_WavFile.chunkId[0], &m_WavFile.chunkId[0] + std::size(m_WavFile.chunkId)).c_str());
+    logger::log_info("<Wav> (\"%s\") chunkSize: %i.", a_FilePath, m_WavFile.chunkSize);
+    logger::log_info("<Wav> (\"%s\") format: %s.", a_FilePath, std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
+    logger::log_info("<Wav> (\"%s\") subchunk1Id: %s.", a_FilePath, std::string(&m_WavFile.subchunk1Id[0], &m_WavFile.subchunk1Id[0] + std::size(m_WavFile.subchunk1Id)).c_str());
+    logger::log_info("<Wav> (\"%s\") subchunk1Size: %i.", a_FilePath, m_WavFile.subchunk1Size);
+    logger::log_info("<Wav> (\"%s\") audioFormat: %i.", a_FilePath, m_WavFile.audioFormat);
     if (m_WavFile.audioFormat != WAVE_FORMAT_PCM)
     {
-        s = std::string("<Wav> File: " + std::string(a_FilePath) + " does not have the format 1 (PCM). This indicates there is probably some form of compression. (" + std::to_string(m_WavFile.audioFormat) + ")");
-        logger::log_info(s.c_str());
+        logger::log_error("<Wav> (\"%s\") does not have the format 1 (PCM). This indicates there is probably some form of compression (%s).", a_FilePath, std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
     }
-    s = std::string("(" + std::string(a_FilePath) + ") subchunk1Id: " + std::string(&m_WavFile.subchunk1Id[0], &m_WavFile.subchunk1Id[0] + std::size(m_WavFile.subchunk1Id)));
-    logger::log_info(s.c_str());
-    s = std::string("(" + std::string(a_FilePath) + ") subchunk1Size: " + std::to_string(m_WavFile.subchunk1Size));
-    logger::log_info(s.c_str());
-    s = std::string("(" + std::string(a_FilePath) + ") audioFormat: " + std::to_string(m_WavFile.audioFormat));
-    logger::log_info(s.c_str());
-    s = std::string("(" + std::string(a_FilePath) + ") numChannels: " + std::to_string(m_WavFile.numChannels));
-    logger::log_info(s.c_str());
-    s = std::string("(" + std::string(a_FilePath) + ") sampleRate: " + std::to_string(m_WavFile.sampleRate));
-    logger::log_info(s.c_str());
+    logger::log_info("<Wav> (\"%s\") numChannels: %i.", a_FilePath, m_WavFile.numChannels);
+    logger::log_info("<Wav> (\"%s\") sampleRate: %ihz.", a_FilePath, m_WavFile.sampleRate);
     if (m_WavFile.sampleRate != 44100)
     {
-        s = std::string("<Wav> File: " + std::string(a_FilePath) + " does not have a 44100 hz sample rate. (" + std::to_string(m_WavFile.sampleRate) + "hz )");
-        logger::log_info(s.c_str());
+        logger::log_error("<Wav> (\"%s\") does not have a 44100 hz sample rate (%ihz).", a_FilePath, std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
     }
-    s = std::string("(" + std::string(a_FilePath) + ") byteRate: " + std::to_string(m_WavFile.byteRate));
-    logger::log_info(s.c_str());
-    s = std::string("(" + std::string(a_FilePath) + ") blockAlign: " + std::to_string(m_WavFile.blockAlign));
-    logger::log_info(s.c_str());
-    s = std::string("(" + std::string(a_FilePath) + ") bitsPerSample: " + std::to_string(m_WavFile.bitsPerSample));
-    logger::log_info(s.c_str());
-    s = std::string("(" + std::string(a_FilePath) + ") subchunk2Id: " + std::string(&m_WavFile.subchunk2Id[0], &m_WavFile.subchunk2Id[0] + std::size(m_WavFile.subchunk2Id)));
-    logger::log_info(s.c_str());
-    s = std::string("(" + std::string(a_FilePath) + ") subchunk2Size: " + std::to_string(m_WavFile.subchunk2Size));
-    logger::log_info(s.c_str());
+    logger::log_info("<Wav> (\"%s\") byteRate: %i.", a_FilePath, m_WavFile.byteRate);
+    logger::log_info("<Wav> (\"%s\") blockAlign: %i.", a_FilePath, m_WavFile.blockAlign);
+    logger::log_info("<Wav> (\"%s\") bitsPerSample: %i.", a_FilePath, m_WavFile.bitsPerSample);
+    logger::log_info("<Wav> (\"%s\") subchunk2Id: %s.", a_FilePath, std::string(&m_WavFile.subchunk2Id[0], &m_WavFile.subchunk2Id[0] + std::size(m_WavFile.subchunk2Id)).c_str());
+    logger::log_info("<Wav> (\"%s\") subchunk2Size: %i.", a_FilePath, m_WavFile.subchunk2Size);
 #endif
 }
 

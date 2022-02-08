@@ -36,12 +36,10 @@ AudioSystem &AudioSystem::operator=(const AudioSystem &rhs)
 /// </summary>
 /// <param name="a_Path">The path of where the sound resides.</param>
 /// <returns></returns>
-int AudioSystem::CreateSound(const char *a_Path)
+int AudioSystem::CreateSound(const char* a_Path)
 {
-	std::string fullpath = std::string(a_Path);
-	std::string s = std::string("<XAudio2> Creating sound: " + fullpath + ".");
-	logger::log_info(s.c_str());
-	WaveFile *sound = new WaveFile(fullpath.c_str());
+	logger::log_info("<XAudio2> Creating sound: \"%s\".", a_Path);
+	WaveFile *sound = new WaveFile(a_Path);
 	const int index = static_cast<int>(m_Sounds.size());
 	m_Sounds.push_back(sound);
 	return index;
