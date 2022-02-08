@@ -1,9 +1,8 @@
-﻿#include <iostream>
-#include <comdef.h>
-
-#include "Audio/XAudio2Player.h"
+﻿#include "Audio/XAudio2Player.h"
 #include "Audio/WaveFile.h"
 #include "Audio/XAudio2Channel.h"
+
+#include "Audio/Logger.h"
 
 XAudio2Channel::XAudio2Channel(XAudio2Player &a_SoundSystem) : BaseChannel()
 {
@@ -42,13 +41,13 @@ void XAudio2Channel::SetSound(const WaveFile &a_Sound)
 		wave.nAvgBytesPerSec = wave.nSamplesPerSec * (wave.wBitsPerSample / a_Sound.GetWavFormat().blockAlign);
 		if (FAILED(hr = m_SoundSystem->GetEngine().CreateSourceVoice(&m_SourceVoice, &wave, 0, 1.0f, &m_VoiceCallback)))
 		{
-			printf("<XAudio2> Creating XAudio Source Voice failed\n");
+			logger::log_error("<XAudio2> Creating XAudio Source Voice failed.");
 			return;
 		}
 	}
 	if (FAILED(hr = m_SourceVoice->Start(0, 0)))
 	{
-		printf("<XAudio2> Starting XAudio Source Voice failed\n");
+		logger::log_error("<XAudio2> Starting XAudio Source Voice failed.");
 		return;
 	}
 	m_IsPlaying = true;
@@ -114,14 +113,14 @@ void XAudio2Channel::Update()
 		m_CurrentPos += size;
 
 		XAUDIO2_BUFFER xBuffer = {0};
-		xBuffer.AudioBytes = size;				 // Buffer containing audio data.
+		xBuffer.AudioBytes = size;		 // Buffer containing audio data.
 		xBuffer.pAudioData = readBuffer; // Size of the audio buffer in bytes.
 		HRESULT hr;
 
 		// Submit it.
 		if (FAILED(hr = m_SourceVoice->SubmitSourceBuffer(&xBuffer)))
 		{
-			printf("<XAudio2> Submitting data to XAudio Source Voice failed\n");
+			logger::log_error("<XAudio2> Submitting data to XAudio Source Voice failed.");
 			return;
 		}
 	}

@@ -178,6 +178,7 @@
     <ClCompile Include="src\Audio\BaseChannel.cpp" />
     <ClCompile Include="src\Audio\BasePlayer.cpp" />
     <ClCompile Include="src\Audio\Logger.cpp" />
+    <ClCompile Include="src\Audio\WavConverter.cpp" />
     <ClCompile Include="src\Audio\WaveFile.cpp" />
     <ClCompile Include="src\Audio\XAudio2Channel.cpp" />
     <ClCompile Include="src\Audio\XAudio2Player.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="include\Audio\BaseChannel.h" />
     <ClInclude Include="include\Audio\BasePlayer.h" />
     <ClInclude Include="include\Audio\Logger.h" />
+    <ClInclude Include="include\Audio\WavConverter.h" />
     <ClInclude Include="include\Audio\WaveFile.h" />
     <ClInclude Include="include\Audio\WavFormat.h" />
     <ClInclude Include="include\Audio\XAudio2Callback.h" />

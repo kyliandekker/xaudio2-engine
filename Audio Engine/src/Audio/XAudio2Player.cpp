@@ -1,6 +1,7 @@
 #include "Audio/WaveFile.h"
 #include "Audio/XAudio2Player.h"
 
+#include "Audio/Logger.h"
 #include "Audio/XAudio2Channel.h"
 
 XAudio2Player::XAudio2Player() : BasePlayer()
@@ -8,21 +9,21 @@ XAudio2Player::XAudio2Player() : BasePlayer()
 	HRESULT hr;
 	if (FAILED(hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
 	{
-		printf("<XAudio> Initializing COM library failed.\n");
+		logger::log_error("<XAudio> Initializing COM library failed.");
 		return;
 	}
 
 	m_Engine = nullptr;
 	if (FAILED(hr = XAudio2Create(&m_Engine, 0, XAUDIO2_DEFAULT_PROCESSOR)))
 	{
-		printf("<XAudio> Creating XAudio failed.\n");
+		logger::log_error("<XAudio> Creating XAudio failed.");
 		return;
 	}
 
 	m_MasterVoice = nullptr;
 	if (FAILED(hr = m_Engine->CreateMasteringVoice(&m_MasterVoice)))
 	{
-		printf("<XAudio> Creating XAudio Mastering Voice failed.\n");
+		logger::log_error("<XAudio> Creating XAudio Mastering Voice failed.");
 		return;
 	}
 }
@@ -40,22 +41,22 @@ XAudio2Player::~XAudio2Player()
 /// Looks for an inactive channel and sets its sound.
 /// </summary>
 /// <param name="a_Sound"></param>
-int XAudio2Player::Play(const WaveFile& a_Sound)
+int XAudio2Player::Play(const WaveFile &a_Sound)
 {
 	for (int i = 0; i < static_cast<int>(m_Channels.size()); i++)
 		if (!m_Channels[i]->IsInUse())
 		{
-			reinterpret_cast<XAudio2Channel*>(m_Channels[i])->SetSound(a_Sound);
+			reinterpret_cast<XAudio2Channel *>(m_Channels[i])->SetSound(a_Sound);
 			return i;
 		}
 	if (static_cast<int>(m_Channels.size()) < m_NumChannels)
 	{
-		XAudio2Channel* channel = new XAudio2Channel(*this);
+		XAudio2Channel *channel = new XAudio2Channel(*this);
 		m_Channels.push_back(channel);
 		channel->SetSound(a_Sound);
 		return static_cast<int>(m_Channels.size()) - 1;
 	}
-	printf("<XAudio> No inactive channels detected.\n");
+	logger::log_error("<XAudio> No inactive channels detected.");
 	return -1;
 }
 

@@ -5,6 +5,7 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 #include <imgui/backends/imgui_impl_sdl.h>
+#include <glad/glad.h>
 
 #include "Audio/Logger.h"
 
@@ -18,7 +19,7 @@ int AudioSDLWindow::CreateWindow()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
-		printf("[ERROR] %s\n", SDL_GetError());
+		logger::log_error("%s.", SDL_GetError());
 		return -1;
 	}
 
@@ -52,23 +53,23 @@ int AudioSDLWindow::CreateWindow()
 
 	if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
 	{
-		logger::LogError("Couldn't initialize GLAD.");
+		logger::log_error("Couldn't initialize GLAD.");
 		return -1;
 	}
-	logger::LogInfo("Initialized GLAD.");
+	logger::log_info("Initialized GLAD.");
 
 	glViewport(0, 0, windowWidth, windowHeight);
 
 	m_AudioWindow.CreateImGui(m_GLContext, m_GLSLversion.c_str());
 
-	ImVec4 background = ImVec4(35 / 255.0f, 35 / 255.0f, 35 / 255.0f, 1.00f);
+	const ImVec4 background = ImVec4(35 / 255.0f, 35 / 255.0f, 35 / 255.0f, 1.00f);
 
 	glClearColor(background.x, background.y, background.z, background.w);
 	while (m_Running)
 	{
 		RenderWindow();
 	}
-	logger::LogInfo("Main loop ended.");
+	logger::log_info("Main loop ended.");
 	return 0;
 }
 
@@ -83,49 +84,49 @@ void AudioSDLWindow::RenderWindow()
 
 		switch (event.type)
 		{
-			case SDL_QUIT:
+		case SDL_QUIT:
+		{
+			m_Running = false;
+			break;
+		}
+		case SDL_WINDOWEVENT:
+		{
+			switch (event.window.event)
 			{
-				m_Running = false;
-				break;
-			}
-			case SDL_WINDOWEVENT:
+			case SDL_WINDOWEVENT_RESIZED:
 			{
-				switch (event.window.event)
-				{
-					case SDL_WINDOWEVENT_RESIZED:
-					{
-						windowWidth = event.window.data1;
-						windowHeight = event.window.data2;
-						glViewport(0, 0, windowWidth, windowHeight);
-						break;
-					}
-					default:
-					{
-						break;
-					}
-				}
-				break;
-			}
-			case SDL_KEYDOWN:
-			{
-				switch (event.key.keysym.sym)
-				{
-					case SDLK_ESCAPE:
-					{
-						m_Running = false;
-						break;
-					}
-					default:
-					{
-						break;
-					}
-				}
+				windowWidth = event.window.data1;
+				windowHeight = event.window.data2;
+				glViewport(0, 0, windowWidth, windowHeight);
 				break;
 			}
 			default:
 			{
 				break;
 			}
+			}
+			break;
+		}
+		case SDL_KEYDOWN:
+		{
+			switch (event.key.keysym.sym)
+			{
+			case SDLK_ESCAPE:
+			{
+				m_Running = false;
+				break;
+			}
+			default:
+			{
+				break;
+			}
+			}
+			break;
+		}
+		default:
+		{
+			break;
+		}
 		}
 	}
 

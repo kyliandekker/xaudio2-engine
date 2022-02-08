@@ -1,9 +1,7 @@
 #pragma once
 
-#include <glad/glad.h>
 #include <sdl/SDL.h>
 #include <string>
-#include <thread>
 
 #include "AudioImGuiWindow.h"
 #include "Audio/AudioSystem.h"
@@ -15,7 +13,6 @@ public:
 	int CreateWindow();
 	void RenderWindow();
 	void DeleteWindow();
-	void UpdateAudio();
 private:
 	SDL_Window* m_Window = nullptr;
 	AudioSystem m_AudioSystem;

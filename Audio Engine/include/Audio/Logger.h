@@ -2,29 +2,25 @@
 
 namespace logger
 {
-	namespace log
+	template <typename ...Args>
+	void log_to_console(const char* flag, const char* format, Args ...args)
 	{
-		// probably going to replace this with the other functions in this header
-		void LogToConsole(const char* message);
+		char buffer[256];
+
+		snprintf(buffer, 256, format, args...);
+
+		printf("%s: %s\n", flag, buffer);
 	}
 
-	enum class Verbosity
+	template <typename ...Args>
+	void log_info(const char* format, Args ...args)
 	{
-		None = 0,
-		Error,
-		Warning,
-		Info
-	};
+		log_to_console("[Info]", format, args...);
+	}
 
-	void SetLogVerbosity(Verbosity verbosity);
-
-	void LogInfo(const char* const message);
-
-	void LogWarning(const char* const message);
-
-	void LogError(const char* const message);
-
-	void LogMessage(const char* const message, Verbosity verbosity, const char* const flag = nullptr);
-
-	void LogClear();
+	template <typename ...Args>
+	void log_error(const char* format, Args ...args)
+	{
+		log_to_console("[Error]", format, args...);
+	}
 }

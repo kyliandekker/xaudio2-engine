@@ -35,8 +35,6 @@ public:
     bool GetChunk(std::vector<std::complex<double>>& signal);
 protected:
     bool m_Looping = false;
-    void LogInfo(const char* a_Info);
-    void LogError(const char* a_Errors);
     float m_Volume = 1.0f;
 
     FILE* m_File = nullptr;

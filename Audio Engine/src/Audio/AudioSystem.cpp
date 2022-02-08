@@ -1,14 +1,14 @@
 ﻿#include "Audio/AudioSystem.h"
 #include "Audio/XAudio2Player.h"
 
-#include <cstdio>
+#include "Audio/Logger.h"
 
 AudioSystem::AudioSystem()
 {
 	m_Player = new XAudio2Player();
 }
 
-AudioSystem::AudioSystem(const AudioSystem& rhs)
+AudioSystem::AudioSystem(const AudioSystem &rhs)
 {
 	m_Player = rhs.m_Player;
 	m_Sounds = rhs.m_Sounds;
@@ -21,7 +21,7 @@ AudioSystem::~AudioSystem()
 	delete m_Player;
 }
 
-AudioSystem& AudioSystem::operator=(const AudioSystem& rhs)
+AudioSystem &AudioSystem::operator=(const AudioSystem &rhs)
 {
 	if (&rhs != this)
 	{
@@ -39,8 +39,8 @@ AudioSystem& AudioSystem::operator=(const AudioSystem& rhs)
 int AudioSystem::CreateSound(const char *a_Path)
 {
 	std::string fullpath = std::string(a_Path);
-	std::string s = std::string("<XAudio2> Creating sound: " + fullpath + ".\n");
-	printf(s.c_str());
+	std::string s = std::string("<XAudio2> Creating sound: " + fullpath + ".");
+	logger::log_info(s.c_str());
 	WaveFile *sound = new WaveFile(fullpath.c_str());
 	const int index = static_cast<int>(m_Sounds.size());
 	m_Sounds.push_back(sound);
