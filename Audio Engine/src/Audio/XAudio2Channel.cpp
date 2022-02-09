@@ -4,9 +4,8 @@
 
 #include "Audio/Logger.h"
 
-XAudio2Channel::XAudio2Channel(XAudio2Player &a_SoundSystem) : BaseChannel()
+XAudio2Channel::XAudio2Channel(XAudio2Player &a_SoundSystem) : BaseChannel(&a_SoundSystem)
 {
-	m_SoundSystem = &a_SoundSystem;
 	m_VoiceCallback = XAudio2Callback();
 }
 
@@ -39,7 +38,7 @@ void XAudio2Channel::SetSound(const WaveFile &a_Sound)
 		wave.wBitsPerSample = a_Sound.GetWavFormat().bitsPerSample;
 		wave.nBlockAlign = a_Sound.GetWavFormat().blockAlign;
 		wave.nAvgBytesPerSec = wave.nSamplesPerSec * (wave.wBitsPerSample / a_Sound.GetWavFormat().blockAlign);
-		if (FAILED(hr = m_SoundSystem->GetEngine().CreateSourceVoice(&m_SourceVoice, &wave, 0, 1.0f, &m_VoiceCallback)))
+		if (FAILED(hr = reinterpret_cast<XAudio2Player*>(m_Player)->GetEngine().CreateSourceVoice(&m_SourceVoice, &wave, 0, 1.0f, &m_VoiceCallback)))
 		{
 			logger::log_error("<XAudio2> Creating XAudio Source Voice failed.");
 			return;
@@ -108,6 +107,7 @@ void XAudio2Channel::Update()
 		// Read the part of the wave file and store it back in the read buffer.
 		m_CurrentSound->Read(m_CurrentPos, size, readBuffer);
 
+		readBuffer = ApplyVolume(readBuffer, size, m_Player->GetVolume());
 		readBuffer = ApplyVolume(readBuffer, size, m_CurrentSound->GetVolume());
 		readBuffer = ApplyEffects(readBuffer, size);
 

@@ -125,6 +125,11 @@ const std::vector<BaseChannel *> &AudioSystem::GetChannels() const
 	return m_Player->GetChannels();
 }
 
+BasePlayer& AudioSystem::GetPlayer() const
+{
+	return *m_Player;
+}
+
 /// <summary>
 /// Removes a sound from all the channels using it.
 /// </summary>

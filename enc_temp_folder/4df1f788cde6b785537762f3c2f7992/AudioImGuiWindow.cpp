@@ -67,7 +67,7 @@ void AudioImGuiWindow::RenderImGui()
         ImGui::Dummy(ImVec2(0.0f, 1.0f));
         ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), "General");
 
-        ImGui::Text("Master Volume");
+        ImGui::Text("Volume");
         ImGui::SameLine();
         float volume = m_AudioSystem.GetPlayer().GetVolume();
         ImGui::SliderFloat(std::string("###Volume_Channel_0").c_str(), &volume, 0, 1);

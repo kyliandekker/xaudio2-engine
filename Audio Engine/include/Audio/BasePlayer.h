@@ -27,8 +27,12 @@ public:
 	virtual void Pause() = 0;
 	virtual void Resume() = 0;
 
+	void SetVolume(float a_Volume);
+	float GetVolume() const;
+
 	const std::vector<BaseChannel*>& GetChannels() const;
 protected:
 	std::vector<BaseChannel*> m_Channels = std::vector<BaseChannel*>();
 	bool m_IsPlaying = true;
+	float m_Volume = 1.0f;
 };

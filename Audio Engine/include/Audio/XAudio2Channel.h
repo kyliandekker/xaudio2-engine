@@ -30,5 +30,4 @@ private:
 	IXAudio2SourceVoice* m_SourceVoice = nullptr;
 	XAudio2Callback m_VoiceCallback;
 	uint32_t m_CurrentPos = 0;
-	XAudio2Player* m_SoundSystem = nullptr;
 };

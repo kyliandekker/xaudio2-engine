@@ -2,11 +2,15 @@
 
 #include "Audio/XAudio2Callback.h"
 
-BaseChannel::BaseChannel() = default;
+BaseChannel::BaseChannel(BasePlayer* a_Player) : m_Player(a_Player)
+{
+	
+}
 
 BaseChannel::BaseChannel(const BaseChannel& rhs)
 {
 	m_CurrentSound = rhs.m_CurrentSound;
+	m_Player = rhs.m_Player;
 	m_IsPlaying = rhs.IsPlaying();
 }
 
@@ -17,6 +21,7 @@ BaseChannel& BaseChannel::operator=(const BaseChannel& rhs)
 	if (&rhs != this)
 	{
 		m_CurrentSound = rhs.m_CurrentSound;
+		m_Player = rhs.m_Player;
 		m_IsPlaying = rhs.IsPlaying();
 	}
 	return *this;
@@ -41,7 +46,7 @@ void BaseChannel::SetVolume(float a_Volume)
 	m_Volume = a_Volume;
 }
 
-float BaseChannel::GetVolume()
+float BaseChannel::GetVolume() const
 {
 	return m_Volume;
 }

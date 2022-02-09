@@ -28,6 +28,16 @@ bool BasePlayer::IsPlaying() const
 	return m_IsPlaying;
 }
 
+void BasePlayer::SetVolume(float a_Volume)
+{
+	m_Volume = a_Volume;
+}
+
+float BasePlayer::GetVolume() const
+{
+	return m_Volume;
+}
+
 const std::vector<BaseChannel *> &BasePlayer::GetChannels() const
 {
 	return m_Channels;

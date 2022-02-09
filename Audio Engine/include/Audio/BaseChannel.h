@@ -2,10 +2,12 @@
 
 #include "WaveFile.h"
 
+class BasePlayer;
+
 class BaseChannel
 {
 public:
-	BaseChannel();
+	BaseChannel(BasePlayer* a_Player);
 	BaseChannel(const BaseChannel& rhs);
 	virtual ~BaseChannel();
 
@@ -20,7 +22,7 @@ public:
 	virtual bool IsInUse() const;
 	virtual bool IsPlaying() const;
 	void SetVolume(float a_Volume);
-	float GetVolume();
+	float GetVolume() const;
 
 	unsigned char* ApplyEffects(unsigned char* a_Data, uint32_t a_BufferSize);
 
@@ -31,4 +33,5 @@ protected:
 	float m_Volume = 1;
 	const WaveFile* m_CurrentSound = nullptr;
 	bool m_IsPlaying = false;
+	BasePlayer* m_Player = nullptr;
 };
