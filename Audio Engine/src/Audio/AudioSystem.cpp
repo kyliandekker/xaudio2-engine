@@ -139,12 +139,23 @@ void AudioSystem::RemoveSound(int a_Index)
 }
 
 /// <summary>
-/// Stops a sound in all the channels that use it.
+/// Pauses a sound in all the channels that use it.
 /// </summary>
 /// <param name="a_Index"></param>
-void AudioSystem::StopAllChannelsWithSound(int a_Index)
+void AudioSystem::PauseAllChannelsWithSound(int a_Index)
 {
 	for (const auto i : m_Player->GetChannels())
 		if (&i->GetSound() == m_Sounds[a_Index])
-			i->RemoveSound();
+			i->Pause();
+}
+
+/// <summary>
+/// Resumes a sound in all the channels that use it.
+/// </summary>
+/// <param name="a_Index"></param>
+void AudioSystem::ResumeAllChannelsWithSound(int a_Index)
+{
+	for (const auto i : m_Player->GetChannels())
+		if (&i->GetSound() == m_Sounds[a_Index])
+			i->Resume();
 }

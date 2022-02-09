@@ -15,7 +15,7 @@ public:
 	~XAudio2Channel() override;
 	void SetSound(const WaveFile& a_Sound);
 
-	void Play() override;
+	void Resume() override;
 	void Pause() override;
 	void Update() override;
 	void Stop() override;

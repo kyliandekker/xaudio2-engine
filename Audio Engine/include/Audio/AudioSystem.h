@@ -28,7 +28,8 @@ public:
 	const std::vector<WaveFile*>& GetSounds() const;
 	const std::vector<BaseChannel*>& GetChannels() const;
 	void RemoveSound(int a_Index);
-	void StopAllChannelsWithSound(int a_Index);
+	void PauseAllChannelsWithSound(int a_Index);
+	void ResumeAllChannelsWithSound(int a_Index);
 private:
 	BasePlayer* m_Player = nullptr;
 	std::vector<WaveFile*> m_Sounds = std::vector<WaveFile*>();

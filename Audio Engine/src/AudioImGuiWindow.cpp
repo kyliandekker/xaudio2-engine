@@ -126,6 +126,13 @@ void AudioImGuiWindow::RenderImGui()
                 if (ImGui::CollapsingHeader(std::string("File Actions###FileActions_" + std::to_string(i)).c_str()))
                 {
                     ImGui::Indent(16.0f);
+
+                    ImGui::Text("Volume");
+                    ImGui::SameLine();
+                    float volume = sound.GetVolume();
+                    ImGui::SliderFloat(std::string("###Volume_Sound_" + std::to_string(i)).c_str(), &volume, 0, 1);
+                    sound.SetVolume(volume);
+
                     if (ImGui::Button(std::string("Play###Play_Sound_" + std::to_string(i)).c_str()))
                     {
                         m_AudioSystem.Play(i);
@@ -134,9 +141,13 @@ void AudioImGuiWindow::RenderImGui()
 	                {
 	                    m_AudioSystem.RemoveSound(i);
 	                }
-	                if (ImGui::Button(std::string("Stop All Channels With This Sound###StopAllChannelsWith_Sound_" + std::to_string(i)).c_str()))
+	                if (ImGui::Button(std::string("Pause All Channels With This Sound###PauseAllChannelsWith_Sound_" + std::to_string(i)).c_str()))
 	                {
-	                    m_AudioSystem.StopAllChannelsWithSound(i);
+	                    m_AudioSystem.PauseAllChannelsWithSound(i);
+	                }
+	                if (ImGui::Button(std::string("Resume All Channels With This Sound###ResumeAllChannelsWith_Sound_" + std::to_string(i)).c_str()))
+	                {
+	                    m_AudioSystem.ResumeAllChannelsWithSound(i);
 	                }
 	                //if (ImGui::Button(std::string("Add Effects###Effects_Sound_" + std::to_string(i)).c_str()))
 	                //{
@@ -185,6 +196,13 @@ void AudioImGuiWindow::RenderImGui()
                     ShowValue("Time Left", std::string(
                         WaveFile::FormatDuration(channel.GetSound().GetDuration() - (xchannel.GetCurrentPos() / channel.GetSound().GetWavFormat().byteRate))
                     ).c_str());
+
+                    ImGui::Text("Volume");
+                    ImGui::SameLine();
+                    float volume = channel.GetVolume();
+                    ImGui::SliderFloat(std::string("###Volume_Channel_" + std::to_string(i)).c_str(), &volume, 0, 1);
+                    channel.SetVolume(volume);
+
                     if (channel.IsPlaying())
                     {
                         if (ImGui::Button(std::string("Pause###Pause_Channel_" + std::to_string(i)).c_str()))
@@ -192,8 +210,8 @@ void AudioImGuiWindow::RenderImGui()
                     }
                     else
                     {
-                        if (ImGui::Button(std::string("Play###Play_Channel_" + std::to_string(i)).c_str()))
-                            channel.Play();
+                        if (ImGui::Button(std::string("Resume###Resume_Channel_" + std::to_string(i)).c_str()))
+                            channel.Resume();
                     }
                 }
             }

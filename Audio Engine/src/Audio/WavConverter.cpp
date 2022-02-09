@@ -7,7 +7,7 @@
 namespace wav
 {
 	// Square root of 2 (size of uint16_t)
-	constexpr float sqrt_two = 1.4142135623730950488016887242097f;
+	constexpr float SQRT_TWO = 1.4142135623730950488016887242097f;
 
 	namespace wav_converter
 	{
@@ -35,7 +35,7 @@ namespace wav
 		{
 			// Determine the size of a 16bit data array.
 			// Chunksize divided by the size of a 24bit int (3) multiplied by the size of a 16bit int (2). 
-			size = size/ sizeof(uint24_t) * sizeof(uint16_t);
+			size = size / sizeof(uint24_t) * sizeof(uint16_t);
 
 			uint16_t* array_16 = new uint16_t[size];
 
@@ -44,7 +44,7 @@ namespace wav
 				float convert_value = *reinterpret_cast<float*>(data);
 
 				//calc 32 to 16 bit unsigned int.
-				convert_value /= sqrt_two;
+				convert_value /= SQRT_TWO;
 				convert_value *= INT16_MAX;
 
 				array_16[a] = static_cast<uint16_t>(convert_value);

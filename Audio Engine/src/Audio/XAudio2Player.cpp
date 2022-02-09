@@ -78,7 +78,7 @@ void XAudio2Player::StopChannel(int a_ChannelHandle)
 /// <param name="a_ChannelHandle"></param>
 void XAudio2Player::PlayChannel(int a_ChannelHandle)
 {
-	m_Channels[a_ChannelHandle]->Play();
+	m_Channels[a_ChannelHandle]->Resume();
 }
 
 /// <summary>

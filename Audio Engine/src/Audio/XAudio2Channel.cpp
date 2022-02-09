@@ -56,7 +56,7 @@ void XAudio2Channel::SetSound(const WaveFile &a_Sound)
 /// <summary>
 /// Sets playback to resumed.
 /// </summary>
-void XAudio2Channel::Play()
+void XAudio2Channel::Resume()
 {
 	m_IsPlaying = true;
 }
@@ -99,7 +99,7 @@ void XAudio2Channel::Update()
 	if (state.BuffersQueued < m_CurrentSound->GetWavFormat().bufferSize)
 	{
 		// Read buffer for the part of the wave file.
-		unsigned char *readBuffer;
+		unsigned char* readBuffer;
 
 		// The initial size we want to retrieve from the audio file.
 		// TODO: Understand what I am doing here.
@@ -107,7 +107,9 @@ void XAudio2Channel::Update()
 
 		// Read the part of the wave file and store it back in the read buffer.
 		m_CurrentSound->Read(m_CurrentPos, size, readBuffer);
-		m_SourceVoice->SetVolume(m_CurrentSound->GetVolume());
+
+		readBuffer = ApplyVolume(readBuffer, size, m_CurrentSound->GetVolume());
+		readBuffer = ApplyEffects(readBuffer, size);
 
 		// Make sure we add the size of this read buffer to the total size, so that on the next frame we will get the next part of the wave file.
 		m_CurrentPos += size;
