@@ -1,9 +1,3 @@
-﻿  AudioImGuiWindow.cpp
-D:\Data\Downloads\XAudio2 Engine\xaudio2-engine\Audio Engine\src\AudioImGuiWindow.cpp(204,57): warning C4244: 'argument': conversion from 'uint32_t' to 'float', possible loss of data
-D:\Data\Downloads\XAudio2 Engine\xaudio2-engine\Audio Engine\src\AudioImGuiWindow.cpp(247,61): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-D:\Data\Downloads\XAudio2 Engine\xaudio2-engine\Audio Engine\src\AudioImGuiWindow.cpp(297,34): warning C4805: '==': unsafe mix of type 'BOOL' and type 'bool' in operation
-  Effects.cpp
-  XAudio2Channel.cpp
-  Generating Code...
+﻿  Effects.cpp
   Audio Engine.vcxproj -> D:\Data\Downloads\XAudio2 Engine\xaudio2-engine\x64\Debug\Audio Engine.exe
   0 File(s) copied

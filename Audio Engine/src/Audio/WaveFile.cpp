@@ -38,7 +38,7 @@ WaveFile::WaveFile(const char* a_FilePath)
     fread(&m_WavFile.chunkId, sizeof(m_WavFile.chunkId), 1, m_File);
 
     // Should be RIFF.
-    if (strcmp(reinterpret_cast<const char*>(m_WavFile.chunkId), "RIFF") != 0)
+    if (strcmp(std::string(&m_WavFile.chunkId[0], &m_WavFile.chunkId[0] + std::size(m_WavFile.chunkId)).c_str(), "RIFF") != 0)
     {
         logger::log_error("<Wav> (\"%s\") is not a RIFF file. (%s)." , a_FilePath, m_WavFile.chunkId);
         return;
@@ -49,18 +49,26 @@ WaveFile::WaveFile(const char* a_FilePath)
 
     // Format (should be WAVE).
     fread(&m_WavFile.format, sizeof(m_WavFile.format), 1, m_File);
-    if (strcmp(reinterpret_cast<const char*>(m_WavFile.format), "WAVE") != 0)
+    if (strcmp(std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str(), "WAVE") != 0)
     {
         logger::log_error("<Wav> (\"%s\") is not a WAV file. (%s).", a_FilePath, m_WavFile.format);
-        return;
+        
     }
-
+ 
     // Subchunk id (should be fmt).
     fread(&m_WavFile.subchunk1Id, sizeof(m_WavFile.subchunk1Id), 1, m_File);
-    if (strcmp(reinterpret_cast<const char*>(m_WavFile.subchunk1Id), "fmt ") != 0)
+    if (strcmp(std::string(&m_WavFile.subchunk1Id[0], &m_WavFile.subchunk1Id[0] + std::size(m_WavFile.subchunk1Id)).c_str(), "fmt ") != 0)
     {
         logger::log_error("<Wav> (\"%s\") has no FMT chunk. (%s).", a_FilePath, m_WavFile.subchunk1Id);
-        return;
+
+        fread(&m_WavFile.subchunk1Size, sizeof(m_WavFile.subchunk1Size), 1, m_File);
+        fseek(m_File, m_WavFile.subchunk1Size, SEEK_CUR);
+        fread(&m_WavFile.subchunk1Id, sizeof(m_WavFile.subchunk1Id), 1, m_File);
+        if (strcmp(std::string(&m_WavFile.subchunk1Id[0], &m_WavFile.subchunk1Id[0] + std::size(m_WavFile.subchunk1Id)).c_str(), "fmt ") != 0)
+        {
+            logger::log_error("<Wav> (\"%s\") Could not find FMT chunk. (%s).", a_FilePath, m_WavFile.subchunk1Id);
+            return;
+        }
     }
 
     // Subchunk size.
