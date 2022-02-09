@@ -2,6 +2,7 @@
 #include "Audio/WaveFile.h"
 #include "Audio/XAudio2Channel.h"
 
+#include "Audio/Effects.h"
 #include "Audio/Logger.h"
 
 XAudio2Channel::XAudio2Channel(XAudio2Player &a_SoundSystem) : BaseChannel(&a_SoundSystem)
@@ -107,8 +108,8 @@ void XAudio2Channel::Update()
 		// Read the part of the wave file and store it back in the read buffer.
 		m_CurrentSound->Read(m_CurrentPos, size, readBuffer);
 
-		readBuffer = ApplyVolume(readBuffer, size, m_Player->GetVolume());
-		readBuffer = ApplyVolume(readBuffer, size, m_CurrentSound->GetVolume());
+		readBuffer = effects::change_volume(readBuffer, size, m_Player->GetVolume());
+		readBuffer = effects::change_volume(readBuffer, size, m_CurrentSound->GetVolume());
 		readBuffer = ApplyEffects(readBuffer, size);
 
 		// Make sure we add the size of this read buffer to the total size, so that on the next frame we will get the next part of the wave file.

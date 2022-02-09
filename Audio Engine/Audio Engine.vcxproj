@@ -177,6 +177,7 @@
     <ClCompile Include="src\Audio\AudioSystem.cpp" />
     <ClCompile Include="src\Audio\BaseChannel.cpp" />
     <ClCompile Include="src\Audio\BasePlayer.cpp" />
+    <ClCompile Include="src\Audio\Effects.cpp" />
     <ClCompile Include="src\Audio\Logger.cpp" />
     <ClCompile Include="src\Audio\WavConverter.cpp" />
     <ClCompile Include="src\Audio\WaveFile.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="include\Audio\AudioSystem.h" />
     <ClInclude Include="include\Audio\BaseChannel.h" />
     <ClInclude Include="include\Audio\BasePlayer.h" />
+    <ClInclude Include="include\Audio\Effects.h" />
     <ClInclude Include="include\Audio\Logger.h" />
     <ClInclude Include="include\Audio\uint24_t.h" />
     <ClInclude Include="include\Audio\WavConverter.h" />

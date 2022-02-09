@@ -28,8 +28,6 @@ public:
 
 	const WaveFile& GetSound() const;
 protected:
-	unsigned char* ApplyVolume(unsigned char* a_Data, uint32_t a_BufferSize, float a_Volume);
-
 	float m_Volume = 1;
 	const WaveFile* m_CurrentSound = nullptr;
 	bool m_IsPlaying = false;

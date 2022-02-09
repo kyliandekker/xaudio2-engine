@@ -87,6 +87,9 @@
     <ClCompile Include="src\Audio\WavConverter.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
+    <ClCompile Include="src\Audio\Effects.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AudioImGuiWindow.h">
@@ -129,6 +132,9 @@
       <Filter>Header Files\audio</Filter>
     </ClInclude>
     <ClInclude Include="include\Audio\uint24_t.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Audio\Effects.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
   </ItemGroup>
