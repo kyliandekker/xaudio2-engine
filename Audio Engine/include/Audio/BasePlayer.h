@@ -30,9 +30,13 @@ public:
 	void SetVolume(float a_Volume);
 	float GetVolume() const;
 
+	void SetPanning(float a_Panning);
+	float GetPanning() const;
+
 	const std::vector<BaseChannel*>& GetChannels() const;
 protected:
 	std::vector<BaseChannel*> m_Channels = std::vector<BaseChannel*>();
 	bool m_IsPlaying = true;
 	float m_Volume = 1.0f;
+	float m_Panning = 0.0f;
 };

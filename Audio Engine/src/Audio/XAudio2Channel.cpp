@@ -110,12 +110,13 @@ void XAudio2Channel::Update()
 
 		readBuffer = effects::change_volume(readBuffer, size, m_Player->GetVolume());
 		readBuffer = effects::change_volume(readBuffer, size, m_CurrentSound->GetVolume());
+		readBuffer = effects::change_panning(readBuffer, size, m_Panning);
 		readBuffer = ApplyEffects(readBuffer, size);
 
 		// Make sure we add the size of this read buffer to the total size, so that on the next frame we will get the next part of the wave file.
 		m_CurrentPos += size;
 
-		XAUDIO2_BUFFER xBuffer = {0};
+		XAUDIO2_BUFFER xBuffer = {0, 0, nullptr, 0, 0, 0, 0, 0, nullptr};
 		xBuffer.AudioBytes = size;		 // Buffer containing audio data.
 		xBuffer.pAudioData = readBuffer; // Size of the audio buffer in bytes.
 		HRESULT hr;

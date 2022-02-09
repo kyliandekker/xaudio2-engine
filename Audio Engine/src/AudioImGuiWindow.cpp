@@ -204,6 +204,12 @@ void AudioImGuiWindow::RenderImGui()
                         WaveFile::FormatDuration(channel.GetSound().GetDuration() - (xchannel.GetCurrentPos() / channel.GetSound().GetWavFormat().byteRate))
                     ).c_str());
 
+                    ImGui::Text("Panning");
+                    ImGui::SameLine();
+                    float panning = channel.GetPanning();
+                    ImGui::SliderFloat(std::string("###Panning_Channel_" + std::to_string(i)).c_str(), &panning, -1, 1);
+                    channel.SetPanning(panning);
+
                     ImGui::Text("Volume");
                     ImGui::SameLine();
                     float volume = channel.GetVolume();

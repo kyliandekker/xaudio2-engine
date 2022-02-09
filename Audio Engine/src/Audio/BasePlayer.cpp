@@ -38,6 +38,16 @@ float BasePlayer::GetVolume() const
 	return m_Volume;
 }
 
+void BasePlayer::SetPanning(float a_Panning)
+{
+	m_Panning = a_Panning;
+}
+
+float BasePlayer::GetPanning() const
+{
+	return m_Panning;
+}
+
 const std::vector<BaseChannel *> &BasePlayer::GetChannels() const
 {
 	return m_Channels;

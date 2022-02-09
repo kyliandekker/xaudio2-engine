@@ -21,9 +21,9 @@ namespace wav
 
 			for (uint32_t a = 0; a < size; a++)
 			{
-				float convert_value = *reinterpret_cast<float*>(data);
+				float converted_value = *reinterpret_cast<float*>(data);
 				
-				array_16[a] = static_cast<uint16_t>(convert_value);
+				array_16[a] = static_cast<uint16_t>(converted_value);
 
 				// Add the size of a 24bit int (3) to move the data pointer.
 				data += sizeof(uint24_t);
@@ -41,13 +41,13 @@ namespace wav
 
 			for (uint32_t a = 0; a < size; a++)
 			{
-				float convert_value = *reinterpret_cast<float*>(data);
+				float converted_value = *reinterpret_cast<float*>(data);
 
 				//calc 32 to 16 bit unsigned int.
-				convert_value /= SQRT_TWO;
-				convert_value *= INT16_MAX;
+				converted_value /= SQRT_TWO;
+				converted_value *= INT16_MAX;
 
-				array_16[a] = static_cast<uint16_t>(convert_value);
+				array_16[a] = static_cast<uint16_t>(converted_value);
 
 				// Add the size of a 32bit int (4) to move the data pointer.
 				data += sizeof(uint32_t);

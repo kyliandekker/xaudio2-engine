@@ -53,9 +53,20 @@ float BaseChannel::GetVolume() const
 	return m_Volume;
 }
 
+void BaseChannel::SetPanning(float a_Panning)
+{
+	m_Panning = a_Panning;
+}
+
+float BaseChannel::GetPanning() const
+{
+	return m_Panning;
+}
+
 unsigned char* BaseChannel::ApplyEffects(unsigned char* a_Data, uint32_t a_BufferSize)
 {
 	a_Data = effects::change_volume(a_Data, a_BufferSize, m_Volume);
+	a_Data = effects::change_panning(a_Data, a_BufferSize, m_Panning);
 	return a_Data;
 }
 
