@@ -125,6 +125,10 @@ const std::vector<BaseChannel *> &AudioSystem::GetChannels() const
 	return m_Player->GetChannels();
 }
 
+/// <summary>
+/// Removes a sound from all the channels using it.
+/// </summary>
+/// <param name="a_Index"></param>
 void AudioSystem::RemoveSound(int a_Index)
 {
 	for (const auto i : m_Player->GetChannels())
@@ -134,6 +138,10 @@ void AudioSystem::RemoveSound(int a_Index)
 	m_Sounds.erase(m_Sounds.begin() + a_Index);
 }
 
+/// <summary>
+/// Stops a sound in all the channels that use it.
+/// </summary>
+/// <param name="a_Index"></param>
 void AudioSystem::StopAllChannelsWithSound(int a_Index)
 {
 	for (const auto i : m_Player->GetChannels())

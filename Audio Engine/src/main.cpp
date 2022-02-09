@@ -4,11 +4,14 @@
 
 int main(int, char*[])
 {
-	AudioSDLWindow audioSDLWindow = AudioSDLWindow();
+	AudioSDLWindow* audioSDLWindow = new AudioSDLWindow();
+	audioSDLWindow->RenderWindow();
+	delete audioSDLWindow;
 
-	audioSDLWindow.CreateWindow();
-	audioSDLWindow.RenderWindow();
-	audioSDLWindow.DeleteWindow();
+	while(true)
+	{
+		
+	}
 
 	return 0;
 }

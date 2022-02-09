@@ -128,5 +128,8 @@
     <ClInclude Include="include\Audio\WavConverter.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
+    <ClInclude Include="include\Audio\uint24_t.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

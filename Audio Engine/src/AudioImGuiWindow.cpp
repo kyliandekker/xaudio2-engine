@@ -14,11 +14,7 @@
 #include "Audio/XAudio2Callback.h"
 #include "Audio/XAudio2Channel.h"
 
-AudioImGuiWindow::AudioImGuiWindow()
-{
-}
-
-AudioImGuiWindow::AudioImGuiWindow(SDL_Window *a_Window, AudioSystem *a_AudioSystem) : m_Window(a_Window), m_AudioSystem(a_AudioSystem)
+AudioImGuiWindow::AudioImGuiWindow(SDL_Window& a_Window, AudioSystem& a_AudioSystem) : m_Window(a_Window), m_AudioSystem(a_AudioSystem)
 {
 }
 
@@ -34,28 +30,21 @@ int AudioImGuiWindow::CreateImGui(const SDL_GLContext &a_Context, const char *a_
     ImGui::StyleColorsDark();
 
     // setup platform/renderer bindings
-    ImGui_ImplSDL2_InitForOpenGL(m_Window, a_Context);
+    ImGui_ImplSDL2_InitForOpenGL(&m_Window, a_Context);
     ImGui_ImplOpenGL3_Init(a_Glslversion);
 
     return 0;
 }
 
-void AudioImGuiWindow::EndImGui()
-{
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
-    ImGui::DestroyContext();
-}
-
 void AudioImGuiWindow::RenderImGui()
 {
     ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplSDL2_NewFrame(m_Window);
+    ImGui_ImplSDL2_NewFrame(&m_Window);
     ImGui::NewFrame();
 
     {
         int sdl_width = 0, sdl_height = 0;
-        SDL_GetWindowSize(m_Window, &sdl_width, &sdl_height);
+        SDL_GetWindowSize(&m_Window, &sdl_width, &sdl_height);
         int controls_width = sdl_width;
 
         controls_width -= 10;
@@ -77,15 +66,15 @@ void AudioImGuiWindow::RenderImGui()
 
         ImGui::Dummy(ImVec2(0.0f, 1.0f));
         ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), "General");
-        if (m_AudioSystem->IsPlaying())
+        if (m_AudioSystem.IsPlaying())
         {
             if (ImGui::Button("Pause Whole Playback"))
-                m_AudioSystem->Pause();
+                m_AudioSystem.Pause();
         }
         else
         {
             if (ImGui::Button("Resume Whole Playback"))
-                m_AudioSystem->Resume();
+                m_AudioSystem.Resume();
         }
         if (ImGui::Button("Add Sound"))
         {
@@ -110,7 +99,7 @@ void AudioImGuiWindow::RenderImGui()
 
         ImGui::Dummy(ImVec2(0.0f, 1.0f));
 
-        const std::vector<WaveFile *> &sounds = m_AudioSystem->GetSounds();
+        const std::vector<WaveFile *> &sounds = m_AudioSystem.GetSounds();
         for (int i = 0; i < static_cast<int>(sounds.size()); i++)
         {
             WaveFile &sound = *sounds[i];
@@ -139,15 +128,15 @@ void AudioImGuiWindow::RenderImGui()
                     ImGui::Indent(16.0f);
                     if (ImGui::Button(std::string("Play###Play_Sound_" + std::to_string(i)).c_str()))
                     {
-                        m_AudioSystem->Play(i);
+                        m_AudioSystem.Play(i);
                     }
 	                if (ImGui::Button(std::string("Remove###Remove_Sound_" + std::to_string(i)).c_str()))
 	                {
-	                    m_AudioSystem->RemoveSound(i);
+	                    m_AudioSystem.RemoveSound(i);
 	                }
 	                if (ImGui::Button(std::string("Stop All Channels With This Sound###StopAllChannelsWith_Sound_" + std::to_string(i)).c_str()))
 	                {
-	                    m_AudioSystem->StopAllChannelsWithSound(i);
+	                    m_AudioSystem.StopAllChannelsWithSound(i);
 	                }
 	                //if (ImGui::Button(std::string("Add Effects###Effects_Sound_" + std::to_string(i)).c_str()))
 	                //{
@@ -176,7 +165,7 @@ void AudioImGuiWindow::RenderImGui()
 
         ImGui::Dummy(ImVec2(0.0f, 1.0f));
 
-        const std::vector<BaseChannel *> &channels = m_AudioSystem->GetChannels();
+        const std::vector<BaseChannel *> &channels = m_AudioSystem.GetChannels();
         for (int i = 0; i < static_cast<int>(channels.size()); i++)
         {
             BaseChannel &channel = *channels[i];
@@ -212,7 +201,7 @@ void AudioImGuiWindow::RenderImGui()
 
         {
             int sdl_width = 0, sdl_height = 0;
-            SDL_GetWindowSize(m_Window, &sdl_width, &sdl_height);
+            SDL_GetWindowSize(&m_Window, &sdl_width, &sdl_height);
             int controls_width = sdl_width;
 
             controls_width -= 10;
@@ -272,7 +261,7 @@ void AudioImGuiWindow::OpenFile()
     {
         char *path = new char[wcslen(ofn.lpstrFile) + 1];
         wsprintfA(path, "%S", ofn.lpstrFile);
-        m_AudioSystem->CreateSound(path);
+        m_AudioSystem.CreateSound(path);
         delete[] path;
     }
 }

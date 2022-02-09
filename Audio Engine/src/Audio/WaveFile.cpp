@@ -6,6 +6,7 @@
 
 #include "Audio/WavConverter.h"
 #include "Audio/Logger.h"
+#include "Audio/uint24_t.h"
 
 #define LOG_INFO
 
@@ -98,12 +99,11 @@ WaveFile::WaveFile(const char* a_FilePath)
     else if (m_WavFile.bitsPerSample == 24)
         Convert24To16();
 
+    m_WavFile.audioFormat = WAVE_FORMAT_PCM;
+    m_WavFile.blockAlign = m_WavFile.numChannels * m_WavFile.bitsPerSample / 8;
+    m_WavFile.byteRate = m_WavFile.sampleRate * m_WavFile.numChannels * m_WavFile.bitsPerSample / 8;
+    m_WavFile.chunkSize = 138 + m_WavFile.subchunk2Size;
     m_WavFile.bufferSize = m_WavFile.bitsPerSample / 8;
-
-    //for (uint32_t a = 0; a < m_WavFile.subchunk2Size; a++)
-    //{
-    //    printf("%hhu\n", m_WavFile.data[a]);
-    //}
 
 #ifdef LOG_INFO
     logger::log_info("<Wav> (\"%s\") chunkId: %s.", a_FilePath, std::string(&m_WavFile.chunkId[0], &m_WavFile.chunkId[0] + std::size(m_WavFile.chunkId)).c_str());
@@ -134,47 +134,23 @@ void WaveFile::Convert32To16()
 {
     m_WavFile.bitsPerSample = 16;
 
-    // Determine the size of a 16bit data array.
-    // Chunksize divided by the size of a 32bit int (4) multiplied by the size of a 16bit int (2). 
-    m_WavFile.subchunk2Size = m_WavFile.subchunk2Size / sizeof(uint32_t) * sizeof(uint16_t);
-    uint16_t* array_16 = new uint16_t[m_WavFile.subchunk2Size];
-    
-    for (uint32_t a = 0; a < m_WavFile.subchunk2Size; a++)
-    {
-        // Skip 1 bit every time since we go from 32bit to 16bit.
-        array_16[a] = *reinterpret_cast<uint16_t*>(m_WavFile.data + 2);
-
-        // Add the size of a 32bit int (4) to move the data pointer.
-        m_WavFile.data += sizeof(uint32_t);
-    }
+    uint16_t* array_16 = wav::wav_converter::convert_32_to_16(m_WavFile.data, m_WavFile.subchunk2Size);
+    delete[] m_WavFile.data;
     m_WavFile.data = reinterpret_cast<unsigned char*>(array_16);
-    m_WavFile.audioFormat = WAVE_FORMAT_PCM;
-    m_WavFile.blockAlign = m_WavFile.numChannels * m_WavFile.bitsPerSample / 8;
-    m_WavFile.byteRate = m_WavFile.sampleRate * m_WavFile.numChannels * m_WavFile.bitsPerSample / 8;
-    m_WavFile.chunkSize = 138 + m_WavFile.subchunk2Size;
 }
 
 void WaveFile::Convert24To16()
 {
-    typedef struct { uint8_t byt[3]; } uint24_t;
-
     m_WavFile.bitsPerSample = 16;
-    m_WavFile.data = reinterpret_cast<unsigned char*>(wav::wav_converter::convert_24_to_16(m_WavFile.data, m_WavFile.subchunk2Size));
 
-    // Determine the size of a 16bit data array.
-    // Chunksize divided by the size of a 24bit int (3) multiplied by the size of a 16bit int (2). 
-    m_WavFile.subchunk2Size = m_WavFile.subchunk2Size / sizeof(uint24_t) * sizeof(uint16_t);
-
-    m_WavFile.audioFormat = WAVE_FORMAT_PCM;
-    m_WavFile.blockAlign = m_WavFile.numChannels * m_WavFile.bitsPerSample / 8;
-    m_WavFile.byteRate = m_WavFile.sampleRate * m_WavFile.numChannels * m_WavFile.bitsPerSample / 8;
-    m_WavFile.chunkSize = 138 + m_WavFile.subchunk2Size;
+    uint16_t* array_16 = wav::wav_converter::convert_24_to_16(m_WavFile.data, m_WavFile.subchunk2Size);
+    delete[] m_WavFile.data;
+    m_WavFile.data = reinterpret_cast<unsigned char*>(array_16);
 }
 
 WaveFile::~WaveFile()
 {
-    // TODO: Delete data.
-    //delete[] m_WavFile.data;
+    delete[] m_WavFile.data;
     if (m_File)
         fclose(m_File);
 }
@@ -360,6 +336,7 @@ bool WaveFile::GetChunk(std::vector<std::complex<double>>& signal)
 
     if (currentIndex >= m_WavFile.subchunk2Size)
         return false;
+
 	return true;
 }
 
