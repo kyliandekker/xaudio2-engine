@@ -6,7 +6,6 @@
 
 #include "Audio/WavConverter.h"
 #include "Audio/Logger.h"
-#include "Audio/uint24_t.h"
 
 #define LOG_INFO
 
@@ -102,10 +101,12 @@ WaveFile::WaveFile(const char* a_FilePath)
     m_WavFile.data = static_cast<unsigned char*>(malloc(sizeof(m_WavFile.data) * m_WavFile.subchunk2Size)); // set aside sound buffer space
     fread(m_WavFile.data, sizeof(m_WavFile.data), m_WavFile.subchunk2Size, m_File); // read in our whole sound data chunk
 
+    printf("%i\n", m_WavFile.subchunk2Size);
     if (m_WavFile.bitsPerSample == 32)
         Convert32To16();
     else if (m_WavFile.bitsPerSample == 24)
         Convert24To16();
+    printf("%i\n", m_WavFile.subchunk2Size);
 
     m_WavFile.audioFormat = WAVE_FORMAT_PCM;
     m_WavFile.blockAlign = m_WavFile.numChannels * m_WavFile.bitsPerSample / 8;
@@ -229,6 +230,7 @@ float WaveFile::GetDuration() const
 /// <returns></returns>
 std::string WaveFile::FormatDuration(float a_Duration)
 {
+    printf("a_Duration %f\n", a_Duration);
 	const unsigned int hours = static_cast<int>(a_Duration) / 3600;
 	const unsigned int minutes = (static_cast<int>(a_Duration) - (hours * 3600)) / 60;
 	const unsigned int seconds = static_cast<int>(a_Duration) % 60;

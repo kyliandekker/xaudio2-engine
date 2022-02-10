@@ -15,14 +15,14 @@ namespace wav
 		{
 			// Determine the size of a 16bit data array.
 			// Chunksize divided by the size of a 32bit int (4) multiplied by the size of a 16bit int (2). 
-			size = size / sizeof(uint32_t) * sizeof(uint16_t);
+			size = size / sizeof(uint24_t) * sizeof(uint16_t);
 
 			uint16_t* array_16 = new uint16_t[size];
 
 			for (uint32_t a = 0; a < size; a++)
 			{
 				float converted_value = *reinterpret_cast<float*>(data);
-				
+
 				array_16[a] = static_cast<uint16_t>(converted_value);
 
 				// Add the size of a 24bit int (3) to move the data pointer.
@@ -35,7 +35,7 @@ namespace wav
 		{
 			// Determine the size of a 16bit data array.
 			// Chunksize divided by the size of a 24bit int (3) multiplied by the size of a 16bit int (2). 
-			size = size / sizeof(uint24_t) * sizeof(uint16_t);
+			size = size / sizeof(uint32_t) * sizeof(uint16_t);
 
 			uint16_t* array_16 = new uint16_t[size];
 

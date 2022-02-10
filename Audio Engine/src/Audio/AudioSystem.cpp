@@ -39,9 +39,8 @@ AudioSystem &AudioSystem::operator=(const AudioSystem &rhs)
 int AudioSystem::CreateSound(const char* a_Path)
 {
 	logger::log_info("<XAudio2> Creating sound: \"%s\".", a_Path);
-	WaveFile *sound = new WaveFile(a_Path);
 	const int index = static_cast<int>(m_Sounds.size());
-	m_Sounds.push_back(sound);
+	m_Sounds.push_back(new WaveFile(a_Path));
 	return index;
 }
 

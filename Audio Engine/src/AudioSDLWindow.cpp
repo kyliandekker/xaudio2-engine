@@ -2,21 +2,15 @@
 
 #include <iostream>
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
-#include <imgui/backends/imgui_impl_sdl.h>
-#include <glad/glad.h>
-#include <imgui/backends/imgui_impl_opengl3.h>
-
 #include "Audio/Logger.h"
-
-#undef main
-
-#define SDL_MAIN_HANDLED
+#include <glad/glad.h>
 
 AudioSDLWindow::AudioSDLWindow()
 {
 	CreateWindow();
+	CreateContext();
+	CreateGlad();
+	CreateImGui();
 }
 
 AudioSDLWindow::~AudioSDLWindow()
@@ -25,11 +19,7 @@ AudioSDLWindow::~AudioSDLWindow()
 
 	delete m_AudioWindow;
 
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplSDL2_Shutdown();
-	ImGui::DestroyContext();
-
-	SDL_GL_DeleteContext(m_GLContext);
+	SDL_GL_DeleteContext(m_glContext);
 	SDL_DestroyWindow(m_Window);
 	SDL_Quit();
 }
@@ -42,33 +32,32 @@ int AudioSDLWindow::CreateWindow()
 		return -1;
 	}
 
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-
-	constexpr SDL_WindowFlags window_flags = static_cast<SDL_WindowFlags>(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 	m_Window = SDL_CreateWindow(
 		m_WindowTitle,
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		windowWidth,
 		windowHeight,
-		window_flags);
+		SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL
+	);
 
-	m_AudioWindow = new AudioImGuiWindow(*m_Window, m_AudioSystem);
 	SDL_SetWindowMinimumSize(m_Window, 500, 300);
 
-	m_GLContext = SDL_GL_CreateContext(m_Window);
-	SDL_GL_MakeCurrent(m_Window, m_GLContext);
+	return 0;
+}
+
+int AudioSDLWindow::CreateContext()
+{
+	m_glContext = SDL_GL_CreateContext(m_Window);
+	SDL_GL_MakeCurrent(m_Window, m_glContext);
 
 	SDL_GL_SetSwapInterval(1);
 
+	return 0;
+}
+
+int AudioSDLWindow::CreateGlad()
+{
 	if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
 	{
 		logger::log_error("Couldn't initialize GLAD.");
@@ -76,80 +65,86 @@ int AudioSDLWindow::CreateWindow()
 	}
 	logger::log_info("Initialized GLAD.");
 
-	glViewport(0, 0, windowWidth, windowHeight);
+	return 0;
+}
 
-	m_AudioWindow->CreateImGui(m_GLContext, "#version 130");
+int AudioSDLWindow::CreateImGui()
+{
+	m_AudioWindow = new AudioImGuiWindow(*m_Window, m_AudioSystem);
+	m_AudioWindow->CreateImGui(m_glContext, "#version 130");
 
-	const ImVec4 background = ImVec4(35 / 255.0f, 35 / 255.0f, 35 / 255.0f, 1.00f);
-
-	glClearColor(background.x, background.y, background.z, background.w);
-
-	while (m_Running)
-		RenderWindow();
-
-	logger::log_info("Main loop ended.");
 	return 0;
 }
 
 void AudioSDLWindow::RenderWindow()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	const ImVec4 background = ImVec4(35 / 255.0f, 35 / 255.0f, 35 / 255.0f, 1.00f);
 
-	SDL_Event event;
-	while (SDL_PollEvent(&event))
+	glViewport(0, 0, windowWidth, windowHeight);
+
+	while(m_Running)
 	{
-		ImGui_ImplSDL2_ProcessEvent(&event);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		switch (event.type)
+		glClearColor(background.x, background.y, background.z, background.w);
+
+		SDL_Event event;
+		while (SDL_PollEvent(&event))
 		{
-			case SDL_QUIT:
+			ImGui_ImplSDL2_ProcessEvent(&event);
+
+			switch (event.type)
 			{
-				m_Running = false;
-				break;
-			}
-			case SDL_WINDOWEVENT:
-			{
-				switch (event.window.event)
+				case SDL_QUIT:
 				{
-					case SDL_WINDOWEVENT_RESIZED:
-					{
-						windowWidth = event.window.data1;
-						windowHeight = event.window.data2;
-						glViewport(0, 0, windowWidth, windowHeight);
-						break;
-					}
-					default:
-					{
-						break;
-					}
+					m_Running = false;
+					break;
 				}
-				break;
-			}
-			case SDL_KEYDOWN:
-			{
-				switch (event.key.keysym.sym)
+				case SDL_WINDOWEVENT:
 				{
-					case SDLK_ESCAPE:
+					switch (event.window.event)
 					{
-						m_Running = false;
-						break;
+						case SDL_WINDOWEVENT_RESIZED:
+						{
+							windowWidth = event.window.data1;
+							windowHeight = event.window.data2;
+							glViewport(0, 0, windowWidth, windowHeight);
+							break;
+						}
+						default:
+						{
+							break;
+						}
 					}
-					default:
-					{
-						break;
-					}
+					break;
 				}
-				break;
-			}
-			default:
-			{
-				break;
+				case SDL_KEYDOWN:
+				{
+					switch (event.key.keysym.sym)
+					{
+						case SDLK_ESCAPE:
+						{
+							m_Running = false;
+							break;
+						}
+						default:
+						{
+							break;
+						}
+					}
+					break;
+				}
+				default:
+				{
+					break;
+				}
 			}
 		}
+
+		m_AudioSystem.Update();
+		m_AudioWindow->RenderImGui();
+
+		SDL_GL_SwapWindow(m_Window);
 	}
-
-	m_AudioSystem.Update();
-	m_AudioWindow->RenderImGui();
-
-	SDL_GL_SwapWindow(m_Window);
+	logger::log_info("Main loop ended.");
 }
