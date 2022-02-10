@@ -28,7 +28,11 @@
 *.exe
 *.out
 *.app
-.pdb
+*.pdb
+*.iobj
+*.ipdb
+*.log
+*.recipe
 
 [xX]32/
 [xX]64/
