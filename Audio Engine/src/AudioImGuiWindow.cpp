@@ -7,7 +7,10 @@
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
+
+#include <imgui/implot.h>
 #include <imgui/imgui_plot.h>
+
 #include <imgui/backends/imgui_impl_sdl.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 
@@ -23,6 +26,7 @@ int AudioImGuiWindow::CreateImGui(const SDL_GLContext &a_Context, const char *a_
     // setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImPlot::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
 
@@ -65,33 +69,36 @@ void AudioImGuiWindow::RenderImGui()
         ImGui::Begin("Controls", nullptr, ImGuiWindowFlags_NoResize);
 
         ImGui::Dummy(ImVec2(0.0f, 1.0f));
-        ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), "General");
-
-        ImGui::Text("Master Panning");
-        ImGui::SameLine();
-        float panning = m_AudioSystem.GetPlayer().GetPanning();
-        ImGui::SliderFloat("###Panning_Master_0", &panning, -1, 1);
-        m_AudioSystem.GetPlayer().SetPanning(panning);
-
-        ImGui::Text("Master Volume");
-        ImGui::SameLine();
-        float volume = m_AudioSystem.GetPlayer().GetVolume();
-        ImGui::SliderFloat("###Volume_Master_0", &volume, 0, 1);
-        m_AudioSystem.GetPlayer().SetVolume(volume);
-
-        if (m_AudioSystem.IsPlaying())
+        if (ImGui::CollapsingHeader("Master Actions###MasterActions_0"))
         {
-            if (ImGui::Button("Pause Whole Playback"))
-                m_AudioSystem.Pause();
-        }
-        else
-        {
-            if (ImGui::Button("Resume Whole Playback"))
-                m_AudioSystem.Resume();
-        }
-        if (ImGui::Button("Add Sound"))
-        {
-            OpenFile();
+            ImGui::Indent(16.0f);
+
+            ImGui::Text("Master Panning");
+            ImGui::SameLine();
+            float panning = m_AudioSystem.GetPlayer().GetPanning();
+            ImGui::SliderFloat("###Panning_Master_0", &panning, -1, 1);
+            m_AudioSystem.GetPlayer().SetPanning(panning);
+
+            ImGui::Text("Master Volume");
+            ImGui::SameLine();
+            float volume = m_AudioSystem.GetPlayer().GetVolume();
+            ImGui::SliderFloat("###Volume_Master_0", &volume, 0, 1);
+            m_AudioSystem.GetPlayer().SetVolume(volume);
+
+            if (m_AudioSystem.IsPlaying())
+            {
+                if (ImGui::Button("Pause Whole Playback"))
+                    m_AudioSystem.Pause();
+            }
+            else
+            {
+                if (ImGui::Button("Resume Whole Playback"))
+                    m_AudioSystem.Resume();
+            }
+            if (ImGui::Button("Add Sound"))
+            {
+                OpenFile();
+            }
         }
 
         ImGui::End();
@@ -119,9 +126,11 @@ void AudioImGuiWindow::RenderImGui()
             if (ImGui::CollapsingHeader(sound.GetSoundTitle()))
             {
                 ImGui::Indent(16.0f);
+
                 if (ImGui::CollapsingHeader(std::string("File Info###FileInfo_" + std::to_string(i)).c_str()))
                 {
                     ImGui::Indent(16.0f);
+
                     ShowValue("Name: ", sound.GetSoundTitle());
                     ShowValue("Format: ", std::to_string(sound.GetWavFormat().audioFormat).c_str());
                     ShowValue("Number Of Channels: ", std::string(std::to_string(sound.GetWavFormat().numChannels) + (sound.GetWavFormat().numChannels == 1 ? " (mono)" : " (stereo)")).c_str());
@@ -131,14 +140,15 @@ void AudioImGuiWindow::RenderImGui()
                     ShowValue("Duration (sec): ", std::string(std::to_string(sound.GetDuration()) + " secs").c_str());
                     ShowValue("Duration: ", WaveFile::FormatDuration(sound.GetDuration()).c_str());
 
-                    bool isLooping = sound.IsLooping();
-                    ImGui::Checkbox("Loop", &isLooping);
-                    sound.SetLooping(isLooping);
                     ImGui::Unindent(16.0f);
                 }
                 if (ImGui::CollapsingHeader(std::string("File Actions###FileActions_" + std::to_string(i)).c_str()))
                 {
                     ImGui::Indent(16.0f);
+
+                    bool isLooping = sound.IsLooping();
+                    ImGui::Checkbox("Loop", &isLooping);
+                    sound.SetLooping(isLooping);
 
                     ImGui::Text("Volume");
                     ImGui::SameLine();
@@ -162,9 +172,7 @@ void AudioImGuiWindow::RenderImGui()
 	                {
 	                    m_AudioSystem.ResumeAllChannelsWithSound(i);
 	                }
-	                //if (ImGui::Button(std::string("Add Effects###Effects_Sound_" + std::to_string(i)).c_str()))
-	                //{
-	                //}
+
                     ImGui::Unindent(16.0f);
 	            }
                 ImGui::Unindent(16.0f);
@@ -195,44 +203,62 @@ void AudioImGuiWindow::RenderImGui()
             BaseChannel &channel = *channels[i];
             if (ImGui::CollapsingHeader(std::string("Channel_" + std::to_string(i)).c_str()))
             {
+                ImGui::Indent(16.0f);
+
                 ShowValue("Is in use: ", channel.IsInUse() ? "true" : "false");
+
                 if (channel.IsInUse())
                 {
-                    ShowValue("Currently playing: ", channel.GetSound().GetSoundTitle());
-                    XAudio2Channel &xchannel = reinterpret_cast<XAudio2Channel &>(channel);
-                    ShowValue("Progress", std::string(
-						WaveFile::FormatDuration(xchannel.GetCurrentPos() / channel.GetSound().GetWavFormat().byteRate) +
-						"/" +
-						WaveFile::FormatDuration(channel.GetSound().GetDuration()))
-						.c_str()
-                    );
-                    ShowValue("Time Left", std::string(
-                        WaveFile::FormatDuration(channel.GetSound().GetDuration() - (xchannel.GetCurrentPos() / channel.GetSound().GetWavFormat().byteRate))
-                    ).c_str());
-
-                    ImGui::Text("Panning");
-                    ImGui::SameLine();
-                    float panning = channel.GetPanning();
-                    ImGui::SliderFloat(std::string("###Panning_Channel_" + std::to_string(i)).c_str(), &panning, -1, 1);
-                    channel.SetPanning(panning);
-
-                    ImGui::Text("Volume");
-                    ImGui::SameLine();
-                    float volume = channel.GetVolume();
-                    ImGui::SliderFloat(std::string("###Volume_Channel_" + std::to_string(i)).c_str(), &volume, 0, 1);
-                    channel.SetVolume(volume);
-
-                    if (channel.IsPlaying())
+                    if (ImGui::CollapsingHeader(std::string("Channel Info###ChannelInfo_" + std::to_string(i)).c_str()))
                     {
-                        if (ImGui::Button(std::string("Pause###Pause_Channel_" + std::to_string(i)).c_str()))
-                            channel.Pause();
+                        ImGui::Indent(16.0f);
+
+                        ShowValue("Currently playing: ", channel.GetSound().GetSoundTitle());
+                        ShowValue("Progress", std::string(
+                            WaveFile::FormatDuration(channel.GetCurrentDataPos() / channel.GetSound().GetWavFormat().byteRate) +
+                            "/" +
+                            WaveFile::FormatDuration(channel.GetSound().GetDuration()))
+                            .c_str()
+                        );
+                        ShowValue("Time Left", std::string(
+                            WaveFile::FormatDuration(channel.GetSound().GetDuration() - (channel.GetCurrentDataPos() / channel.GetSound().GetWavFormat().byteRate))
+                        ).c_str());
+
+                        ImGui::Unindent(16.0f);
                     }
-                    else
+
+                    if (ImGui::CollapsingHeader(std::string("Channel Actions###ChannelActions_" + std::to_string(i)).c_str()))
                     {
-                        if (ImGui::Button(std::string("Resume###Resume_Channel_" + std::to_string(i)).c_str()))
-                            channel.Resume();
+                        ImGui::Indent(16.0f);
+
+                        ImGui::Text("Panning");
+                        ImGui::SameLine();
+                        float panning = channel.GetPanning();
+                        ImGui::SliderFloat(std::string("###Panning_Channel_" + std::to_string(i)).c_str(), &panning, -1, 1);
+                        channel.SetPanning(panning);
+
+                        ImGui::Text("Volume");
+                        ImGui::SameLine();
+                        float volume = channel.GetVolume();
+                        ImGui::SliderFloat(std::string("###Volume_Channel_" + std::to_string(i)).c_str(), &volume, 0, 1);
+                        channel.SetVolume(volume);
+
+                        if (channel.IsPlaying())
+                        {
+                            if (ImGui::Button(std::string("Pause###Pause_Channel_" + std::to_string(i)).c_str()))
+                                channel.Pause();
+                        }
+                        else
+                        {
+                            if (ImGui::Button(std::string("Resume###Resume_Channel_" + std::to_string(i)).c_str()))
+                                channel.Resume();
+                        }
+
+                        ImGui::Unindent(16.0f);
                     }
                 }
+
+                ImGui::Unindent(16.0f);
             }
         }
 
@@ -275,6 +301,7 @@ void AudioImGuiWindow::DeleteWindow()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
+    ImPlot::DestroyContext();
     ImGui::DestroyContext();
 }
 

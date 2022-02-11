@@ -172,6 +172,8 @@
     <ClCompile Include="..\external\src\imgui\imgui_plot.cpp" />
     <ClCompile Include="..\external\src\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\external\src\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\external\src\imgui\implot.cpp" />
+    <ClCompile Include="..\external\src\imgui\implot_items.cpp" />
     <ClCompile Include="src\AudioImGuiWindow.cpp" />
     <ClCompile Include="src\AudioSDLWindow.cpp" />
     <ClCompile Include="src\Audio\AudioSystem.cpp" />

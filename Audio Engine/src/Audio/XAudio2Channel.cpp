@@ -98,28 +98,27 @@ void XAudio2Channel::Update()
 	m_SourceVoice->GetState(&state);
 	if (state.BuffersQueued < m_CurrentSound->GetWavFormat().bufferSize)
 	{
-		// Read buffer for the part of the wave file.
-		unsigned char* readBuffer;
-
 		// The initial size we want to retrieve from the audio file.
 		// TODO: Understand what I am doing here.
 		uint32_t size = 8184;
 
 		// Read the part of the wave file and store it back in the read buffer.
-		m_CurrentSound->Read(m_CurrentPos, size, readBuffer);
+		m_CurrentSound->Read(m_CurrentPos, size, m_Data);
 
-		readBuffer = effects::change_volume(readBuffer, size, m_Player->GetVolume());
-		readBuffer = effects::change_volume(readBuffer, size, m_CurrentSound->GetVolume());
-		readBuffer = effects::change_panning(readBuffer, size, m_Panning);
-		readBuffer = effects::change_panning(readBuffer, size, m_Player->GetPanning());
-		readBuffer = ApplyEffects(readBuffer, size);
+		m_Data = effects::change_volume(m_Data, size, m_Player->GetVolume());
+		m_Data = effects::change_volume(m_Data, size, m_CurrentSound->GetVolume());
+		m_Data = effects::change_panning(m_Data, size, m_Panning);
+		m_Data = effects::change_panning(m_Data, size, m_Player->GetPanning());
+		m_Data = ApplyEffects(m_Data, size);
+
+		m_CurrentDataSize = size;
 
 		// Make sure we add the size of this read buffer to the total size, so that on the next frame we will get the next part of the wave file.
 		m_CurrentPos += size;
 
 		XAUDIO2_BUFFER xBuffer = {0, 0, nullptr, 0, 0, 0, 0, 0, nullptr};
 		xBuffer.AudioBytes = size;		 // Buffer containing audio data.
-		xBuffer.pAudioData = readBuffer; // Size of the audio buffer in bytes.
+		xBuffer.pAudioData = m_Data; // Size of the audio buffer in bytes.
 		HRESULT hr;
 
 		// Submit it.
@@ -178,13 +177,4 @@ IXAudio2SourceVoice &XAudio2Channel::GetSourceVoice() const
 XAudio2Callback &XAudio2Channel::GetVoiceCallback()
 {
 	return m_VoiceCallback;
-}
-
-/// <summary>
-/// Returns the current position of the playback.
-/// </summary>
-/// <returns></returns>
-uint32_t XAudio2Channel::GetCurrentPos() const
-{
-	return m_CurrentPos;
 }

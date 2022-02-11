@@ -20,11 +20,67 @@ WaveFile::WaveFile(const WaveFile & rhs)
     m_SoundTitle = rhs.m_SoundTitle;
 }
 
+void WaveFile::SetRIFFChunk(unsigned char chunkId[4], uint32_t chunkSize, unsigned char format[4])
+{
+    memcpy(m_WavFile.chunkId, chunkId, 4 * sizeof(unsigned char));
+    m_WavFile.chunkSize = chunkSize;
+    memcpy(m_WavFile.format, format, 4 * sizeof(unsigned char));
+
+    logger::log_info("<Wav> (\"%s\") chunkId: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.chunkId[0], &m_WavFile.chunkId[0] + std::size(m_WavFile.chunkId)).c_str());
+
+    logger::log_info("<Wav> (\"%s\") chunkSize: %i.", m_SoundTitle.c_str(), m_WavFile.chunkSize);
+
+    logger::log_info("<Wav> (\"%s\") format: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
+}
+
+void WaveFile::SetFMTChunk(unsigned char chunkId[4], uint32_t chunkSize, uint16_t audioFormat, uint16_t numChannels, uint32_t sampleRate, uint32_t byteRate, uint16_t blockAlign, uint16_t bitsPerSample)
+{
+    memcpy(m_WavFile.subchunk1Id, chunkId, 4 * sizeof(unsigned char));
+    m_WavFile.subchunk1Size = chunkSize;
+    m_WavFile.audioFormat = audioFormat;
+    m_WavFile.numChannels = numChannels;
+    m_WavFile.sampleRate = sampleRate;
+    m_WavFile.byteRate = byteRate;
+    m_WavFile.blockAlign = blockAlign;
+    m_WavFile.bitsPerSample = bitsPerSample;
+
+	logger::log_info("<Wav> (\"%s\") subchunk1Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk1Id[0], &m_WavFile.subchunk1Id[0] + std::size(m_WavFile.subchunk1Id)).c_str());
+    logger::log_info("<Wav> (\"%s\") subchunk1Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk1Size);
+    logger::log_info("<Wav> (\"%s\") audioFormat: %i.", m_SoundTitle.c_str(), m_WavFile.audioFormat);
+    if (m_WavFile.audioFormat != WAVE_FORMAT_PCM)
+    {
+        logger::log_error("<Wav> (\"%s\") does not have the format 1 (PCM). This indicates there is probably some form of compression (%s).", m_SoundTitle.c_str(), std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
+    }
+    logger::log_info("<Wav> (\"%s\") numChannels: %i.", m_SoundTitle.c_str(), m_WavFile.numChannels);
+    logger::log_info("<Wav> (\"%s\") sampleRate: %ihz.", m_SoundTitle.c_str(), m_WavFile.sampleRate);
+    if (m_WavFile.sampleRate != 44100)
+    {
+        logger::log_error("<Wav> (\"%s\") does not have a 44100 hz sample rate (%ihz).", m_SoundTitle.c_str(), std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
+    }
+    logger::log_info("<Wav> (\"%s\") byteRate: %i.", m_SoundTitle.c_str(), m_WavFile.byteRate);
+    logger::log_info("<Wav> (\"%s\") blockAlign: %i.", m_SoundTitle.c_str(), m_WavFile.blockAlign);
+    logger::log_info("<Wav> (\"%s\") bitsPerSample: %i.", m_SoundTitle.c_str(), m_WavFile.bitsPerSample);
+}
+
+void WaveFile::SetDataChunk(unsigned char chunkId[4], uint32_t chunkSize, unsigned char* data)
+{
+    memcpy(m_WavFile.subchunk2Id, chunkId, 4 * sizeof(unsigned char));
+    m_WavFile.subchunk2Size = chunkSize;
+
+    // Actual data.
+    m_WavFile.data = static_cast<unsigned char*>(malloc(sizeof(m_WavFile.data) * chunkSize)); // Set aside sound buffer space.
+    memcpy(m_WavFile.data, data, sizeof(m_WavFile.data) * chunkSize);
+
+    logger::log_info("<Wav> (\"%s\") subchunk2Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk2Id[0], &m_WavFile.subchunk2Id[0] + std::size(m_WavFile.subchunk2Id)).c_str());
+    logger::log_info("<Wav> (\"%s\") subchunk2Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk2Size);
+}
+
 WaveFile::WaveFile(const char* a_FilePath)
 {
     m_WavFile = {};
 
     m_SoundTitle = std::string(a_FilePath);
+
     // Open the file. (use friend's file system later)
     fopen_s(&m_File, a_FilePath, "rb");
     if (!m_File)
@@ -33,110 +89,104 @@ WaveFile::WaveFile(const char* a_FilePath)
         return;
     }
 
-    // Read what chunk id the file has.
-    fread(&m_WavFile.chunkId, sizeof(m_WavFile.chunkId), 1, m_File);
-
-    // Should be RIFF.
-    if (strcmp(std::string(&m_WavFile.chunkId[0], &m_WavFile.chunkId[0] + std::size(m_WavFile.chunkId)).c_str(), "RIFF") != 0)
+    bool filledRiff = false, filledFmt = false, filledData = false;
+    while (!filledRiff || !filledFmt || !filledData)
     {
-        logger::log_error("<Wav> (\"%s\") is not a RIFF file. (%s)." , a_FilePath, m_WavFile.chunkId);
-        return;
-    }
+        unsigned char chunkid[4];
 
-    // Check chunk size (file size).
-    fread(&m_WavFile.chunkSize, sizeof(m_WavFile.chunkSize), 1, m_File);
+        uint32_t chunksize;
 
-    // Format (should be WAVE).
-    fread(&m_WavFile.format, sizeof(m_WavFile.format), 1, m_File);
-    if (strcmp(std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str(), "WAVE") != 0)
-    {
-        logger::log_error("<Wav> (\"%s\") is not a WAV file. (%s).", a_FilePath, m_WavFile.format);
-        
-    }
- 
-    // Subchunk id (should be fmt).
-    fread(&m_WavFile.subchunk1Id, sizeof(m_WavFile.subchunk1Id), 1, m_File);
-    if (strcmp(std::string(&m_WavFile.subchunk1Id[0], &m_WavFile.subchunk1Id[0] + std::size(m_WavFile.subchunk1Id)).c_str(), "fmt ") != 0)
-    {
-        logger::log_error("<Wav> (\"%s\") has no FMT chunk. (%s).", a_FilePath, m_WavFile.subchunk1Id);
+        // Read what chunk id the file has.
+        fread(&chunkid, sizeof(chunkid), 1, m_File);
 
-        fread(&m_WavFile.subchunk1Size, sizeof(m_WavFile.subchunk1Size), 1, m_File);
-        fseek(m_File, m_WavFile.subchunk1Size, SEEK_CUR);
-        fread(&m_WavFile.subchunk1Id, sizeof(m_WavFile.subchunk1Id), 1, m_File);
-        if (strcmp(std::string(&m_WavFile.subchunk1Id[0], &m_WavFile.subchunk1Id[0] + std::size(m_WavFile.subchunk1Id)).c_str(), "fmt ") != 0)
+        // Check chunk size (file size).
+        fread(&chunksize, sizeof(chunksize), 1, m_File);
+
+        /*
+         * RIFF CHUNK
+         */
+        if (strcmp(std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), "RIFF") == 0)
         {
-            logger::log_error("<Wav> (\"%s\") Could not find FMT chunk. (%s).", a_FilePath, m_WavFile.subchunk1Id);
-            return;
+            unsigned char format[4];
+
+            // Format (should be WAVE).
+            fread(&format, sizeof(format), 1, m_File);
+
+            if (strcmp(std::string(&format[0], &format[0] + std::size(format)).c_str(), "WAVE") != 0)
+            {
+                logger::log_error("<Wav> (\"%s\") is not a WAV file. (%s).", m_SoundTitle.c_str(), format);
+                return;
+            }
+
+            SetRIFFChunk(chunkid, chunksize, format);
+            filledRiff = true;
+        }
+        else if (strcmp(std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), "fmt ") == 0)
+        {
+            uint16_t audioFormat;
+            uint16_t numChannels;
+            uint32_t sampleRate;
+            uint32_t byteRate;
+            uint16_t blockAlign;
+            uint16_t bitsPerSample;
+
+            // audio format (should be 1, other values indicate compression).
+            fread(&audioFormat, sizeof(audioFormat), 1, m_File);
+
+            // numChannels (mono is 1, stereo is 2).
+            fread(&numChannels, sizeof(numChannels), 1, m_File);
+
+            // sampleRate
+            fread(&sampleRate, sizeof(sampleRate), 1, m_File);
+
+            // byteRate
+            fread(&byteRate, sizeof(byteRate), 1, m_File);
+
+            // blockAlign
+            fread(&blockAlign, sizeof(blockAlign), 1, m_File);
+
+            // bitsPerSample
+            fread(&bitsPerSample, sizeof(bitsPerSample), 1, m_File);
+
+            SetFMTChunk(chunkid, chunksize, audioFormat, numChannels, sampleRate, byteRate, blockAlign, bitsPerSample);
+            filledFmt = true;
+        }
+        else if (strcmp(std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), "data") == 0)
+        {
+            // Actual data.
+            unsigned char* data = static_cast<unsigned char*>(malloc(sizeof(data) * chunksize)); // set aside sound buffer space.
+            fread(data, sizeof(data), chunksize, m_File); // read in our whole sound data chunk.
+
+            SetDataChunk(chunkid, chunksize, data);
+
+            delete[] data;
+
+            filledData = true;
+        }
+        else
+        {
+            logger::log_info("<Wav> (\"%s\") Found subchunk %s with size %i. Skipping.", m_SoundTitle.c_str(), std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), chunksize);
+
+            fseek(m_File, chunksize, SEEK_CUR);
         }
     }
 
-    // Subchunk size.
-    fread(&m_WavFile.subchunk1Size, sizeof(m_WavFile.subchunk1Size), 1, m_File);
-
-    // audio format (should be 1, other values indicate compression).
-    fread(&m_WavFile.audioFormat, sizeof(m_WavFile.audioFormat), 1, m_File);
-
-    // numChannels (mono is 1, stereo is 2).
-    fread(&m_WavFile.numChannels, sizeof(m_WavFile.numChannels), 1, m_File);
-
-    // sampleRate
-    fread(&m_WavFile.sampleRate, sizeof(m_WavFile.sampleRate), 1, m_File);
-
-    // byteRate
-    fread(&m_WavFile.byteRate, sizeof(m_WavFile.byteRate), 1, m_File);
-
-    // blockAlign
-    fread(&m_WavFile.blockAlign, sizeof(m_WavFile.blockAlign), 1, m_File);
-
-    // bitsPerSample
-    fread(&m_WavFile.bitsPerSample, sizeof(m_WavFile.bitsPerSample), 1, m_File);
-
-    // subchunk2Id
-    fread(&m_WavFile.subchunk2Id, sizeof(m_WavFile.subchunk2Id), 1, m_File);
-
-    // Data size.
-    fread(&m_WavFile.subchunk2Size, sizeof(m_WavFile.subchunk2Size), 1, m_File);
-
-    // Actual data.
-    m_WavFile.data = static_cast<unsigned char*>(malloc(sizeof(m_WavFile.data) * m_WavFile.subchunk2Size)); // set aside sound buffer space
-    fread(m_WavFile.data, sizeof(m_WavFile.data), m_WavFile.subchunk2Size, m_File); // read in our whole sound data chunk
-
-    printf("%i\n", m_WavFile.subchunk2Size);
     if (m_WavFile.bitsPerSample == 32)
+    {
+        logger::log_info("<Wav> (\"%s\") Wav file is 32bit. Converting now.", m_SoundTitle.c_str());
         Convert32To16();
+    }
     else if (m_WavFile.bitsPerSample == 24)
+    {
+        logger::log_info("<Wav> (\"%s\") Wav file is 24bit. Converting now.", m_SoundTitle.c_str());
         Convert24To16();
-    printf("%i\n", m_WavFile.subchunk2Size);
+    }
 
     m_WavFile.audioFormat = WAVE_FORMAT_PCM;
     m_WavFile.blockAlign = m_WavFile.numChannels * m_WavFile.bitsPerSample / 8;
     m_WavFile.byteRate = m_WavFile.sampleRate * m_WavFile.numChannels * m_WavFile.bitsPerSample / 8;
     m_WavFile.chunkSize = 138 + m_WavFile.subchunk2Size;
     m_WavFile.bufferSize = m_WavFile.bitsPerSample / 8;
-
-#ifdef LOG_INFO
-    logger::log_info("<Wav> (\"%s\") chunkId: %s.", a_FilePath, std::string(&m_WavFile.chunkId[0], &m_WavFile.chunkId[0] + std::size(m_WavFile.chunkId)).c_str());
-    logger::log_info("<Wav> (\"%s\") chunkSize: %i.", a_FilePath, m_WavFile.chunkSize);
-    logger::log_info("<Wav> (\"%s\") format: %s.", a_FilePath, std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
-    logger::log_info("<Wav> (\"%s\") subchunk1Id: %s.", a_FilePath, std::string(&m_WavFile.subchunk1Id[0], &m_WavFile.subchunk1Id[0] + std::size(m_WavFile.subchunk1Id)).c_str());
-    logger::log_info("<Wav> (\"%s\") subchunk1Size: %i.", a_FilePath, m_WavFile.subchunk1Size);
-    logger::log_info("<Wav> (\"%s\") audioFormat: %i.", a_FilePath, m_WavFile.audioFormat);
-    if (m_WavFile.audioFormat != WAVE_FORMAT_PCM)
-    {
-        logger::log_error("<Wav> (\"%s\") does not have the format 1 (PCM). This indicates there is probably some form of compression (%s).", a_FilePath, std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
-    }
-    logger::log_info("<Wav> (\"%s\") numChannels: %i.", a_FilePath, m_WavFile.numChannels);
-    logger::log_info("<Wav> (\"%s\") sampleRate: %ihz.", a_FilePath, m_WavFile.sampleRate);
-    if (m_WavFile.sampleRate != 44100)
-    {
-        logger::log_error("<Wav> (\"%s\") does not have a 44100 hz sample rate (%ihz).", a_FilePath, std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
-    }
-    logger::log_info("<Wav> (\"%s\") byteRate: %i.", a_FilePath, m_WavFile.byteRate);
-    logger::log_info("<Wav> (\"%s\") blockAlign: %i.", a_FilePath, m_WavFile.blockAlign);
-    logger::log_info("<Wav> (\"%s\") bitsPerSample: %i.", a_FilePath, m_WavFile.bitsPerSample);
-    logger::log_info("<Wav> (\"%s\") subchunk2Id: %s.", a_FilePath, std::string(&m_WavFile.subchunk2Id[0], &m_WavFile.subchunk2Id[0] + std::size(m_WavFile.subchunk2Id)).c_str());
-    logger::log_info("<Wav> (\"%s\") subchunk2Size: %i.", a_FilePath, m_WavFile.subchunk2Size);
-#endif
 }
 
 void WaveFile::Convert32To16()
@@ -230,7 +280,6 @@ float WaveFile::GetDuration() const
 /// <returns></returns>
 std::string WaveFile::FormatDuration(float a_Duration)
 {
-    printf("a_Duration %f\n", a_Duration);
 	const unsigned int hours = static_cast<int>(a_Duration) / 3600;
 	const unsigned int minutes = (static_cast<int>(a_Duration) - (hours * 3600)) / 60;
 	const unsigned int seconds = static_cast<int>(a_Duration) % 60;

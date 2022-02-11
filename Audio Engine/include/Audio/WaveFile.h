@@ -12,6 +12,9 @@ class WaveFile
 public:
     WaveFile();
     WaveFile(const WaveFile& rhs);
+    void SetRIFFChunk(unsigned char chunkId[4], uint32_t chunkSize, unsigned char format[4]);
+    void SetFMTChunk(unsigned char chunkId[4], uint32_t chunkSize, uint16_t audioFormat, uint16_t numChannels, uint32_t sampleRate, uint32_t byteRate, uint16_t blockAlign, uint16_t bitsPerSample);
+    void SetDataChunk(unsigned char chunkId[4], uint32_t chunkSize, unsigned char* data);
     WaveFile(const char* a_FilePath);
     void Convert32To16();
     void Convert24To16();

@@ -28,6 +28,10 @@ public:
 	void SetPanning(float a_Panning);
 	float GetPanning() const;
 
+	uint32_t GetCurrentDataPos() const;
+	uint32_t GetDataSize() const;
+	unsigned char* GetData() const;
+
 	unsigned char* ApplyEffects(unsigned char* a_Data, uint32_t a_BufferSize);
 
 	const WaveFile& GetSound() const;
@@ -37,4 +41,9 @@ protected:
 	const WaveFile* m_CurrentSound = nullptr;
 	bool m_IsPlaying = false;
 	BasePlayer* m_Player = nullptr;
+
+	uint32_t m_CurrentPos = 0;
+	uint32_t m_CurrentDataSize = 0;
+
+	unsigned char* m_Data = nullptr;
 };
