@@ -35,7 +35,7 @@ void WaveFile::SetRIFFChunk(unsigned char chunkId[4], uint32_t chunkSize, unsign
 
 void WaveFile::SetFMTChunk(unsigned char chunkId[4], uint32_t chunkSize, uint16_t audioFormat, uint16_t numChannels, uint32_t sampleRate, uint32_t byteRate, uint16_t blockAlign, uint16_t bitsPerSample)
 {
-    memcpy(m_WavFile.subchunk1Id, chunkId, 4 * sizeof(unsigned char));
+    memcpy(m_WavFile.subchunk1Id, chunkId, sizeof(m_WavFile.subchunk1Id));
     m_WavFile.subchunk1Size = chunkSize;
     m_WavFile.audioFormat = audioFormat;
     m_WavFile.numChannels = numChannels;
@@ -77,8 +77,8 @@ void WaveFile::SetDataChunk(unsigned char chunkId[4], uint32_t chunkSize, unsign
 
 void WaveFile::SetAcidChunk(unsigned char chunkId[4], uint32_t chunkSize, uint32_t type_of_file, uint16_t root_note, int num_of_beats, uint16_t meter_denominator, uint16_t meter_numerator, float tempo)
 {
-    memcpy(m_WavFile.subchunk2Id, chunkId, 4 * sizeof(unsigned char));
-    m_WavFile.subchunk2Size = chunkSize;
+    memcpy(m_WavFile.subchunk3Id, chunkId, sizeof(m_WavFile.subchunk3Id));
+    m_WavFile.subchunk3Size = chunkSize;
     m_WavFile.type_of_file = type_of_file;
     m_WavFile.root_note = root_note;
     m_WavFile.num_of_beats = num_of_beats;
@@ -86,14 +86,56 @@ void WaveFile::SetAcidChunk(unsigned char chunkId[4], uint32_t chunkSize, uint32
     m_WavFile.meter_numerator = meter_numerator;
     m_WavFile.tempo = tempo;
 
-    logger::log_info("<Wav> (\"%s\") subchunk2Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk2Id[0], &m_WavFile.subchunk2Id[0] + std::size(m_WavFile.subchunk2Id)).c_str());
-    logger::log_info("<Wav> (\"%s\") subchunk2Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk2Size);
+    logger::log_info("<Wav> (\"%s\") subchunk3Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk3Id[0], &m_WavFile.subchunk3Id[0] + std::size(m_WavFile.subchunk3Id)).c_str());
+    logger::log_info("<Wav> (\"%s\") subchunk3Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk3Size);
     logger::log_info("<Wav> (\"%s\") type_of_file: 0x%x.", m_SoundTitle.c_str(), m_WavFile.type_of_file);
     logger::log_info("<Wav> (\"%s\") root_note: 0x%x.", m_SoundTitle.c_str(), m_WavFile.root_note);
     logger::log_info("<Wav> (\"%s\") num_of_beats: %i.", m_SoundTitle.c_str(), m_WavFile.num_of_beats);
     logger::log_info("<Wav> (\"%s\") meter_denominator: %i.", m_SoundTitle.c_str(), m_WavFile.meter_denominator);
     logger::log_info("<Wav> (\"%s\") meter_numerator: %i.", m_SoundTitle.c_str(), m_WavFile.meter_numerator);
     logger::log_info("<Wav> (\"%s\") tempo: %fbpm.", m_SoundTitle.c_str(), m_WavFile.tempo);
+}
+
+void WaveFile::SetBextChunk(unsigned char chunkId[4], uint32_t chunkSize, unsigned char description[256], unsigned char originator[32], unsigned char originator_reference[32], unsigned char origination_date[10], unsigned char origination_time[8], uint32_t time_reference_low, uint32_t time_reference_high, uint16_t version, unsigned char umid[64], uint16_t loudness_value, uint16_t loudness_range, uint16_t max_true_peak_level, uint16_t max_momentary_loudness, uint16_t max_short_term_loudness, unsigned char reserved[180])
+{
+    memcpy(m_WavFile.subchunk4Id, chunkId, sizeof(m_WavFile.subchunk4Id));
+    m_WavFile.subchunk4Size = chunkSize;
+    memcpy(m_WavFile.description, description, sizeof(m_WavFile.description));
+    memcpy(m_WavFile.originator, originator, sizeof(m_WavFile.originator));
+    memcpy(m_WavFile.originator_reference, originator_reference, sizeof(m_WavFile.originator_reference));
+    memcpy(m_WavFile.origination_date, origination_date, sizeof(m_WavFile.origination_date));
+    memcpy(m_WavFile.origination_time, origination_time, sizeof(m_WavFile.origination_time));
+    for (unsigned char& j : m_WavFile.origination_time)
+	    if (j == '-')
+		    j = ':';
+    m_WavFile.time_reference_low = time_reference_low;
+    m_WavFile.time_reference_high = time_reference_high;
+    m_WavFile.version = version;
+    memcpy(m_WavFile.umid, umid, sizeof(m_WavFile.umid));
+    m_WavFile.loudness_value = loudness_value;
+    m_WavFile.loudness_range = loudness_range;
+    m_WavFile.max_true_peak_level = max_true_peak_level;
+    m_WavFile.max_momentary_loudness = max_momentary_loudness;
+    m_WavFile.max_short_term_loudness = max_short_term_loudness;
+    memcpy(m_WavFile.reserved, reserved, sizeof(m_WavFile.reserved));
+
+    logger::log_info("<Wav> (\"%s\") subchunk4Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk4Id[0], &m_WavFile.subchunk4Id[0] + std::size(m_WavFile.subchunk4Id)).c_str());
+    logger::log_info("<Wav> (\"%s\") subchunk4Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk4Size);
+    logger::log_info("<Wav> (\"%s\") description: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.description[0], &m_WavFile.description[0] + std::size(m_WavFile.description)).c_str());
+    logger::log_info("<Wav> (\"%s\") originator: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.originator[0], &m_WavFile.originator[0] + std::size(m_WavFile.originator)).c_str());
+    logger::log_info("<Wav> (\"%s\") originator_reference: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.originator_reference[0], &m_WavFile.originator_reference[0] + std::size(m_WavFile.originator_reference)).c_str());
+    logger::log_info("<Wav> (\"%s\") origination_date: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.origination_date[0], &m_WavFile.origination_date[0] + std::size(m_WavFile.origination_date)).c_str());
+    logger::log_info("<Wav> (\"%s\") origination_time: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.origination_time[0], &m_WavFile.origination_time[0] + std::size(m_WavFile.origination_time)).c_str());
+    logger::log_info("<Wav> (\"%s\") time_reference_low: %i.", m_SoundTitle.c_str(), m_WavFile.time_reference_low);
+    logger::log_info("<Wav> (\"%s\") time_reference_high: %i.", m_SoundTitle.c_str(), m_WavFile.time_reference_high);
+    logger::log_info("<Wav> (\"%s\") version: %i.", m_SoundTitle.c_str(), m_WavFile.version);
+    logger::log_info("<Wav> (\"%s\") umid: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.umid[0], &m_WavFile.umid[0] + std::size(m_WavFile.umid)).c_str());
+    logger::log_info("<Wav> (\"%s\") loudness_value: %i.", m_SoundTitle.c_str(), m_WavFile.loudness_value);
+    logger::log_info("<Wav> (\"%s\") loudness_range: %i.", m_SoundTitle.c_str(), m_WavFile.loudness_range);
+    logger::log_info("<Wav> (\"%s\") max_true_peak_level: %i.", m_SoundTitle.c_str(), m_WavFile.max_true_peak_level);
+    logger::log_info("<Wav> (\"%s\") max_momentary_loudness: %i.", m_SoundTitle.c_str(), m_WavFile.max_momentary_loudness);
+    logger::log_info("<Wav> (\"%s\") max_short_term_loudness: %i.", m_SoundTitle.c_str(), m_WavFile.max_short_term_loudness);
+    logger::log_info("<Wav> (\"%s\") reserved: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.reserved[0], &m_WavFile.reserved[0] + std::size(m_WavFile.reserved)).c_str());
 }
 
 WaveFile::WaveFile(const char* a_FilePath)
@@ -168,6 +210,13 @@ WaveFile::WaveFile(const char* a_FilePath)
             fread(&bitsPerSample, sizeof(bitsPerSample), 1, m_File);
 
             SetFMTChunk(chunkid, chunksize, audioFormat, numChannels, sampleRate, byteRate, blockAlign, bitsPerSample);
+
+            uint32_t actual_chunksize = sizeof(audioFormat) + sizeof(numChannels) + sizeof(sampleRate) + sizeof(byteRate) + sizeof(blockAlign) + sizeof(bitsPerSample);
+            if (actual_chunksize < chunksize)
+            {
+                printf("Bigger fmt chunk than usual, skipping\n");
+                fseek(m_File, static_cast<int32_t>(chunksize - actual_chunksize), SEEK_CUR);
+            }
         }
         else if (strcmp(std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), "data") == 0)
         {
@@ -203,6 +252,56 @@ WaveFile::WaveFile(const char* a_FilePath)
             fread(&tempo, sizeof(tempo), 1, m_File);
 
             SetAcidChunk(chunkid, chunksize, type_of_file, root_note, num_of_beats, meter_denominator, meter_numerator, tempo);
+        }
+        else if (strcmp(std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), "bext") == 0)
+        {
+            unsigned char description[256];
+            unsigned char originator[32];
+            unsigned char originator_reference[32];
+            unsigned char origination_date[10];
+            unsigned char origination_time[8];
+            uint32_t time_reference_low;
+            uint32_t time_reference_high;
+            uint16_t version;
+            unsigned char umid[64];
+            uint16_t loudness_value;
+            uint16_t loudness_range;
+            uint16_t max_true_peak_level;
+            uint16_t max_momentary_loudness;
+            uint16_t max_short_term_loudness;
+            unsigned char reserved[180];
+
+            fread(&description, sizeof(description), 1, m_File);
+
+            fread(&originator, sizeof(originator), 1, m_File);
+
+            fread(&originator_reference, sizeof(originator_reference), 1, m_File);
+
+            fread(&origination_date, sizeof(origination_date), 1, m_File);
+
+            fread(&origination_time, sizeof(origination_time), 1, m_File);
+
+            fread(&time_reference_low, sizeof(time_reference_low), 1, m_File);
+
+            fread(&time_reference_high, sizeof(time_reference_high), 1, m_File);
+
+            fread(&version, sizeof(version), 1, m_File);
+
+            fread(&umid, sizeof(umid), 1, m_File);
+
+            fread(&loudness_value, sizeof(loudness_value), 1, m_File);
+
+            fread(&loudness_range, sizeof(loudness_range), 1, m_File);
+
+            fread(&max_true_peak_level, sizeof(max_true_peak_level), 1, m_File);
+
+            fread(&max_momentary_loudness, sizeof(max_momentary_loudness), 1, m_File);
+
+            fread(&max_short_term_loudness, sizeof(max_short_term_loudness), 1, m_File);
+
+            fread(&reserved, sizeof(reserved), 1, m_File);
+
+            SetBextChunk(chunkid, chunksize, description, originator, originator_reference, origination_date, origination_time, time_reference_low, time_reference_high, version, umid, loudness_value, loudness_range, max_true_peak_level, max_momentary_loudness, max_short_term_loudness, reserved);
         }
         else
         {

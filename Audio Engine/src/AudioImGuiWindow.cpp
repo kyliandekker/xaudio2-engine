@@ -139,6 +139,18 @@ void AudioImGuiWindow::RenderImGui()
                     ShowValue("Bits Per Sample: ", std::to_string(sound.GetWavFormat().bitsPerSample).c_str());
                     ShowValue("Duration (sec): ", std::string(std::to_string(sound.GetDuration()) + " secs").c_str());
                     ShowValue("Duration: ", WaveFile::FormatDuration(sound.GetDuration()).c_str());
+                    if (sound.GetWavFormat().tempo != 0.0f)
+                    {
+                        ShowValue("Tempo: ", std::to_string(sound.GetWavFormat().tempo).c_str());
+                    }
+                    if (strcmp(std::string(&sound.GetWavFormat().origination_date[0], &sound.GetWavFormat().origination_date[0] + std::size(sound.GetWavFormat().origination_date)).c_str(), "") != 0)
+                    {
+                        ShowValue("Origination Date: ", std::string(&sound.GetWavFormat().origination_date[0], &sound.GetWavFormat().origination_date[0] + std::size(sound.GetWavFormat().origination_date)).c_str());
+                    }
+                    if (strcmp(std::string(&sound.GetWavFormat().origination_time[0], &sound.GetWavFormat().origination_time[0] + std::size(sound.GetWavFormat().origination_time)).c_str(), "") != 0)
+                    {
+                        ShowValue("Origination Time: ", std::string(&sound.GetWavFormat().origination_time[0], &sound.GetWavFormat().origination_time[0] + std::size(sound.GetWavFormat().origination_time)).c_str());
+                    }
 
                     ImGui::Unindent(16.0f);
                 }
@@ -290,11 +302,17 @@ void AudioImGuiWindow::RenderImGui()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+float GetRGBColor(int color)
+{
+    return 1.0f / 255.0f * static_cast<float>(color);
+}
+
 void AudioImGuiWindow::ShowValue(const char *a_Text, const char *a_Value)
 {
+    ImVec4 color = ImVec4(GetRGBColor(61), GetRGBColor(133), GetRGBColor(224), 1.0f);
     ImGui::Text(a_Text);
     ImGui::SameLine();
-    ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), a_Value);
+    ImGui::TextColored(color, a_Value);
 }
 
 void AudioImGuiWindow::DeleteWindow()

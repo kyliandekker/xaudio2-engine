@@ -16,6 +16,7 @@ public:
     void SetFMTChunk(unsigned char chunkId[4], uint32_t chunkSize, uint16_t audioFormat, uint16_t numChannels, uint32_t sampleRate, uint32_t byteRate, uint16_t blockAlign, uint16_t bitsPerSample);
     void SetDataChunk(unsigned char chunkId[4], uint32_t chunkSize, unsigned char* data);
     void SetAcidChunk(unsigned char chunkId[4], uint32_t chunkSize, uint32_t type_of_file, uint16_t root_note, int num_of_beats, uint16_t meter_denominator, uint16_t meter_numerator, float tempo);
+    void SetBextChunk(unsigned char chunkId[4], uint32_t chunkSize, unsigned char description[256], unsigned char originator[32], unsigned char originator_reference[32], unsigned char origination_date[10], unsigned char origination_time[8], uint32_t time_reference_low, uint32_t time_reference_high, uint16_t version, unsigned char umid[64], uint16_t loudness_value, uint16_t loudness_range, uint16_t max_true_peak_level, uint16_t max_momentary_loudness, uint16_t max_short_term_loudness, unsigned char reserved[180]);
     WaveFile(const char* a_FilePath);
     void Convert32To16();
     void Convert24To16();
