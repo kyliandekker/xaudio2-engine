@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 // http://soundfile.sapp.org/doc/WaveFormat/
+// https://www.kvraudio.com/forum/viewtopic.php?t=172636
 class WavFormat
 {
 public:
@@ -9,11 +10,11 @@ public:
     uint32_t chunkSize; // Riff chunk size.
     unsigned char format[4]; // WAVE
     // fmt
-    unsigned char subchunk1Id[4]; // fmt
-    uint32_t subchunk1Size; // fmt chunk size
-    uint16_t audioFormat; // 1
-    uint16_t numChannels; // 2
-    uint32_t sampleRate; // 
+    unsigned char subchunk1Id[4];
+    uint32_t subchunk1Size;
+    uint16_t audioFormat;
+    uint16_t numChannels;
+    uint32_t sampleRate;
     uint32_t byteRate;
     uint16_t blockAlign;
     uint16_t bitsPerSample;
@@ -22,4 +23,48 @@ public:
     uint32_t subchunk2Size;
     unsigned char* data;
     uint32_t bufferSize;
+
+    // EXTRA
+
+    // acid
+    unsigned char subchunk3Id[4];
+    uint32_t subchunk3Size;
+    uint32_t type_of_file;
+    uint16_t root_note;
+    int num_of_beats;
+    uint16_t meter_denominator;
+    uint16_t meter_numerator;
+    float tempo;
 };
+
+
+/*
+ * ** The acid chunk goes a little something like this:
+**
+** 4 bytes          'acid'
+** 4 bytes (int)     length of chunk starting at next byte
+**
+** 4 bytes (int)     type of file:
+**        this appears to be a bit mask,however some combinations
+**        are probably impossible and/or qualified as "errors"
+**
+**        0x01 On: One Shot         Off: Loop
+**        0x02 On: Root note is Set Off: No root
+**        0x04 On: Stretch is On,   Off: Strech is OFF
+**        0x08 On: Disk Based       Off: Ram based
+**        0x10 On: ??????????       Off: ????????? (Acidizer puts that ON)
+**
+** 2 bytes (short)      root note
+**        if type 0x10 is OFF : [C,C#,(...),B] -> [0x30 to 0x3B]
+**        if type 0x10 is ON  : [C,C#,(...),B] -> [0x3C to 0x47]
+**         (both types fit on same MIDI pitch albeit different octaves, so who cares)
+**
+** 2 bytes (short)      ??? always set to 0x8000
+** 4 bytes (float)      ??? seems to be always 0
+** 4 bytes (int)        number of beats
+** 2 bytes (short)      meter denominator   //always 4 in SF/ACID
+** 2 bytes (short)      meter numerator     //always 4 in SF/ACID
+**                      //are we sure about the order?? usually its num/denom
+** 4 bytes (float)      tempo
+**
+ */

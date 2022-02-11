@@ -75,6 +75,27 @@ void WaveFile::SetDataChunk(unsigned char chunkId[4], uint32_t chunkSize, unsign
     logger::log_info("<Wav> (\"%s\") subchunk2Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk2Size);
 }
 
+void WaveFile::SetAcidChunk(unsigned char chunkId[4], uint32_t chunkSize, uint32_t type_of_file, uint16_t root_note, int num_of_beats, uint16_t meter_denominator, uint16_t meter_numerator, float tempo)
+{
+    memcpy(m_WavFile.subchunk2Id, chunkId, 4 * sizeof(unsigned char));
+    m_WavFile.subchunk2Size = chunkSize;
+    m_WavFile.type_of_file = type_of_file;
+    m_WavFile.root_note = root_note;
+    m_WavFile.num_of_beats = num_of_beats;
+    m_WavFile.meter_denominator = meter_denominator;
+    m_WavFile.meter_numerator = meter_numerator;
+    m_WavFile.tempo = tempo;
+
+    logger::log_info("<Wav> (\"%s\") subchunk2Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk2Id[0], &m_WavFile.subchunk2Id[0] + std::size(m_WavFile.subchunk2Id)).c_str());
+    logger::log_info("<Wav> (\"%s\") subchunk2Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk2Size);
+    logger::log_info("<Wav> (\"%s\") type_of_file: 0x%x.", m_SoundTitle.c_str(), m_WavFile.type_of_file);
+    logger::log_info("<Wav> (\"%s\") root_note: 0x%x.", m_SoundTitle.c_str(), m_WavFile.root_note);
+    logger::log_info("<Wav> (\"%s\") num_of_beats: %i.", m_SoundTitle.c_str(), m_WavFile.num_of_beats);
+    logger::log_info("<Wav> (\"%s\") meter_denominator: %i.", m_SoundTitle.c_str(), m_WavFile.meter_denominator);
+    logger::log_info("<Wav> (\"%s\") meter_numerator: %i.", m_SoundTitle.c_str(), m_WavFile.meter_numerator);
+    logger::log_info("<Wav> (\"%s\") tempo: %fbpm.", m_SoundTitle.c_str(), m_WavFile.tempo);
+}
+
 WaveFile::WaveFile(const char* a_FilePath)
 {
     m_WavFile = {};
@@ -89,8 +110,7 @@ WaveFile::WaveFile(const char* a_FilePath)
         return;
     }
 
-    bool filledRiff = false, filledFmt = false, filledData = false;
-    while (!filledRiff || !filledFmt || !filledData)
+    while (!feof(m_File))
     {
         unsigned char chunkid[4];
 
@@ -119,7 +139,6 @@ WaveFile::WaveFile(const char* a_FilePath)
             }
 
             SetRIFFChunk(chunkid, chunksize, format);
-            filledRiff = true;
         }
         else if (strcmp(std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), "fmt ") == 0)
         {
@@ -149,7 +168,6 @@ WaveFile::WaveFile(const char* a_FilePath)
             fread(&bitsPerSample, sizeof(bitsPerSample), 1, m_File);
 
             SetFMTChunk(chunkid, chunksize, audioFormat, numChannels, sampleRate, byteRate, blockAlign, bitsPerSample);
-            filledFmt = true;
         }
         else if (strcmp(std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), "data") == 0)
         {
@@ -159,15 +177,38 @@ WaveFile::WaveFile(const char* a_FilePath)
 
             SetDataChunk(chunkid, chunksize, data);
 
-            delete[] data;
+            free(data);
+        }
+        else if (strcmp(std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), "acid") == 0)
+        {
+            uint32_t type_of_file;
+            uint16_t root_note;
+            int num_of_beats;
+            uint16_t meter_denominator;
+            uint16_t meter_numerator;
+            float tempo;
 
-            filledData = true;
+            fread(&type_of_file, sizeof(type_of_file), 1, m_File);
+
+            fread(&root_note, sizeof(root_note), 1, m_File);
+
+            fseek(m_File, 6, SEEK_CUR);
+
+            fread(&num_of_beats, sizeof(num_of_beats), 1, m_File);
+
+            fread(&meter_denominator, sizeof(meter_denominator), 1, m_File);
+
+            fread(&meter_numerator, sizeof(meter_numerator), 1, m_File);
+
+            fread(&tempo, sizeof(tempo), 1, m_File);
+
+            SetAcidChunk(chunkid, chunksize, type_of_file, root_note, num_of_beats, meter_denominator, meter_numerator, tempo);
         }
         else
         {
             logger::log_info("<Wav> (\"%s\") Found subchunk %s with size %i. Skipping.", m_SoundTitle.c_str(), std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), chunksize);
 
-            fseek(m_File, chunksize, SEEK_CUR);
+            fseek(m_File, static_cast<int32_t>(chunksize), SEEK_CUR);
         }
     }
 
@@ -194,7 +235,7 @@ void WaveFile::Convert32To16()
     m_WavFile.bitsPerSample = 16;
 
     uint16_t* array_16 = wav::wav_converter::convert_32_to_16(m_WavFile.data, m_WavFile.subchunk2Size);
-    delete[] m_WavFile.data;
+    free(m_WavFile.data);
     m_WavFile.data = reinterpret_cast<unsigned char*>(array_16);
 }
 
@@ -203,13 +244,13 @@ void WaveFile::Convert24To16()
     m_WavFile.bitsPerSample = 16;
 
     uint16_t* array_16 = wav::wav_converter::convert_24_to_16(m_WavFile.data, m_WavFile.subchunk2Size);
-    delete[] m_WavFile.data;
+    free(m_WavFile.data);
     m_WavFile.data = reinterpret_cast<unsigned char*>(array_16);
 }
 
 WaveFile::~WaveFile()
 {
-    delete[] m_WavFile.data;
+    free(m_WavFile.data);
     if (m_File)
         fclose(m_File);
 }
