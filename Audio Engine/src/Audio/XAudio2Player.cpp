@@ -41,7 +41,7 @@ XAudio2Player::~XAudio2Player()
 /// Looks for an inactive channel and sets its sound.
 /// </summary>
 /// <param name="a_Sound"></param>
-int XAudio2Player::Play(const WaveFile &a_Sound)
+Handle XAudio2Player::Play(const WaveFile &a_Sound)
 {
 	for (int i = 0; i < static_cast<int>(m_Channels.size()); i++)
 		if (!m_Channels[i]->IsInUse())
@@ -64,9 +64,9 @@ int XAudio2Player::Play(const WaveFile &a_Sound)
 /// Stops a channel from playing.
 /// </summary>
 /// <param name="a_ChannelHandle"></param>
-void XAudio2Player::StopChannel(int a_ChannelHandle)
+void XAudio2Player::StopChannel(Handle a_ChannelHandle)
 {
-	if (a_ChannelHandle < 0 || a_ChannelHandle >= static_cast<int>(m_Channels.size()))
+	if (!a_ChannelHandle.IsValid() && a_ChannelHandle < 0 || a_ChannelHandle >= static_cast<int>(m_Channels.size()))
 		return;
 	m_Channels[a_ChannelHandle]->Stop();
 	m_Channels[a_ChannelHandle]->Reset();
@@ -76,7 +76,7 @@ void XAudio2Player::StopChannel(int a_ChannelHandle)
 /// Resumes playback on a channel.
 /// </summary>
 /// <param name="a_ChannelHandle"></param>
-void XAudio2Player::PlayChannel(int a_ChannelHandle)
+void XAudio2Player::PlayChannel(Handle a_ChannelHandle)
 {
 	m_Channels[a_ChannelHandle]->Resume();
 }
@@ -85,7 +85,7 @@ void XAudio2Player::PlayChannel(int a_ChannelHandle)
 /// Stops playback on a channel.
 /// </summary>
 /// <param name="a_ChannelHandle"></param>
-void XAudio2Player::PauseChannel(int a_ChannelHandle)
+void XAudio2Player::PauseChannel(Handle a_ChannelHandle)
 {
 	m_Channels[a_ChannelHandle]->Pause();
 }
@@ -95,7 +95,7 @@ void XAudio2Player::PauseChannel(int a_ChannelHandle)
 /// </summary>
 void XAudio2Player::StopAllChannels()
 {
-	for (int i = 0; i < static_cast<int>(m_Channels.size()); i++)
+	for (int i = static_cast<int>(m_Channels.size()) - 1; i > -1; i--)
 		if (m_Channels[i]->IsInUse())
 			m_Channels[i]->Stop();
 }
@@ -106,9 +106,8 @@ void XAudio2Player::StopAllChannels()
 void XAudio2Player::Update()
 {
 	if (m_IsPlaying)
-		for (int i = 0; i < static_cast<int>(m_Channels.size()); i++)
-			if (m_Channels[i]->IsInUse())
-				m_Channels[i]->Update();
+		for (int i = static_cast<int>(m_Channels.size()) - 1; i > -1; i--)
+			m_Channels[i]->Update();
 }
 
 /// <summary>

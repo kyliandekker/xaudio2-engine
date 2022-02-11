@@ -15,11 +15,11 @@ public:
 	XAudio2Player();
 	~XAudio2Player() override;
 
-	int Play(const WaveFile& a_Sound) override;
+	Handle Play(const WaveFile& a_Sound) override;
 
-	void StopChannel(int a_ChannelHandle) override;
-	void PlayChannel(int a_ChannelHandle) override;
-	void PauseChannel(int a_ChannelHandle) override;
+	void StopChannel(Handle a_ChannelHandle) override;
+	void PlayChannel(Handle a_ChannelHandle) override;
+	void PauseChannel(Handle a_ChannelHandle) override;
 	void StopAllChannels() override;
 
 	void Update() override;

@@ -195,6 +195,7 @@
     <ClInclude Include="include\Audio\BasePlayer.h" />
     <ClInclude Include="include\Audio\Effects.h" />
     <ClInclude Include="include\Audio\Logger.h" />
+    <ClInclude Include="include\Audio\SoundHandle.h" />
     <ClInclude Include="include\Audio\uint24_t.h" />
     <ClInclude Include="include\Audio\WavConverter.h" />
     <ClInclude Include="include\Audio\WaveFile.h" />

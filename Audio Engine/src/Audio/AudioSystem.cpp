@@ -17,7 +17,7 @@ AudioSystem::AudioSystem(const AudioSystem &rhs)
 AudioSystem::~AudioSystem()
 {
 	for (int i = 0; i < static_cast<int>(m_Sounds.size()); i++)
-		RemoveSound(i);
+		RemoveSound(1);
 	delete m_Player;
 }
 
@@ -36,10 +36,10 @@ AudioSystem &AudioSystem::operator=(const AudioSystem &rhs)
 /// </summary>
 /// <param name="a_Path">The path of where the sound resides.</param>
 /// <returns></returns>
-int AudioSystem::CreateSound(const char* a_Path)
+Handle AudioSystem::CreateSound(const char* a_Path)
 {
 	logger::log_info("<XAudio2> Creating sound: \"%s\".", a_Path);
-	const int index = static_cast<int>(m_Sounds.size());
+	const Handle index = static_cast<int>(m_Sounds.size());
 	m_Sounds.push_back(new WaveFile(a_Path));
 	return index;
 }
@@ -49,7 +49,7 @@ int AudioSystem::CreateSound(const char* a_Path)
 /// </summary>
 /// <param name="a_SoundHandle">The index of the sound (stored in the sound list)</param>
 /// <returns></returns>
-int AudioSystem::Play(int a_SoundHandle)
+Handle AudioSystem::Play(Handle a_SoundHandle)
 {
 	return m_Player->Play(*m_Sounds[a_SoundHandle]);
 }
@@ -58,7 +58,7 @@ int AudioSystem::Play(int a_SoundHandle)
 /// Stops playback on a channel.
 /// </summary>
 /// <param name="a_ChannelHandle"></param>
-void AudioSystem::StopChannel(int a_ChannelHandle)
+void AudioSystem::StopChannel(Handle a_ChannelHandle)
 {
 	m_Player->StopChannel(a_ChannelHandle);
 }
@@ -67,7 +67,7 @@ void AudioSystem::StopChannel(int a_ChannelHandle)
 /// Resumes playback on a channel.
 /// </summary>
 /// <param name="a_ChannelHandle"></param>
-void AudioSystem::PlayChannel(int a_ChannelHandle)
+void AudioSystem::PlayChannel(Handle a_ChannelHandle)
 {
 	m_Player->PlayChannel(a_ChannelHandle);
 }
@@ -76,7 +76,7 @@ void AudioSystem::PlayChannel(int a_ChannelHandle)
 /// Stops playback on a channel.
 /// </summary>
 /// <param name="a_ChannelHandle"></param>
-void AudioSystem::PauseChannel(int a_ChannelHandle)
+void AudioSystem::PauseChannel(Handle a_ChannelHandle)
 {
 	m_Player->PauseChannel(a_ChannelHandle);
 }
@@ -132,34 +132,34 @@ BasePlayer& AudioSystem::GetPlayer() const
 /// <summary>
 /// Removes a sound from all the channels using it.
 /// </summary>
-/// <param name="a_Index"></param>
-void AudioSystem::RemoveSound(int a_Index)
+/// <param name="a_SoundHandle"></param>
+void AudioSystem::RemoveSound(Handle a_SoundHandle)
 {
 	for (const auto i : m_Player->GetChannels())
-		if (&i->GetSound() == m_Sounds[a_Index])
+		if (&i->GetSound() == m_Sounds[a_SoundHandle])
 			i->RemoveSound();
-	delete m_Sounds[a_Index];
-	m_Sounds.erase(m_Sounds.begin() + a_Index);
+	delete m_Sounds[a_SoundHandle];
+	m_Sounds.erase(m_Sounds.begin() + a_SoundHandle);
 }
 
 /// <summary>
 /// Pauses a sound in all the channels that use it.
 /// </summary>
-/// <param name="a_Index"></param>
-void AudioSystem::PauseAllChannelsWithSound(int a_Index)
+/// <param name="a_SoundHandle"></param>
+void AudioSystem::PauseAllChannelsWithSound(Handle a_SoundHandle)
 {
 	for (const auto i : m_Player->GetChannels())
-		if (&i->GetSound() == m_Sounds[a_Index])
+		if (&i->GetSound() == m_Sounds[a_SoundHandle])
 			i->Pause();
 }
 
 /// <summary>
 /// Resumes a sound in all the channels that use it.
 /// </summary>
-/// <param name="a_Index"></param>
-void AudioSystem::ResumeAllChannelsWithSound(int a_Index)
+/// <param name="a_SoundHandle"></param>
+void AudioSystem::ResumeAllChannelsWithSound(Handle a_SoundHandle)
 {
 	for (const auto i : m_Player->GetChannels())
-		if (&i->GetSound() == m_Sounds[a_Index])
+		if (&i->GetSound() == m_Sounds[a_SoundHandle])
 			i->Resume();
 }

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "BasePlayer.h"
+#include "SoundHandle.h"
 #include "WaveFile.h"
 
 class AudioSystem
@@ -13,12 +14,12 @@ public:
 
 	AudioSystem& operator=(const AudioSystem& rhs);
 
-	int CreateSound(const char* a_Path);
-	int Play(int a_SoundHandle);
+	Handle CreateSound(const char* a_Path);
+	Handle Play(Handle a_SoundHandle);
 
-	void StopChannel(int a_ChannelHandle);
-	void PlayChannel(int a_ChannelHandle);
-	void PauseChannel(int a_ChannelHandle);
+	void StopChannel(Handle a_ChannelHandle);
+	void PlayChannel(Handle a_ChannelHandle);
+	void PauseChannel(Handle a_ChannelHandle);
 
 	void Update();
 	void Resume();
@@ -30,9 +31,9 @@ public:
 
 	BasePlayer& GetPlayer() const;
 
-	void RemoveSound(int a_Index);
-	void PauseAllChannelsWithSound(int a_Index);
-	void ResumeAllChannelsWithSound(int a_Index);
+	void RemoveSound(Handle a_SoundHandle);
+	void PauseAllChannelsWithSound(Handle a_SoundHandle);
+	void ResumeAllChannelsWithSound(Handle a_SoundHandle);
 private:
 	BasePlayer* m_Player = nullptr;
 	std::vector<WaveFile*> m_Sounds = std::vector<WaveFile*>();

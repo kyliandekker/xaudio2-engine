@@ -143,5 +143,8 @@
     <ClInclude Include="include\Audio\Effects.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
+    <ClInclude Include="include\Audio\SoundHandle.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
