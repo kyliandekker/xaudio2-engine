@@ -8,9 +8,9 @@ class WavFormat
 {
 public:
     // riff
-    unsigned char chunkId[4]; // RIFF
-    uint32_t chunkSize;       // Riff chunk size.
-    unsigned char format[4];  // WAVE
+    unsigned char chunkId[4];
+    uint32_t chunkSize;
+    unsigned char format[4];
     // fmt
     unsigned char subchunk1Id[4];
     uint32_t subchunk1Size;

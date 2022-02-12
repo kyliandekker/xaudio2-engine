@@ -19,125 +19,7 @@ WaveFile::WaveFile(const WaveFile &rhs)
     m_SoundTitle = rhs.m_SoundTitle;
 }
 
-void WaveFile::SetRIFFChunk(unsigned char chunkId[4], uint32_t chunkSize, unsigned char format[4])
-{
-    memcpy(m_WavFile.chunkId, chunkId, 4 * sizeof(unsigned char));
-    m_WavFile.chunkSize = chunkSize;
-    memcpy(m_WavFile.format, format, 4 * sizeof(unsigned char));
-
-    logger::log_info("<Wav> (\"%s\") chunkId: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.chunkId[0], &m_WavFile.chunkId[0] + std::size(m_WavFile.chunkId)).c_str());
-
-    logger::log_info("<Wav> (\"%s\") chunkSize: %i.", m_SoundTitle.c_str(), m_WavFile.chunkSize);
-
-    logger::log_info("<Wav> (\"%s\") format: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
-}
-
-void WaveFile::SetFMTChunk(unsigned char chunkId[4], uint32_t chunkSize, uint16_t audioFormat, uint16_t numChannels, uint32_t sampleRate, uint32_t byteRate, uint16_t blockAlign, uint16_t bitsPerSample)
-{
-    memcpy(m_WavFile.subchunk1Id, chunkId, sizeof(m_WavFile.subchunk1Id));
-    m_WavFile.subchunk1Size = chunkSize;
-    m_WavFile.audioFormat = audioFormat;
-    m_WavFile.numChannels = numChannels;
-    m_WavFile.sampleRate = sampleRate;
-    m_WavFile.byteRate = byteRate;
-    m_WavFile.blockAlign = blockAlign;
-    m_WavFile.bitsPerSample = bitsPerSample;
-
-    logger::log_info("<Wav> (\"%s\") subchunk1Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk1Id[0], &m_WavFile.subchunk1Id[0] + std::size(m_WavFile.subchunk1Id)).c_str());
-    logger::log_info("<Wav> (\"%s\") subchunk1Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk1Size);
-    logger::log_info("<Wav> (\"%s\") audioFormat: %i.", m_SoundTitle.c_str(), m_WavFile.audioFormat);
-    if (m_WavFile.audioFormat != WAVE_FORMAT_PCM)
-    {
-        logger::log_error("<Wav> (\"%s\") does not have the format 1 (PCM). This indicates there is probably some form of compression (%s).", m_SoundTitle.c_str(), std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
-    }
-    logger::log_info("<Wav> (\"%s\") numChannels: %i.", m_SoundTitle.c_str(), m_WavFile.numChannels);
-    logger::log_info("<Wav> (\"%s\") sampleRate: %ihz.", m_SoundTitle.c_str(), m_WavFile.sampleRate);
-    if (m_WavFile.sampleRate != 44100)
-    {
-        logger::log_error("<Wav> (\"%s\") does not have a 44100 hz sample rate (%ihz).", m_SoundTitle.c_str(), std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
-    }
-    logger::log_info("<Wav> (\"%s\") byteRate: %i.", m_SoundTitle.c_str(), m_WavFile.byteRate);
-    logger::log_info("<Wav> (\"%s\") blockAlign: %i.", m_SoundTitle.c_str(), m_WavFile.blockAlign);
-    logger::log_info("<Wav> (\"%s\") bitsPerSample: %i.", m_SoundTitle.c_str(), m_WavFile.bitsPerSample);
-}
-
-void WaveFile::SetDataChunk(unsigned char chunkId[4], uint32_t chunkSize, unsigned char *data)
-{
-    memcpy(m_WavFile.subchunk2Id, chunkId, 4 * sizeof(unsigned char));
-    m_WavFile.subchunk2Size = chunkSize;
-
-    // Actual data.
-    m_WavFile.data = static_cast<unsigned char *>(malloc(sizeof(m_WavFile.data) * chunkSize)); // Set aside sound buffer space.
-    memcpy(m_WavFile.data, data, sizeof(m_WavFile.data) * chunkSize);
-
-    logger::log_info("<Wav> (\"%s\") subchunk2Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk2Id[0], &m_WavFile.subchunk2Id[0] + std::size(m_WavFile.subchunk2Id)).c_str());
-    logger::log_info("<Wav> (\"%s\") subchunk2Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk2Size);
-}
-
-void WaveFile::SetAcidChunk(unsigned char chunkId[4], uint32_t chunkSize, uint32_t type_of_file, uint16_t root_note, uint32_t num_of_beats, uint16_t meter_denominator, uint16_t meter_numerator, float tempo)
-{
-    memcpy(m_WavFile.subchunk3Id, chunkId, sizeof(m_WavFile.subchunk3Id));
-    m_WavFile.subchunk3Size = chunkSize;
-    m_WavFile.type_of_file = type_of_file;
-    m_WavFile.root_note = root_note;
-    m_WavFile.num_of_beats = num_of_beats;
-    m_WavFile.meter_denominator = meter_denominator;
-    m_WavFile.meter_numerator = meter_numerator;
-    m_WavFile.tempo = tempo;
-
-    logger::log_info("<Wav> (\"%s\") subchunk3Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk3Id[0], &m_WavFile.subchunk3Id[0] + std::size(m_WavFile.subchunk3Id)).c_str());
-    logger::log_info("<Wav> (\"%s\") subchunk3Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk3Size);
-    logger::log_info("<Wav> (\"%s\") type_of_file: 0x%x.", m_SoundTitle.c_str(), m_WavFile.type_of_file);
-    logger::log_info("<Wav> (\"%s\") root_note: 0x%x.", m_SoundTitle.c_str(), m_WavFile.root_note);
-    logger::log_info("<Wav> (\"%s\") num_of_beats: %i.", m_SoundTitle.c_str(), m_WavFile.num_of_beats);
-    logger::log_info("<Wav> (\"%s\") meter_denominator: %i.", m_SoundTitle.c_str(), m_WavFile.meter_denominator);
-    logger::log_info("<Wav> (\"%s\") meter_numerator: %i.", m_SoundTitle.c_str(), m_WavFile.meter_numerator);
-    logger::log_info("<Wav> (\"%s\") tempo: %fbpm.", m_SoundTitle.c_str(), m_WavFile.tempo);
-}
-
-void WaveFile::SetBextChunk(unsigned char chunkId[4], uint32_t chunkSize, unsigned char description[256], unsigned char originator[32], unsigned char originator_reference[32], unsigned char origination_date[10], unsigned char origination_time[8], uint32_t time_reference_low, uint32_t time_reference_high, uint16_t version, unsigned char umid[64], uint16_t loudness_value, uint16_t loudness_range, uint16_t max_true_peak_level, uint16_t max_momentary_loudness, uint16_t max_short_term_loudness, unsigned char reserved[180])
-{
-    memcpy(m_WavFile.subchunk4Id, chunkId, sizeof(m_WavFile.subchunk4Id));
-    m_WavFile.subchunk4Size = chunkSize;
-    memcpy(m_WavFile.description, description, sizeof(m_WavFile.description));
-    memcpy(m_WavFile.originator, originator, sizeof(m_WavFile.originator));
-    memcpy(m_WavFile.originator_reference, originator_reference, sizeof(m_WavFile.originator_reference));
-    memcpy(m_WavFile.origination_date, origination_date, sizeof(m_WavFile.origination_date));
-    memcpy(m_WavFile.origination_time, origination_time, sizeof(m_WavFile.origination_time));
-    for (unsigned char &j : m_WavFile.origination_time)
-        if (j == '-')
-            j = ':';
-    m_WavFile.time_reference_low = time_reference_low;
-    m_WavFile.time_reference_high = time_reference_high;
-    m_WavFile.version = version;
-    memcpy(m_WavFile.umid, umid, sizeof(m_WavFile.umid));
-    m_WavFile.loudness_value = loudness_value;
-    m_WavFile.loudness_range = loudness_range;
-    m_WavFile.max_true_peak_level = max_true_peak_level;
-    m_WavFile.max_momentary_loudness = max_momentary_loudness;
-    m_WavFile.max_short_term_loudness = max_short_term_loudness;
-    memcpy(m_WavFile.reserved, reserved, sizeof(m_WavFile.reserved));
-
-    logger::log_info("<Wav> (\"%s\") subchunk4Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk4Id[0], &m_WavFile.subchunk4Id[0] + std::size(m_WavFile.subchunk4Id)).c_str());
-    logger::log_info("<Wav> (\"%s\") subchunk4Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk4Size);
-    logger::log_info("<Wav> (\"%s\") description: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.description[0], &m_WavFile.description[0] + std::size(m_WavFile.description)).c_str());
-    logger::log_info("<Wav> (\"%s\") originator: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.originator[0], &m_WavFile.originator[0] + std::size(m_WavFile.originator)).c_str());
-    logger::log_info("<Wav> (\"%s\") originator_reference: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.originator_reference[0], &m_WavFile.originator_reference[0] + std::size(m_WavFile.originator_reference)).c_str());
-    logger::log_info("<Wav> (\"%s\") origination_date: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.origination_date[0], &m_WavFile.origination_date[0] + std::size(m_WavFile.origination_date)).c_str());
-    logger::log_info("<Wav> (\"%s\") origination_time: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.origination_time[0], &m_WavFile.origination_time[0] + std::size(m_WavFile.origination_time)).c_str());
-    logger::log_info("<Wav> (\"%s\") time_reference_low: %i.", m_SoundTitle.c_str(), m_WavFile.time_reference_low);
-    logger::log_info("<Wav> (\"%s\") time_reference_high: %i.", m_SoundTitle.c_str(), m_WavFile.time_reference_high);
-    logger::log_info("<Wav> (\"%s\") version: %i.", m_SoundTitle.c_str(), m_WavFile.version);
-    logger::log_info("<Wav> (\"%s\") umid: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.umid[0], &m_WavFile.umid[0] + std::size(m_WavFile.umid)).c_str());
-    logger::log_info("<Wav> (\"%s\") loudness_value: %i.", m_SoundTitle.c_str(), m_WavFile.loudness_value);
-    logger::log_info("<Wav> (\"%s\") loudness_range: %i.", m_SoundTitle.c_str(), m_WavFile.loudness_range);
-    logger::log_info("<Wav> (\"%s\") max_true_peak_level: %i.", m_SoundTitle.c_str(), m_WavFile.max_true_peak_level);
-    logger::log_info("<Wav> (\"%s\") max_momentary_loudness: %i.", m_SoundTitle.c_str(), m_WavFile.max_momentary_loudness);
-    logger::log_info("<Wav> (\"%s\") max_short_term_loudness: %i.", m_SoundTitle.c_str(), m_WavFile.max_short_term_loudness);
-    logger::log_info("<Wav> (\"%s\") reserved: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.reserved[0], &m_WavFile.reserved[0] + std::size(m_WavFile.reserved)).c_str());
-}
-
-WaveFile::WaveFile(const char *a_FilePath)
+WaveFile::WaveFile(const char* a_FilePath)
 {
     m_WavFile = {};
 
@@ -220,7 +102,7 @@ WaveFile::WaveFile(const char *a_FilePath)
         else if (strcmp(std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), "data") == 0)
         {
             // Actual data.
-            unsigned char *data = static_cast<unsigned char *>(malloc(sizeof(data) * chunksize)); // set aside sound buffer space.
+            unsigned char* data = static_cast<unsigned char*>(malloc(sizeof(data) * chunksize)); // set aside sound buffer space.
             fread(data, sizeof(data), chunksize, m_File);                                         // read in our whole sound data chunk.
 
             SetDataChunk(chunkid, chunksize, data);
@@ -328,29 +210,207 @@ WaveFile::WaveFile(const char *a_FilePath)
     m_WavFile.bufferSize = m_WavFile.bitsPerSample / 8;
 }
 
-void WaveFile::Convert32To16()
-{
-    m_WavFile.bitsPerSample = 16;
-
-    uint16_t *array_16 = wav::wav_converter::convert_32_to_16(m_WavFile.data, m_WavFile.subchunk2Size);
-    free(m_WavFile.data);
-    m_WavFile.data = reinterpret_cast<unsigned char *>(array_16);
-}
-
-void WaveFile::Convert24To16()
-{
-    m_WavFile.bitsPerSample = 16;
-
-    uint16_t *array_16 = wav::wav_converter::convert_24_to_16(m_WavFile.data, m_WavFile.subchunk2Size);
-    free(m_WavFile.data);
-    m_WavFile.data = reinterpret_cast<unsigned char *>(array_16);
-}
-
 WaveFile::~WaveFile()
 {
     free(m_WavFile.data);
     if (m_File)
         fclose(m_File);
+}
+
+/// <summary>
+/// Sets the riff chunk.
+/// </summary>
+/// <param name="a_ChunkId">The chunk id.</param>
+/// <param name="a_ChunkSize">The chunk size.</param>
+/// <param name="a_Format">The format.</param>
+void WaveFile::SetRIFFChunk(unsigned char a_ChunkId[4], uint32_t a_ChunkSize, unsigned char a_Format[4])
+{
+    memcpy(m_WavFile.chunkId, a_ChunkId, 4 * sizeof(unsigned char));
+    m_WavFile.chunkSize = a_ChunkSize;
+    memcpy(m_WavFile.format, a_Format, 4 * sizeof(unsigned char));
+
+    logger::log_info("<Wav> (\"%s\") chunkId: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.chunkId[0], &m_WavFile.chunkId[0] + std::size(m_WavFile.chunkId)).c_str());
+
+    logger::log_info("<Wav> (\"%s\") chunkSize: %i.", m_SoundTitle.c_str(), m_WavFile.chunkSize);
+
+    logger::log_info("<Wav> (\"%s\") format: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
+}
+
+/// <summary>
+/// Sets the format chunk.
+/// </summary>
+/// <param name="a_ChunkId">The chunk id.</param>
+/// <param name="a_ChunkSize">The chunk size.</param>
+/// <param name="a_AudioFormat">The audio format.</param>
+/// <param name="a_NumChannels">The number of channels.</param>
+/// <param name="a_SampleRate">The sample rate.</param>
+/// <param name="a_ByteRate">The byte rate.</param>
+/// <param name="a_BlockAlign">The block align.</param>
+/// <param name="a_BitsPerSample">The bits per sample.</param>
+void WaveFile::SetFMTChunk(unsigned char a_ChunkId[4], uint32_t a_ChunkSize, uint16_t a_AudioFormat, uint16_t a_NumChannels, uint32_t a_SampleRate, uint32_t a_ByteRate, uint16_t a_BlockAlign, uint16_t a_BitsPerSample)
+{
+    memcpy(m_WavFile.subchunk1Id, a_ChunkId, sizeof(m_WavFile.subchunk1Id));
+    m_WavFile.subchunk1Size = a_ChunkSize;
+    m_WavFile.audioFormat = a_AudioFormat;
+    m_WavFile.numChannels = a_NumChannels;
+    m_WavFile.sampleRate = a_SampleRate;
+    m_WavFile.byteRate = a_ByteRate;
+    m_WavFile.blockAlign = a_BlockAlign;
+    m_WavFile.bitsPerSample = a_BitsPerSample;
+
+    logger::log_info("<Wav> (\"%s\") subchunk1Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk1Id[0], &m_WavFile.subchunk1Id[0] + std::size(m_WavFile.subchunk1Id)).c_str());
+    logger::log_info("<Wav> (\"%s\") subchunk1Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk1Size);
+    logger::log_info("<Wav> (\"%s\") audioFormat: %i.", m_SoundTitle.c_str(), m_WavFile.audioFormat);
+    if (m_WavFile.audioFormat != WAVE_FORMAT_PCM)
+    {
+        logger::log_error("<Wav> (\"%s\") does not have the format 1 (PCM). This indicates there is probably some form of compression (%s).", m_SoundTitle.c_str(), std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
+    }
+    logger::log_info("<Wav> (\"%s\") numChannels: %i.", m_SoundTitle.c_str(), m_WavFile.numChannels);
+    logger::log_info("<Wav> (\"%s\") sampleRate: %ihz.", m_SoundTitle.c_str(), m_WavFile.sampleRate);
+    if (m_WavFile.sampleRate != 44100)
+    {
+        logger::log_error("<Wav> (\"%s\") does not have a 44100 hz sample rate (%ihz).", m_SoundTitle.c_str(), std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
+    }
+    logger::log_info("<Wav> (\"%s\") byteRate: %i.", m_SoundTitle.c_str(), m_WavFile.byteRate);
+    logger::log_info("<Wav> (\"%s\") blockAlign: %i.", m_SoundTitle.c_str(), m_WavFile.blockAlign);
+    logger::log_info("<Wav> (\"%s\") bitsPerSample: %i.", m_SoundTitle.c_str(), m_WavFile.bitsPerSample);
+}
+
+/// <summary>
+/// Sets the data chunk.
+/// </summary>
+/// <param name="a_ChunkId">The chunk id.</param>
+/// <param name="a_ChunkSize">The chunk size.</param>
+/// <param name="a_Data">The data.</param>
+void WaveFile::SetDataChunk(unsigned char a_ChunkId[4], uint32_t a_ChunkSize, unsigned char* a_Data)
+{
+    memcpy(m_WavFile.subchunk2Id, a_ChunkId, 4 * sizeof(unsigned char));
+    m_WavFile.subchunk2Size = a_ChunkSize;
+
+    // Actual data.
+    m_WavFile.data = static_cast<unsigned char *>(malloc(sizeof(m_WavFile.data) * a_ChunkSize)); // Set aside sound buffer space.
+    memcpy(m_WavFile.data, a_Data, sizeof(m_WavFile.data) * a_ChunkSize);
+
+    logger::log_info("<Wav> (\"%s\") subchunk2Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk2Id[0], &m_WavFile.subchunk2Id[0] + std::size(m_WavFile.subchunk2Id)).c_str());
+    logger::log_info("<Wav> (\"%s\") subchunk2Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk2Size);
+}
+
+/// <summary>
+/// Sets the acid chunk.
+/// </summary>
+/// <param name="a_ChunkId">The chunk id.</param>
+/// <param name="a_ChunkSize">The chunk size.</param>
+/// <param name="a_TypeOfFile">The type of file.</param>
+/// <param name="a_RootNote">The root note.</param>
+/// <param name="a_NumOfBeats">The number of beats.</param>
+/// <param name="a_MeterDenominator">The meter denominator.</param>
+/// <param name="a_MeterNumerator">The meter numerator.</param>
+/// <param name="a_Tempo">The tempo.</param>
+void WaveFile::SetAcidChunk(unsigned char a_ChunkId[4], uint32_t a_ChunkSize, uint32_t a_TypeOfFile, uint16_t a_RootNote, uint32_t a_NumOfBeats, uint16_t a_MeterDenominator, uint16_t a_MeterNumerator, float a_Tempo)
+{
+    memcpy(m_WavFile.subchunk3Id, a_ChunkId, sizeof(m_WavFile.subchunk3Id));
+    m_WavFile.subchunk3Size = a_ChunkSize;
+    m_WavFile.type_of_file = a_TypeOfFile;
+    m_WavFile.root_note = a_RootNote;
+    m_WavFile.num_of_beats = a_NumOfBeats;
+    m_WavFile.meter_denominator = a_MeterDenominator;
+    m_WavFile.meter_numerator = a_MeterNumerator;
+    m_WavFile.tempo = a_Tempo;
+
+    logger::log_info("<Wav> (\"%s\") subchunk3Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk3Id[0], &m_WavFile.subchunk3Id[0] + std::size(m_WavFile.subchunk3Id)).c_str());
+    logger::log_info("<Wav> (\"%s\") subchunk3Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk3Size);
+    logger::log_info("<Wav> (\"%s\") type_of_file: 0x%x.", m_SoundTitle.c_str(), m_WavFile.type_of_file);
+    logger::log_info("<Wav> (\"%s\") root_note: 0x%x.", m_SoundTitle.c_str(), m_WavFile.root_note);
+    logger::log_info("<Wav> (\"%s\") num_of_beats: %i.", m_SoundTitle.c_str(), m_WavFile.num_of_beats);
+    logger::log_info("<Wav> (\"%s\") meter_denominator: %i.", m_SoundTitle.c_str(), m_WavFile.meter_denominator);
+    logger::log_info("<Wav> (\"%s\") meter_numerator: %i.", m_SoundTitle.c_str(), m_WavFile.meter_numerator);
+    logger::log_info("<Wav> (\"%s\") tempo: %fbpm.", m_SoundTitle.c_str(), m_WavFile.tempo);
+}
+
+/// <summary>
+/// Sets the bext chunk.
+/// </summary>
+/// <param name="a_ChunkId">The chunk id.</param>
+/// <param name="a_ChunkSize">The chunk size.</param>
+/// <param name="a_Description">The description.</param>
+/// <param name="a_Originator">The originator.</param>
+/// <param name="a_OriginatorReference">The originator reference.</param>
+/// <param name="a_OriginationDate">Creation date.</param>
+/// <param name="a_OriginationTime">Creation time.</param>
+/// <param name="a_TimeReferenceLow">The low time reference.</param>
+/// <param name="a_TimeReferenceHigh">The high time reference.</param>
+/// <param name="a_Version">The version.</param>
+/// <param name="a_Umid">The umid.</param>
+/// <param name="a_LoudnessValue">The loudness value.</param>
+/// <param name="a_LoudnessRange">The loudness range.</param>
+/// <param name="a_MaxTruePeakLevel">The max true peak level.</param>
+/// <param name="a_MaxMomentaryLoudness">The max momentary loudness value.</param>
+/// <param name="a_MaxShortTermLoudness">The max short term loudness value.</param>
+/// <param name="a_Reserved">The reserved value.</param>
+void WaveFile::SetBextChunk(unsigned char a_ChunkId[4], uint32_t a_ChunkSize, unsigned char a_Description[256], unsigned char a_Originator[32], unsigned char a_OriginatorReference[32], unsigned char a_OriginationDate[10], unsigned char a_OriginationTime[8], uint32_t a_TimeReferenceLow, uint32_t a_TimeReferenceHigh, uint16_t a_Version, unsigned char a_Umid[64], uint16_t a_LoudnessValue, uint16_t a_LoudnessRange, uint16_t a_MaxTruePeakLevel, uint16_t a_MaxMomentaryLoudness, uint16_t a_MaxShortTermLoudness, unsigned char a_Reserved[180])
+{
+    memcpy(m_WavFile.subchunk4Id, a_ChunkId, sizeof(m_WavFile.subchunk4Id));
+    m_WavFile.subchunk4Size = a_ChunkSize;
+    memcpy(m_WavFile.description, a_Description, sizeof(m_WavFile.description));
+    memcpy(m_WavFile.originator, a_Originator, sizeof(m_WavFile.originator));
+    memcpy(m_WavFile.originator_reference, a_OriginatorReference, sizeof(m_WavFile.originator_reference));
+    memcpy(m_WavFile.origination_date, a_OriginationDate, sizeof(m_WavFile.origination_date));
+    memcpy(m_WavFile.origination_time, a_OriginationTime, sizeof(m_WavFile.origination_time));
+    for (unsigned char &j : m_WavFile.origination_time)
+        if (j == '-')
+            j = ':';
+    m_WavFile.time_reference_low = a_TimeReferenceLow;
+    m_WavFile.time_reference_high = a_TimeReferenceHigh;
+    m_WavFile.version = a_Version;
+    memcpy(m_WavFile.umid, a_Umid, sizeof(m_WavFile.umid));
+    m_WavFile.loudness_value = a_LoudnessValue;
+    m_WavFile.loudness_range = a_LoudnessRange;
+    m_WavFile.max_true_peak_level = a_MaxTruePeakLevel;
+    m_WavFile.max_momentary_loudness = a_MaxMomentaryLoudness;
+    m_WavFile.max_short_term_loudness = a_MaxShortTermLoudness;
+    memcpy(m_WavFile.reserved, a_Reserved, sizeof(m_WavFile.reserved));
+
+    logger::log_info("<Wav> (\"%s\") subchunk4Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk4Id[0], &m_WavFile.subchunk4Id[0] + std::size(m_WavFile.subchunk4Id)).c_str());
+    logger::log_info("<Wav> (\"%s\") subchunk4Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk4Size);
+    logger::log_info("<Wav> (\"%s\") description: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.description[0], &m_WavFile.description[0] + std::size(m_WavFile.description)).c_str());
+    logger::log_info("<Wav> (\"%s\") originator: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.originator[0], &m_WavFile.originator[0] + std::size(m_WavFile.originator)).c_str());
+    logger::log_info("<Wav> (\"%s\") originator_reference: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.originator_reference[0], &m_WavFile.originator_reference[0] + std::size(m_WavFile.originator_reference)).c_str());
+    logger::log_info("<Wav> (\"%s\") origination_date: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.origination_date[0], &m_WavFile.origination_date[0] + std::size(m_WavFile.origination_date)).c_str());
+    logger::log_info("<Wav> (\"%s\") origination_time: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.origination_time[0], &m_WavFile.origination_time[0] + std::size(m_WavFile.origination_time)).c_str());
+    logger::log_info("<Wav> (\"%s\") time_reference_low: %i.", m_SoundTitle.c_str(), m_WavFile.time_reference_low);
+    logger::log_info("<Wav> (\"%s\") time_reference_high: %i.", m_SoundTitle.c_str(), m_WavFile.time_reference_high);
+    logger::log_info("<Wav> (\"%s\") version: %i.", m_SoundTitle.c_str(), m_WavFile.version);
+    logger::log_info("<Wav> (\"%s\") umid: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.umid[0], &m_WavFile.umid[0] + std::size(m_WavFile.umid)).c_str());
+    logger::log_info("<Wav> (\"%s\") loudness_value: %i.", m_SoundTitle.c_str(), m_WavFile.loudness_value);
+    logger::log_info("<Wav> (\"%s\") loudness_range: %i.", m_SoundTitle.c_str(), m_WavFile.loudness_range);
+    logger::log_info("<Wav> (\"%s\") max_true_peak_level: %i.", m_SoundTitle.c_str(), m_WavFile.max_true_peak_level);
+    logger::log_info("<Wav> (\"%s\") max_momentary_loudness: %i.", m_SoundTitle.c_str(), m_WavFile.max_momentary_loudness);
+    logger::log_info("<Wav> (\"%s\") max_short_term_loudness: %i.", m_SoundTitle.c_str(), m_WavFile.max_short_term_loudness);
+    logger::log_info("<Wav> (\"%s\") reserved: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.reserved[0], &m_WavFile.reserved[0] + std::size(m_WavFile.reserved)).c_str());
+}
+
+/// <summary>
+/// Converts 32 bit pcm data to 16 bit pcm data.
+/// </summary>
+void WaveFile::Convert32To16()
+{
+    m_WavFile.bitsPerSample = 16;
+
+    uint16_t *array_16 = wav::wav_converter::Convert32To16(m_WavFile.data, m_WavFile.subchunk2Size);
+    free(m_WavFile.data);
+    m_WavFile.data = reinterpret_cast<unsigned char *>(array_16);
+}
+
+/// <summary>
+/// Converts 24 bit pcm data to 16 bit pcm data.
+/// </summary>
+void WaveFile::Convert24To16()
+{
+    m_WavFile.bitsPerSample = 16;
+
+    uint16_t *array_16 = wav::wav_converter::Convert24To16(m_WavFile.data, m_WavFile.subchunk2Size);
+    free(m_WavFile.data);
+    m_WavFile.data = reinterpret_cast<unsigned char *>(array_16);
 }
 
 WaveFile &WaveFile::operator=(const WaveFile &rhs)

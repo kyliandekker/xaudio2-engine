@@ -231,7 +231,7 @@ IXAudio2 &AudioSystem::GetEngine() const
 /// <param name="a_Volume">The volume.</param>
 void AudioSystem::SetVolume(float a_Volume)
 {
-	a_Volume = math::fclamp(a_Volume, 0.0f, 1.0f);
+	a_Volume = math::ClampF(a_Volume, 0.0f, 1.0f);
 	m_Volume = a_Volume;
 }
 
@@ -250,7 +250,7 @@ float AudioSystem::GetVolume() const
 /// <param name="a_Panning">The panning.</param>
 void AudioSystem::SetPanning(float a_Panning)
 {
-	a_Panning = math::fclamp(a_Panning, -1.0f, 1.0f);
+	a_Panning = math::ClampF(a_Panning, -1.0f, 1.0f);
 	m_Panning = a_Panning;
 }
 

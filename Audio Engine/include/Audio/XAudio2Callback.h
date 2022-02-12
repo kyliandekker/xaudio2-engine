@@ -4,25 +4,20 @@
 
 struct XAudio2Callback : public IXAudio2VoiceCallback
 {
-	STDMETHOD_(void, OnVoiceProcessingPassStart)(UINT32)
-	{
-	}
-	STDMETHOD_(void, OnVoiceProcessingPassEnd)()
-	{
-	}
-	STDMETHOD_(void, OnStreamEnd)()
-	{
-	}
-	STDMETHOD_(void, OnBufferStart)(void*)
-	{
-	}
-	STDMETHOD_(void, OnBufferEnd)(void*)
-	{
-	}
-	STDMETHOD_(void, OnLoopEnd)(void*)
-	{
-	}
-	STDMETHOD_(void, OnVoiceError)(void*, HRESULT)
-	{
-	}
+	virtual ~XAudio2Callback() = default;
+
+	STDMETHOD_(void, OnVoiceProcessingPassStart)(UINT32) override
+	{}
+	STDMETHOD_(void, OnVoiceProcessingPassEnd)() override
+	{}
+	STDMETHOD_(void, OnStreamEnd)() override
+	{}
+	STDMETHOD_(void, OnBufferStart)(void*) override
+	{}
+	STDMETHOD_(void, OnBufferEnd)(void*) override
+	{}
+	STDMETHOD_(void, OnLoopEnd)(void*) override
+	{}
+	STDMETHOD_(void, OnVoiceError)(void*, HRESULT) override
+	{}
 };

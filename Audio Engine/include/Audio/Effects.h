@@ -4,6 +4,6 @@
 
 namespace effects
 {
-	unsigned char* change_volume(unsigned char* data, uint32_t size, float volume);
-	unsigned char* change_panning(unsigned char* data, uint32_t size, float amount);
+	unsigned char* ChangeVolume(unsigned char* a_Data, uint32_t a_Size, float a_Volume);
+	unsigned char* ChangePanning(unsigned char* a_Data, uint32_t a_Size, float a_Amount);
 }

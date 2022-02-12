@@ -2,5 +2,5 @@
 
 namespace math
 {
-	float fclamp(float value, float min, float max);
+	float ClampF(float a_Value, float a_Min, float a_Max);
 }

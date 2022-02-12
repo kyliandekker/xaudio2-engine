@@ -10,7 +10,7 @@ class AudioSystem;
 class XAudio2Channel
 {
 public:
-	XAudio2Channel(AudioSystem& a_SoundSystem);
+	XAudio2Channel(AudioSystem& a_AudioSystem);
 	XAudio2Channel(const XAudio2Channel& rhs);
 	~XAudio2Channel();
 
@@ -50,7 +50,7 @@ private:
 	float m_Panning = 0.0f;
 	const WaveFile* m_CurrentSound = nullptr;
 	bool m_IsPlaying = false;
-	AudioSystem& m_Player;
+	AudioSystem& m_AudioSystem;
 
 	uint32_t m_CurrentPos = 0;
 	uint32_t m_DataSize = 0;

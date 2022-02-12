@@ -6,7 +6,7 @@
 #include "Audio/Logger.h"
 #include "Audio/math.h"
 
-XAudio2Channel::XAudio2Channel(AudioSystem& a_Player) : m_Player(a_Player)
+XAudio2Channel::XAudio2Channel(AudioSystem& a_AudioSystem) : m_AudioSystem(a_AudioSystem)
 {
 	m_VoiceCallback = XAudio2Callback();
 }
@@ -40,7 +40,7 @@ void XAudio2Channel::SetSound(const WaveFile &a_Sound)
 		wave.wBitsPerSample = a_Sound.GetWavFormat().bitsPerSample;
 		wave.nBlockAlign = a_Sound.GetWavFormat().blockAlign;
 		wave.nAvgBytesPerSec = wave.nSamplesPerSec * (wave.wBitsPerSample / a_Sound.GetWavFormat().blockAlign);
-		if (FAILED(hr = m_Player.GetEngine().CreateSourceVoice(&m_SourceVoice, &wave, 0, 1.0f, &m_VoiceCallback)))
+		if (FAILED(hr = m_AudioSystem.GetEngine().CreateSourceVoice(&m_SourceVoice, &wave, 0, 1.0f, &m_VoiceCallback)))
 		{
 			logger::log_error("<XAudio2> Creating XAudio Source Voice failed.");
 			return;
@@ -113,19 +113,19 @@ void XAudio2Channel::Update()
 		m_CurrentSound->Read(m_CurrentPos, size, m_Data);
 
 		// Master volume.
-		m_Data = effects::change_volume(m_Data, size, m_Player.GetVolume());
+		m_Data = effects::ChangeVolume(m_Data, size, m_AudioSystem.GetVolume());
 
 		// Channel volume.
-		m_Data = effects::change_volume(m_Data, size, m_Volume);
+		m_Data = effects::ChangeVolume(m_Data, size, m_Volume);
 
 		// Sound volume (not sure why you would want this but I want it in here damn it)
-		m_Data = effects::change_volume(m_Data, size, m_CurrentSound->GetVolume());
+		m_Data = effects::ChangeVolume(m_Data, size, m_CurrentSound->GetVolume());
 
 		// Master panning.
-		m_Data = effects::change_panning(m_Data, size, m_Player.GetPanning());
+		m_Data = effects::ChangePanning(m_Data, size, m_AudioSystem.GetPanning());
 
 		// Channel panning.
-		m_Data = effects::change_panning(m_Data, size, m_Panning);
+		m_Data = effects::ChangePanning(m_Data, size, m_Panning);
 
 		// Other effects.
 		m_Data = ApplyEffects(m_Data, size);
@@ -142,10 +142,7 @@ void XAudio2Channel::Update()
 
 		// Submit it.
 		if (FAILED(hr = m_SourceVoice->SubmitSourceBuffer(&xBuffer)))
-		{
 			logger::log_error("<XAudio2> Submitting data to XAudio Source Voice failed.");
-			return;
-		}
 	}
 }
 
@@ -205,7 +202,7 @@ XAudio2Callback &XAudio2Channel::GetVoiceCallback()
 /// <param name="a_Volume">The volume.</param>
 void XAudio2Channel::SetVolume(float a_Volume)
 {
-	a_Volume = math::fclamp(a_Volume, 0.0f, 1.0f);
+	a_Volume = math::ClampF(a_Volume, 0.0f, 1.0f);
 	m_Volume = a_Volume;
 }
 
@@ -224,7 +221,7 @@ float XAudio2Channel::GetVolume() const
 /// <param name="a_Panning">The panning of the channel.</param>
 void XAudio2Channel::SetPanning(float a_Panning)
 {
-	a_Panning = math::fclamp(a_Panning, -1.0f, 1.0f);
+	a_Panning = math::ClampF(a_Panning, -1.0f, 1.0f);
 	m_Panning = a_Panning;
 }
 
