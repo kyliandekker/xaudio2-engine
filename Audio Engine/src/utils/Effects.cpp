@@ -1,6 +1,6 @@
-﻿#include <Audio/Effects.h>
+﻿#include <xaudio2_engine/utils/Effects.h>
 
-#include <Audio/math.h>
+#include <xaudio2_engine/utils/math.h>
 
 /// <summary>
 /// Changes the value of a byte.

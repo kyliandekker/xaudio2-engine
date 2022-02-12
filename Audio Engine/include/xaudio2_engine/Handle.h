@@ -7,7 +7,11 @@ constexpr int32_t SOUND_NULL_HANDLE = -1;
 struct Handle
 {
 	Handle() = default;
-	Handle(const int32_t a_Handle) { m_Handle = a_Handle; }
+	Handle(const int32_t rhs) { m_Handle = rhs; }
+	Handle(const Handle& rhs) { m_Handle = rhs; }
+	~Handle() = default;
+
+	Handle& operator=(const Handle& rhs) { m_Handle = rhs; return *this; }
 
 	operator int32_t() const
 	{

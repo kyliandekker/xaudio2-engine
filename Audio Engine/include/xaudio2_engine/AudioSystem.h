@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "./XAudio2Channel.h"
-#include "./SoundHandle.h"
-#include "./WaveFile.h"
+#include "./xaudio2/XAudio2Channel.h"
+#include "./Handle.h"
+#include "./wav/WaveFile.h"
 
 constexpr uint32_t NUM_CHANNELS = 20;
 

@@ -13,117 +13,81 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\audio">
-      <UniqueIdentifier>{15b4ca25-64cf-4841-9a83-1fde4fbac367}</UniqueIdentifier>
+    <Filter Include="Source Files\utils">
+      <UniqueIdentifier>{edb6ccd4-192f-4639-8c80-7669d66b36fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\audio">
-      <UniqueIdentifier>{1b1c31f0-1d60-4316-904b-4787924d4adf}</UniqueIdentifier>
+    <Filter Include="Source Files\xaudio2">
+      <UniqueIdentifier>{cfad7fda-fc20-42fe-9fad-7836601cfeef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\imgui">
-      <UniqueIdentifier>{9060223e-5f17-4c11-8817-ceac6d6378a6}</UniqueIdentifier>
+    <Filter Include="Source Files\wav">
+      <UniqueIdentifier>{b4312b1d-83ff-420c-b391-2a50f4b75ba1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\glad">
-      <UniqueIdentifier>{9b422e8c-eb4a-4c9f-9ccd-efda804ec4dc}</UniqueIdentifier>
+    <Filter Include="Header Files\xaudio2">
+      <UniqueIdentifier>{dea17335-ece9-4e89-a7b1-15741ef82bc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\wav">
+      <UniqueIdentifier>{1e9af1ea-bcb8-43ca-8acc-19b18fcaee96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utils">
+      <UniqueIdentifier>{0c6091eb-7245-42be-9a62-1e48a4508e8d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\AudioImGuiWindow.cpp">
+    <ClCompile Include="src\wav\WavConverter.cpp">
+      <Filter>Source Files\wav</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wav\WaveFile.cpp">
+      <Filter>Source Files\wav</Filter>
+    </ClCompile>
+    <ClCompile Include="src\xaudio2\XAudio2Channel.cpp">
+      <Filter>Source Files\xaudio2</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\Effects.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\Logger.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\math.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AudioSystem.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AudioSDLWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Audio\AudioSystem.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Audio\WaveFile.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Audio\XAudio2Channel.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\src\imgui\imgui.cpp">
-      <Filter>Source Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\src\imgui\imgui_demo.cpp">
-      <Filter>Source Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\src\imgui\imgui_draw.cpp">
-      <Filter>Source Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\src\imgui\imgui_tables.cpp">
-      <Filter>Source Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\src\imgui\imgui_widgets.cpp">
-      <Filter>Source Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\src\imgui\backends\imgui_impl_opengl3.cpp">
-      <Filter>Source Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\src\imgui\backends\imgui_impl_sdl.cpp">
-      <Filter>Source Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\src\glad\glad.c">
-      <Filter>Source Files\glad</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Audio\Logger.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Audio\WavConverter.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Audio\Effects.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Audio\math.cpp">
-      <Filter>Source Files\audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\AudioImGuiWindow.h">
+    <ClInclude Include="include\xaudio2_engine\AudioSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\AudioSDLWindow.h">
+    <ClInclude Include="include\xaudio2_engine\Handle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Audio\AudioSystem.h">
-      <Filter>Header Files\audio</Filter>
+    <ClInclude Include="include\xaudio2_engine\xaudio2\XAudio2Callback.h">
+      <Filter>Header Files\xaudio2</Filter>
     </ClInclude>
-    <ClInclude Include="include\Audio\WaveFile.h">
-      <Filter>Header Files\audio</Filter>
+    <ClInclude Include="include\xaudio2_engine\xaudio2\XAudio2Channel.h">
+      <Filter>Header Files\xaudio2</Filter>
     </ClInclude>
-    <ClInclude Include="include\Audio\WavFormat.h">
-      <Filter>Header Files\audio</Filter>
+    <ClInclude Include="include\xaudio2_engine\wav\WavConverter.h">
+      <Filter>Header Files\wav</Filter>
     </ClInclude>
-    <ClInclude Include="include\Audio\XAudio2Callback.h">
-      <Filter>Header Files\audio</Filter>
+    <ClInclude Include="include\xaudio2_engine\wav\WaveFile.h">
+      <Filter>Header Files\wav</Filter>
     </ClInclude>
-    <ClInclude Include="include\Audio\XAudio2Channel.h">
-      <Filter>Header Files\audio</Filter>
+    <ClInclude Include="include\xaudio2_engine\wav\WavFormat.h">
+      <Filter>Header Files\wav</Filter>
     </ClInclude>
-    <ClInclude Include="include\ImguiWindowStruct.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\xaudio2_engine\utils\Effects.h">
+      <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="include\Audio\Logger.h">
-      <Filter>Header Files\audio</Filter>
+    <ClInclude Include="include\xaudio2_engine\utils\Logger.h">
+      <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="include\Audio\WavConverter.h">
-      <Filter>Header Files\audio</Filter>
+    <ClInclude Include="include\xaudio2_engine\utils\math.h">
+      <Filter>Header Files\utils</Filter>
     </ClInclude>
-    <ClInclude Include="include\Audio\uint24_t.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Audio\Effects.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Audio\SoundHandle.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Audio\math.h">
-      <Filter>Header Files\audio</Filter>
+    <ClInclude Include="include\xaudio2_engine\utils\uint24_t.h">
+      <Filter>Header Files\utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,7 +4,11 @@
 
 struct XAudio2Callback : IXAudio2VoiceCallback
 {
+	XAudio2Callback() : IXAudio2VoiceCallback() {}
+	XAudio2Callback(const XAudio2Callback& rhs) = default;
 	virtual ~XAudio2Callback() = default;
+
+	XAudio2Callback& operator=(const XAudio2Callback& rhs) = default;
 
 	STDMETHOD_(void, OnVoiceProcessingPassStart)(UINT32) override
 	{}

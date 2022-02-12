@@ -1,12 +1,10 @@
 #include <xaudio2.h>
 #include <algorithm>
 
-#include "Audio/WaveFile.h"
+#include <xaudio2_engine/wav/WaveFile.h>
 
-#include "Audio/WavConverter.h"
-#include "Audio/Logger.h"
-
-#define LOG_INFO
+#include <xaudio2_engine/wav/WavConverter.h>
+#include <xaudio2_engine/utils/Logger.h>
 
 WaveFile::WaveFile() = default;
 

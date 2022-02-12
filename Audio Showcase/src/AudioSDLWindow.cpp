@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "Audio/Logger.h"
+#include <xaudio2_engine/utils/Logger.h>
 #include <glad/glad.h>
 
 AudioSDLWindow::AudioSDLWindow()

@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Audio Engine", "Audio Engine\Audio Engine.vcxproj", "{706D6690-DA45-4102-B22D-0451B3BD56AD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Audio Showcase", "Audio Showcase\Audio Showcase.vcxproj", "{5345409E-9718-4265-BE95-B5081D330984}"
+	ProjectSection(ProjectDependencies) = postProject
+		{706D6690-DA45-4102-B22D-0451B3BD56AD} = {706D6690-DA45-4102-B22D-0451B3BD56AD}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

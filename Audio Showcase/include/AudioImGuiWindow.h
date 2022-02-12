@@ -3,8 +3,8 @@
 #include <imgui/backends/imgui_impl_sdl.h>
 #include <sdl/SDL_video.h>
 
-#include "ImguiWindowStruct.h"
-#include "Audio/AudioSystem.h"
+#include <ImguiWindowStruct.h>
+#include <xaudio2_engine/AudioSystem.h>
 
 class AudioImGuiWindow
 {

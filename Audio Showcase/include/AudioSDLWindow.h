@@ -3,7 +3,7 @@
 #include <sdl/SDL.h>
 
 #include "AudioImGuiWindow.h"
-#include <Audio/AudioSystem.h>
+#include <xaudio2_engine/AudioSystem.h>
 
 class AudioSDLWindow
 {
@@ -26,6 +26,6 @@ private:
 	SDL_GLContext m_glContext = nullptr;
 
 	bool m_Running = true;
-	uint32_t windowWidth = 1280, windowHeight = 720;
+	int32_t windowWidth = 1280, windowHeight = 720;
 	const char *m_WindowTitle = "XAudio2 Showcase";
 };

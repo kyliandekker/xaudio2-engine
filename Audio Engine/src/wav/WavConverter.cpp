@@ -1,8 +1,8 @@
 ﻿#include <iostream>
 
-#include "Audio/WavConverter.h"
+#include <xaudio2_engine/wav/WavConverter.h>
 
-#include "Audio/uint24_t.h"
+#include <xaudio2_engine/utils/uint24_t.h>
 
 namespace wav
 {

@@ -1,14 +1,30 @@
-﻿#include "Audio/AudioSystem.h"
-#include "Audio/WaveFile.h"
-#include "Audio/XAudio2Channel.h"
+﻿#include <xaudio2_engine/AudioSystem.h>
+#include <xaudio2_engine/wav/WaveFile.h>
+#include <xaudio2_engine/xaudio2/XAudio2Channel.h>
 
-#include "Audio/Effects.h"
-#include "Audio/Logger.h"
-#include "Audio/math.h"
+#include <xaudio2_engine/utils/Effects.h>
+#include <xaudio2_engine/utils/Logger.h>
+#include <xaudio2_engine/utils/math.h>
 
 XAudio2Channel::XAudio2Channel(AudioSystem& a_AudioSystem) : m_AudioSystem(a_AudioSystem)
 {
 	m_VoiceCallback = XAudio2Callback();
+}
+
+XAudio2Channel::XAudio2Channel(const XAudio2Channel& rhs) : m_AudioSystem(rhs.m_AudioSystem)
+{
+	m_Volume = rhs.m_Volume;
+	m_Panning = rhs.m_Panning;
+	m_CurrentSound = rhs.m_CurrentSound;
+	m_IsPlaying = rhs.m_IsPlaying;
+
+	m_CurrentPos = rhs.m_CurrentPos;
+	m_DataSize = rhs.m_DataSize;
+
+	m_Data = rhs.m_Data;
+
+	m_SourceVoice = rhs.m_SourceVoice;
+	m_VoiceCallback = rhs.m_VoiceCallback;
 }
 
 XAudio2Channel::~XAudio2Channel()
@@ -18,6 +34,29 @@ XAudio2Channel::~XAudio2Channel()
 		m_SourceVoice->DestroyVoice();
 		m_SourceVoice = nullptr;
 	}
+}
+
+XAudio2Channel& XAudio2Channel::operator=(const XAudio2Channel& rhs)
+{
+	if (&rhs != this)
+	{
+		m_AudioSystem = rhs.m_AudioSystem;
+
+		m_Volume = rhs.m_Volume;
+		m_Panning = rhs.m_Panning;
+		m_CurrentSound = rhs.m_CurrentSound;
+		m_IsPlaying = rhs.m_IsPlaying;
+
+		m_CurrentPos = rhs.m_CurrentPos;
+		m_DataSize = rhs.m_DataSize;
+
+		m_Data = rhs.m_Data;
+
+		m_SourceVoice = rhs.m_SourceVoice;
+		m_VoiceCallback = rhs.m_VoiceCallback;
+	}
+
+	return *this;
 }
 
 /// <summary>

@@ -1,7 +1,7 @@
-﻿#include "Audio/AudioSystem.h"
+﻿#include <xaudio2_engine/AudioSystem.h>
 
-#include "Audio/Logger.h"
-#include "Audio/math.h"
+#include <xaudio2_engine/utils/Logger.h>
+#include <xaudio2_engine/utils/math.h>
 
 #include <xaudio2.h>
 

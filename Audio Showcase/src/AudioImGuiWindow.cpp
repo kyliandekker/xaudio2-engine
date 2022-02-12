@@ -11,8 +11,8 @@
 #include <imgui/backends/imgui_impl_sdl.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 
-#include "Audio/XAudio2Callback.h"
-#include "Audio/XAudio2Channel.h"
+#include <xaudio2_engine/xaudio2/XAudio2Callback.h>
+#include <xaudio2_engine/xaudio2/XAudio2Channel.h>
 
 AudioImGuiWindow::AudioImGuiWindow(SDL_Window &a_Window, AudioSystem &a_AudioSystem) : m_Window(a_Window), m_AudioSystem(a_AudioSystem)
 {
