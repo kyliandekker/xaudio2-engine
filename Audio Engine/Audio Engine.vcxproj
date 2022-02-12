@@ -177,24 +177,21 @@
     <ClCompile Include="src\AudioImGuiWindow.cpp" />
     <ClCompile Include="src\AudioSDLWindow.cpp" />
     <ClCompile Include="src\Audio\AudioSystem.cpp" />
-    <ClCompile Include="src\Audio\BaseChannel.cpp" />
-    <ClCompile Include="src\Audio\BasePlayer.cpp" />
     <ClCompile Include="src\Audio\Effects.cpp" />
     <ClCompile Include="src\Audio\Logger.cpp" />
+    <ClCompile Include="src\Audio\math.cpp" />
     <ClCompile Include="src\Audio\WavConverter.cpp" />
     <ClCompile Include="src\Audio\WaveFile.cpp" />
     <ClCompile Include="src\Audio\XAudio2Channel.cpp" />
-    <ClCompile Include="src\Audio\XAudio2Player.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AudioImGuiWindow.h" />
     <ClInclude Include="include\AudioSDLWindow.h" />
     <ClInclude Include="include\Audio\AudioSystem.h" />
-    <ClInclude Include="include\Audio\BaseChannel.h" />
-    <ClInclude Include="include\Audio\BasePlayer.h" />
     <ClInclude Include="include\Audio\Effects.h" />
     <ClInclude Include="include\Audio\Logger.h" />
+    <ClInclude Include="include\Audio\math.h" />
     <ClInclude Include="include\Audio\SoundHandle.h" />
     <ClInclude Include="include\Audio\uint24_t.h" />
     <ClInclude Include="include\Audio\WavConverter.h" />
@@ -202,7 +199,6 @@
     <ClInclude Include="include\Audio\WavFormat.h" />
     <ClInclude Include="include\Audio\XAudio2Callback.h" />
     <ClInclude Include="include\Audio\XAudio2Channel.h" />
-    <ClInclude Include="include\Audio\XAudio2Player.h" />
     <ClInclude Include="include\ImguiWindowStruct.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

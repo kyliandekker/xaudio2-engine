@@ -39,19 +39,10 @@
     <ClCompile Include="src\Audio\AudioSystem.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
-    <ClCompile Include="src\Audio\BaseChannel.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Audio\BasePlayer.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
     <ClCompile Include="src\Audio\WaveFile.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
     <ClCompile Include="src\Audio\XAudio2Channel.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Audio\XAudio2Player.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
     <ClCompile Include="..\external\src\imgui\imgui.cpp">
@@ -96,6 +87,9 @@
     <ClCompile Include="..\external\src\imgui\implot_items.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="src\Audio\math.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AudioImGuiWindow.h">
@@ -105,12 +99,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Audio\AudioSystem.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Audio\BaseChannel.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Audio\BasePlayer.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
     <ClInclude Include="include\Audio\WaveFile.h">
@@ -123,9 +111,6 @@
       <Filter>Header Files\audio</Filter>
     </ClInclude>
     <ClInclude Include="include\Audio\XAudio2Channel.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Audio\XAudio2Player.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
     <ClInclude Include="include\ImguiWindowStruct.h">
@@ -144,6 +129,9 @@
       <Filter>Header Files\audio</Filter>
     </ClInclude>
     <ClInclude Include="include\Audio\SoundHandle.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Audio\math.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
   </ItemGroup>

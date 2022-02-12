@@ -1,11 +1,12 @@
-﻿#include "Audio/XAudio2Player.h"
+﻿#include "Audio/AudioSystem.h"
 #include "Audio/WaveFile.h"
 #include "Audio/XAudio2Channel.h"
 
 #include "Audio/Effects.h"
 #include "Audio/Logger.h"
+#include "Audio/math.h"
 
-XAudio2Channel::XAudio2Channel(XAudio2Player &a_SoundSystem) : BaseChannel(&a_SoundSystem)
+XAudio2Channel::XAudio2Channel(AudioSystem& a_Player) : m_Player(a_Player)
 {
 	m_VoiceCallback = XAudio2Callback();
 }
@@ -20,9 +21,9 @@ XAudio2Channel::~XAudio2Channel()
 }
 
 /// <summary>
-/// Sets the sound of a channel.
+/// Sets the sound of a channel and starts the playback.
 /// </summary>
-/// <param name="a_Sound"></param>
+/// <param name="a_Sound">A pointer to a wave file.</param>
 void XAudio2Channel::SetSound(const WaveFile &a_Sound)
 {
 	m_CurrentSound = &a_Sound;
@@ -39,7 +40,7 @@ void XAudio2Channel::SetSound(const WaveFile &a_Sound)
 		wave.wBitsPerSample = a_Sound.GetWavFormat().bitsPerSample;
 		wave.nBlockAlign = a_Sound.GetWavFormat().blockAlign;
 		wave.nAvgBytesPerSec = wave.nSamplesPerSec * (wave.wBitsPerSample / a_Sound.GetWavFormat().blockAlign);
-		if (FAILED(hr = reinterpret_cast<XAudio2Player*>(m_Player)->GetEngine().CreateSourceVoice(&m_SourceVoice, &wave, 0, 1.0f, &m_VoiceCallback)))
+		if (FAILED(hr = m_Player.GetEngine().CreateSourceVoice(&m_SourceVoice, &wave, 0, 1.0f, &m_VoiceCallback)))
 		{
 			logger::log_error("<XAudio2> Creating XAudio Source Voice failed.");
 			return;
@@ -48,13 +49,19 @@ void XAudio2Channel::SetSound(const WaveFile &a_Sound)
 	if (FAILED(hr = m_SourceVoice->Start(0, 0)))
 	{
 		logger::log_error("<XAudio2> Starting XAudio Source Voice failed.");
-		return;
 	}
+}
+
+/// <summary>
+/// Starts the playback of the channel.
+/// </summary>
+void XAudio2Channel::Start()
+{
 	m_IsPlaying = true;
 }
 
 /// <summary>
-/// Sets playback to resumed.
+/// Resumes the playback of the channel.
 /// </summary>
 void XAudio2Channel::Resume()
 {
@@ -62,7 +69,7 @@ void XAudio2Channel::Resume()
 }
 
 /// <summary>
-/// Sets playback to paused.
+/// Pauses the playback of the channel.
 /// </summary>
 void XAudio2Channel::Pause()
 {
@@ -70,7 +77,7 @@ void XAudio2Channel::Pause()
 }
 
 /// <summary>
-/// Plays the current sound.
+/// Updates the playback of the channel.
 /// </summary>
 void XAudio2Channel::Update()
 {
@@ -105,13 +112,25 @@ void XAudio2Channel::Update()
 		// Read the part of the wave file and store it back in the read buffer.
 		m_CurrentSound->Read(m_CurrentPos, size, m_Data);
 
-		m_Data = effects::change_volume(m_Data, size, m_Player->GetVolume());
+		// Master volume.
+		m_Data = effects::change_volume(m_Data, size, m_Player.GetVolume());
+
+		// Channel volume.
+		m_Data = effects::change_volume(m_Data, size, m_Volume);
+
+		// Sound volume (not sure why you would want this but I want it in here damn it)
 		m_Data = effects::change_volume(m_Data, size, m_CurrentSound->GetVolume());
+
+		// Master panning.
+		m_Data = effects::change_panning(m_Data, size, m_Player.GetPanning());
+
+		// Channel panning.
 		m_Data = effects::change_panning(m_Data, size, m_Panning);
-		m_Data = effects::change_panning(m_Data, size, m_Player->GetPanning());
+
+		// Other effects.
 		m_Data = ApplyEffects(m_Data, size);
 
-		m_CurrentDataSize = size;
+		m_DataSize = size;
 
 		// Make sure we add the size of this read buffer to the total size, so that on the next frame we will get the next part of the wave file.
 		m_CurrentPos += size;
@@ -131,11 +150,12 @@ void XAudio2Channel::Update()
 }
 
 /// <summary>
-/// Stops the source voice, removes the sound and sets the channel to inactive.
+/// Stops and resets the channel (removing the sound and flushing the buffers).
 /// </summary>
 void XAudio2Channel::Stop()
 {
-	m_CurrentSound = nullptr;
+	RemoveSound();
+
 	Reset();
 
 	// Stop the source voice.
@@ -146,7 +166,7 @@ void XAudio2Channel::Stop()
 }
 
 /// <summary>
-/// Resets the playback position.
+/// Resets the data position of the channel.
 /// </summary>
 void XAudio2Channel::Reset()
 {
@@ -154,7 +174,7 @@ void XAudio2Channel::Reset()
 }
 
 /// <summary>
-/// Removes the current sound.
+/// Removes the sound.
 /// </summary>
 void XAudio2Channel::RemoveSound()
 {
@@ -162,19 +182,122 @@ void XAudio2Channel::RemoveSound()
 }
 
 /// <summary>
-/// Returns the source voice.
+/// Returns the XAudio2 source voice.
 /// </summary>
-/// <returns></returns>
+/// <returns>The XAudio2 source voice.</returns>
 IXAudio2SourceVoice &XAudio2Channel::GetSourceVoice() const
 {
 	return *m_SourceVoice;
 }
 
 /// <summary>
-/// Returns the voice callback.
+/// Returns the XAudio2 voice callback.
 /// </summary>
-/// <returns></returns>
+/// <returns>The XAudio2 voice callback</returns>
 XAudio2Callback &XAudio2Channel::GetVoiceCallback()
 {
 	return m_VoiceCallback;
+}
+
+/// <summary>
+/// Sets the volume of the channel.
+/// </summary>
+/// <param name="a_Volume">The volume.</param>
+void XAudio2Channel::SetVolume(float a_Volume)
+{
+	a_Volume = math::fclamp(a_Volume, 0.0f, 1.0f);
+	m_Volume = a_Volume;
+}
+
+/// <summary>
+/// Returns the volume of the channel.
+/// </summary>
+/// <returns>The volume of the channel.</returns>
+float XAudio2Channel::GetVolume() const
+{
+	return m_Volume;
+}
+
+/// <summary>
+/// Sets the panning of the channel.
+/// </summary>
+/// <param name="a_Panning">The panning of the channel.</param>
+void XAudio2Channel::SetPanning(float a_Panning)
+{
+	a_Panning = math::fclamp(a_Panning, -1.0f, 1.0f);
+	m_Panning = a_Panning;
+}
+
+/// <summary>
+/// Returns the panning of the channel.
+/// </summary>
+/// <returns>The panning of the channel.</returns>
+float XAudio2Channel::GetPanning() const
+{
+	return m_Panning;
+}
+
+/// <summary>
+/// Returns whether or not the channel is playing audio.
+/// </summary>
+/// <returns>Whether or not the channel is playing audio.</returns>
+bool XAudio2Channel::IsPlaying() const
+{
+	return m_IsPlaying;
+}
+
+/// <summary>
+/// Returns whether the channel has a sound.
+/// </summary>
+/// <returns>whether the channel has a sound.</returns>
+bool XAudio2Channel::IsInUse() const
+{
+	return m_CurrentSound != nullptr;
+}
+
+/// <summary>
+/// Returns the current data position (the playback point).
+/// </summary>
+/// <returns>The current data position (the playback point).</returns>
+uint32_t XAudio2Channel::GetCurrentDataPos() const
+{
+	return m_CurrentPos;
+}
+
+/// <summary>
+/// Returns the data size.
+/// </summary>
+/// <returns>The data size.</returns>
+uint32_t XAudio2Channel::GetDataSize() const
+{
+	return m_DataSize;
+}
+
+/// <summary>
+/// Returns the data that is currently being played.
+/// </summary>
+/// <returns>The data that is currently being played.</returns>
+unsigned char* XAudio2Channel::GetData() const
+{
+	return m_Data;
+}
+
+/// <summary>
+/// Applies all the effects.
+/// </summary>
+/// <param name="a_Data">The pcm data that needs to be processed.</param>
+/// <param name="a_BufferSize">The size of the pcm data block.</param>
+/// <returns></returns>
+unsigned char* XAudio2Channel::ApplyEffects(unsigned char* a_Data, uint32_t a_BufferSize)
+{
+	return a_Data;
+}
+
+/// <summary>
+/// Returns the sound.
+/// </summary>
+/// <returns>The sound.</returns>
+const WaveFile& XAudio2Channel::GetSound() const
+{
+	return *m_CurrentSound;
 }

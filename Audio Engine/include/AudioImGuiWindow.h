@@ -9,15 +9,16 @@
 class AudioImGuiWindow
 {
 public:
-	AudioImGuiWindow(SDL_Window& a_Window, AudioSystem& a_AudioSystem);
-	int CreateImGui(const SDL_GLContext& a_Context, const char* a_Glslversion);
+	AudioImGuiWindow(SDL_Window &a_Window, AudioSystem &a_AudioSystem);
+	uint32_t CreateImGui(const SDL_GLContext &a_Context, const char *a_Glslversion);
 	void RenderImGui();
-	void ShowValue(const char* a_Text, const char* a_Value);
+	void ShowValue(const char *a_Text, const char *a_Value);
 	void DeleteWindow();
 	void OpenFile();
+
 private:
-	SDL_Window& m_Window;
-	AudioSystem& m_AudioSystem;
+	SDL_Window &m_Window;
+	AudioSystem &m_AudioSystem;
 
 	ImguiWindowStruct m_ControlsWindow, m_SoundsWindow, m_ChannelsWindow;
 };

@@ -1,4 +1,3 @@
-#define NOMINMAX
 #include <xaudio2.h>
 #include <algorithm>
 
@@ -11,7 +10,7 @@
 
 WaveFile::WaveFile() = default;
 
-WaveFile::WaveFile(const WaveFile & rhs)
+WaveFile::WaveFile(const WaveFile &rhs)
 {
     m_Looping = rhs.m_Looping;
     m_Volume = rhs.m_Volume;
@@ -44,7 +43,7 @@ void WaveFile::SetFMTChunk(unsigned char chunkId[4], uint32_t chunkSize, uint16_
     m_WavFile.blockAlign = blockAlign;
     m_WavFile.bitsPerSample = bitsPerSample;
 
-	logger::log_info("<Wav> (\"%s\") subchunk1Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk1Id[0], &m_WavFile.subchunk1Id[0] + std::size(m_WavFile.subchunk1Id)).c_str());
+    logger::log_info("<Wav> (\"%s\") subchunk1Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk1Id[0], &m_WavFile.subchunk1Id[0] + std::size(m_WavFile.subchunk1Id)).c_str());
     logger::log_info("<Wav> (\"%s\") subchunk1Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk1Size);
     logger::log_info("<Wav> (\"%s\") audioFormat: %i.", m_SoundTitle.c_str(), m_WavFile.audioFormat);
     if (m_WavFile.audioFormat != WAVE_FORMAT_PCM)
@@ -62,20 +61,20 @@ void WaveFile::SetFMTChunk(unsigned char chunkId[4], uint32_t chunkSize, uint16_
     logger::log_info("<Wav> (\"%s\") bitsPerSample: %i.", m_SoundTitle.c_str(), m_WavFile.bitsPerSample);
 }
 
-void WaveFile::SetDataChunk(unsigned char chunkId[4], uint32_t chunkSize, unsigned char* data)
+void WaveFile::SetDataChunk(unsigned char chunkId[4], uint32_t chunkSize, unsigned char *data)
 {
     memcpy(m_WavFile.subchunk2Id, chunkId, 4 * sizeof(unsigned char));
     m_WavFile.subchunk2Size = chunkSize;
 
     // Actual data.
-    m_WavFile.data = static_cast<unsigned char*>(malloc(sizeof(m_WavFile.data) * chunkSize)); // Set aside sound buffer space.
+    m_WavFile.data = static_cast<unsigned char *>(malloc(sizeof(m_WavFile.data) * chunkSize)); // Set aside sound buffer space.
     memcpy(m_WavFile.data, data, sizeof(m_WavFile.data) * chunkSize);
 
     logger::log_info("<Wav> (\"%s\") subchunk2Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk2Id[0], &m_WavFile.subchunk2Id[0] + std::size(m_WavFile.subchunk2Id)).c_str());
     logger::log_info("<Wav> (\"%s\") subchunk2Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk2Size);
 }
 
-void WaveFile::SetAcidChunk(unsigned char chunkId[4], uint32_t chunkSize, uint32_t type_of_file, uint16_t root_note, int num_of_beats, uint16_t meter_denominator, uint16_t meter_numerator, float tempo)
+void WaveFile::SetAcidChunk(unsigned char chunkId[4], uint32_t chunkSize, uint32_t type_of_file, uint16_t root_note, uint32_t num_of_beats, uint16_t meter_denominator, uint16_t meter_numerator, float tempo)
 {
     memcpy(m_WavFile.subchunk3Id, chunkId, sizeof(m_WavFile.subchunk3Id));
     m_WavFile.subchunk3Size = chunkSize;
@@ -105,9 +104,9 @@ void WaveFile::SetBextChunk(unsigned char chunkId[4], uint32_t chunkSize, unsign
     memcpy(m_WavFile.originator_reference, originator_reference, sizeof(m_WavFile.originator_reference));
     memcpy(m_WavFile.origination_date, origination_date, sizeof(m_WavFile.origination_date));
     memcpy(m_WavFile.origination_time, origination_time, sizeof(m_WavFile.origination_time));
-    for (unsigned char& j : m_WavFile.origination_time)
-	    if (j == '-')
-		    j = ':';
+    for (unsigned char &j : m_WavFile.origination_time)
+        if (j == '-')
+            j = ':';
     m_WavFile.time_reference_low = time_reference_low;
     m_WavFile.time_reference_high = time_reference_high;
     m_WavFile.version = version;
@@ -138,7 +137,7 @@ void WaveFile::SetBextChunk(unsigned char chunkId[4], uint32_t chunkSize, unsign
     logger::log_info("<Wav> (\"%s\") reserved: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.reserved[0], &m_WavFile.reserved[0] + std::size(m_WavFile.reserved)).c_str());
 }
 
-WaveFile::WaveFile(const char* a_FilePath)
+WaveFile::WaveFile(const char *a_FilePath)
 {
     m_WavFile = {};
 
@@ -221,8 +220,8 @@ WaveFile::WaveFile(const char* a_FilePath)
         else if (strcmp(std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), "data") == 0)
         {
             // Actual data.
-            unsigned char* data = static_cast<unsigned char*>(malloc(sizeof(data) * chunksize)); // set aside sound buffer space.
-            fread(data, sizeof(data), chunksize, m_File); // read in our whole sound data chunk.
+            unsigned char *data = static_cast<unsigned char *>(malloc(sizeof(data) * chunksize)); // set aside sound buffer space.
+            fread(data, sizeof(data), chunksize, m_File);                                         // read in our whole sound data chunk.
 
             SetDataChunk(chunkid, chunksize, data);
 
@@ -232,7 +231,7 @@ WaveFile::WaveFile(const char* a_FilePath)
         {
             uint32_t type_of_file;
             uint16_t root_note;
-            int num_of_beats;
+            uint32_t num_of_beats;
             uint16_t meter_denominator;
             uint16_t meter_numerator;
             float tempo;
@@ -333,18 +332,18 @@ void WaveFile::Convert32To16()
 {
     m_WavFile.bitsPerSample = 16;
 
-    uint16_t* array_16 = wav::wav_converter::convert_32_to_16(m_WavFile.data, m_WavFile.subchunk2Size);
+    uint16_t *array_16 = wav::wav_converter::convert_32_to_16(m_WavFile.data, m_WavFile.subchunk2Size);
     free(m_WavFile.data);
-    m_WavFile.data = reinterpret_cast<unsigned char*>(array_16);
+    m_WavFile.data = reinterpret_cast<unsigned char *>(array_16);
 }
 
 void WaveFile::Convert24To16()
 {
     m_WavFile.bitsPerSample = 16;
 
-    uint16_t* array_16 = wav::wav_converter::convert_24_to_16(m_WavFile.data, m_WavFile.subchunk2Size);
+    uint16_t *array_16 = wav::wav_converter::convert_24_to_16(m_WavFile.data, m_WavFile.subchunk2Size);
     free(m_WavFile.data);
-    m_WavFile.data = reinterpret_cast<unsigned char*>(array_16);
+    m_WavFile.data = reinterpret_cast<unsigned char *>(array_16);
 }
 
 WaveFile::~WaveFile()
@@ -354,7 +353,7 @@ WaveFile::~WaveFile()
         fclose(m_File);
 }
 
-WaveFile& WaveFile::operator=(const WaveFile & rhs)
+WaveFile &WaveFile::operator=(const WaveFile &rhs)
 {
     if (&rhs != this)
     {
@@ -368,37 +367,17 @@ WaveFile& WaveFile::operator=(const WaveFile & rhs)
 }
 
 /// <summary>
-/// Returns the duration of a FFT in ms/block.
-/// </summary>
-/// <param name="a_BlockLength"></param>
-/// <returns></returns>
-float WaveFile::GetFFTDuration(int a_BlockLength) const
-{
-    return a_BlockLength / (m_WavFile.sampleRate / 1000);
-}
-
-/// <summary>
-/// Returns the frequency resolution of a FFT in Hz.
-/// </summary>
-/// <param name="a_BlockLength"></param>
-/// <returns></returns>
-float WaveFile::GetFFTFrequencyResolution(int a_BlockLength) const
-{
-    return (1 / GetFFTDuration(a_BlockLength) * 1000);
-}
-
-/// <summary>
 /// Reads a part of the data array of the wave file.
 /// </summary>
 /// <param name="a_StartingPoint">The starting point of where to read from.</param>
 /// <param name="a_ElementCount">The element count of which to search for (will be reduced when reaching end of file)</param>
 /// <param name="a_Buffer">The buffer that will store the data.</param>
-void WaveFile::Read(uint32_t a_StartingPoint, uint32_t& a_ElementCount, unsigned char*& a_Buffer) const
+void WaveFile::Read(uint32_t a_StartingPoint, uint32_t &a_ElementCount, unsigned char *&a_Buffer) const
 {
     // NOTE: This part will reduce the size of the buffer array. It is necessary when reaching the end of the file if we want to loop it.
     if (a_StartingPoint + a_ElementCount >= m_WavFile.subchunk2Size)
     {
-        int newsize = a_ElementCount - ((a_StartingPoint + a_ElementCount) - m_WavFile.subchunk2Size);
+        uint32_t newsize = a_ElementCount - ((a_StartingPoint + a_ElementCount) - m_WavFile.subchunk2Size);
         a_ElementCount = newsize;
     }
     a_Buffer = m_WavFile.data + a_StartingPoint;
@@ -420,26 +399,25 @@ float WaveFile::GetDuration() const
 /// <returns></returns>
 std::string WaveFile::FormatDuration(float a_Duration)
 {
-	const unsigned int hours = static_cast<int>(a_Duration) / 3600;
-	const unsigned int minutes = (static_cast<int>(a_Duration) - (hours * 3600)) / 60;
-	const unsigned int seconds = static_cast<int>(a_Duration) % 60;
-	const unsigned int total = (hours * 3600) + (minutes * 60) + seconds;
-	const float milisecondsfloat = a_Duration - static_cast<float>(total);
-    const unsigned int miliseconds = static_cast<int>(milisecondsfloat * 1000);
+    const uint32_t hours = static_cast<uint32_t>(a_Duration) / 3600;
+    const uint32_t minutes = (static_cast<uint32_t>(a_Duration) - (hours * 3600)) / 60;
+    const uint32_t seconds = static_cast<uint32_t>(a_Duration) % 60;
+    const uint32_t total = (hours * 3600) + (minutes * 60) + seconds;
+    const float milisecondsfloat = a_Duration - static_cast<float>(total);
+    const uint32_t miliseconds = static_cast<uint32_t>(milisecondsfloat * 1000);
 
     char hoursstring[32], minutesstring[32], secondsstring[32], milisecondsstring[32];
     sprintf_s(hoursstring, "%02d", hours);
     sprintf_s(minutesstring, "%02d", minutes);
     sprintf_s(secondsstring, "%02d", seconds);
     sprintf_s(milisecondsstring, "%03d", miliseconds);
-    return 
-        std::string(hoursstring) +
-        ":" +
-        std::string(minutesstring) +
-        ":" + 
-        std::string(secondsstring) +
-        ":" + 
-        std::string(milisecondsstring);
+    return std::string(hoursstring) +
+           ":" +
+           std::string(minutesstring) +
+           ":" +
+           std::string(secondsstring) +
+           ":" +
+           std::string(milisecondsstring);
 }
 
 /// <summary>
@@ -492,58 +470,16 @@ float WaveFile::GetVolume() const
 /// Returns the wav file.
 /// </summary>
 /// <returns></returns>
-const WavFormat& WaveFile::GetWavFormat() const
+const WavFormat &WaveFile::GetWavFormat() const
 {
     return m_WavFile;
-}
-
-bool WaveFile::GetChunk(std::vector<std::complex<double>>& signal)
-{
-    signal.clear();
-
-    int startIndex = std::max((m_prevEnd - 128), 0);
-
-    int endIndex = startIndex + 256;
-
-    m_prevEnd = endIndex;
-
-    int byteStep = m_WavFile.numChannels * m_WavFile.byteRate;
-
-    int byteStartIndex = startIndex * byteStep;
-
-    int byteEndIndex = endIndex * byteStep;
-
-    int currentIndex = byteStartIndex;
-    short int currentSample;
-    while((currentIndex < byteEndIndex) && (currentIndex < (m_WavFile.subchunk2Size - 1)))
-    {
-	    if (m_WavFile.byteRate > 1)
-	    {
-            currentSample = (m_WavFile.data[currentIndex] << 8) + m_WavFile.data[currentIndex];
-	    }
-        else
-        {
-            currentSample = m_WavFile.data[currentIndex];
-        }
-
-        std::complex<double> signalSample(static_cast<double>(currentSample), 0.0);
-
-        signal.push_back(signalSample);
-
-        currentIndex += byteStep;
-    }
-
-    if (currentIndex >= m_WavFile.subchunk2Size)
-        return false;
-
-	return true;
 }
 
 /// <summary>
 /// Returns the sound title.
 /// </summary>
 /// <returns></returns>
-const char* WaveFile::GetSoundTitle() const
+const char *WaveFile::GetSoundTitle() const
 {
     return m_SoundTitle.c_str();
 }

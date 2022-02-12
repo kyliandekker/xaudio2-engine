@@ -15,13 +15,13 @@
 #include <imgui/backends/imgui_impl_opengl3.h>
 
 #include "Audio/XAudio2Callback.h"
-#include "Audio/XAudio2Channel.h"
+#include "Audio/XAudio2channel.h"
 
-AudioImGuiWindow::AudioImGuiWindow(SDL_Window& a_Window, AudioSystem& a_AudioSystem) : m_Window(a_Window), m_AudioSystem(a_AudioSystem)
+AudioImGuiWindow::AudioImGuiWindow(SDL_Window &a_Window, AudioSystem &a_AudioSystem) : m_Window(a_Window), m_AudioSystem(a_AudioSystem)
 {
 }
 
-int AudioImGuiWindow::CreateImGui(const SDL_GLContext &a_Context, const char *a_Glslversion)
+uint32_t AudioImGuiWindow::CreateImGui(const SDL_GLContext &a_Context, const char *a_Glslversion)
 {
     // setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -75,15 +75,15 @@ void AudioImGuiWindow::RenderImGui()
 
             ImGui::Text("Master Panning");
             ImGui::SameLine();
-            float panning = m_AudioSystem.GetPlayer().GetPanning();
+            float panning = m_AudioSystem.GetPanning();
             ImGui::SliderFloat("###Panning_Master_0", &panning, -1, 1);
-            m_AudioSystem.GetPlayer().SetPanning(panning);
+            m_AudioSystem.SetPanning(panning);
 
             ImGui::Text("Master Volume");
             ImGui::SameLine();
-            float volume = m_AudioSystem.GetPlayer().GetVolume();
+            float volume = m_AudioSystem.GetVolume();
             ImGui::SliderFloat("###Volume_Master_0", &volume, 0, 1);
-            m_AudioSystem.GetPlayer().SetVolume(volume);
+            m_AudioSystem.SetVolume(volume);
 
             if (m_AudioSystem.IsPlaying())
             {
@@ -96,9 +96,7 @@ void AudioImGuiWindow::RenderImGui()
                     m_AudioSystem.Resume();
             }
             if (ImGui::Button("Add Sound"))
-            {
                 OpenFile();
-            }
         }
 
         ImGui::End();
@@ -111,19 +109,20 @@ void AudioImGuiWindow::RenderImGui()
 
         m_SoundsWindow.m_Size = ImVec2(m_ControlsWindow.m_Size.x, m_ControlsWindow.m_Size.y);
 
-        ImGui::SetNextWindowSize(
-            m_SoundsWindow.m_Size,
-            ImGuiCond_Always);
+        ImGui::SetNextWindowSize(m_SoundsWindow.m_Size, ImGuiCond_Always);
 
         ImGui::Begin("Sounds", nullptr, ImGuiWindowFlags_NoResize);
 
         ImGui::Dummy(ImVec2(0.0f, 1.0f));
 
-        const std::vector<WaveFile *> &sounds = m_AudioSystem.GetSounds();
-        for (int i = 0; i < static_cast<int>(sounds.size()); i++)
+        for (uint32_t i = 0; i < m_AudioSystem.SoundSize(); i++)
         {
-            WaveFile &sound = *sounds[i];
-            if (ImGui::CollapsingHeader(sound.GetSoundTitle()))
+            WaveFile *sound = m_AudioSystem.GetSound(i);
+
+            if (sound == nullptr)
+                continue;
+
+            if (ImGui::CollapsingHeader(sound->GetSoundTitle()))
             {
                 ImGui::Indent(16.0f);
 
@@ -131,26 +130,20 @@ void AudioImGuiWindow::RenderImGui()
                 {
                     ImGui::Indent(16.0f);
 
-                    ShowValue("Name: ", sound.GetSoundTitle());
-                    ShowValue("Format: ", std::to_string(sound.GetWavFormat().audioFormat).c_str());
-                    ShowValue("Number Of Channels: ", std::string(std::to_string(sound.GetWavFormat().numChannels) + (sound.GetWavFormat().numChannels == 1 ? " (mono)" : " (stereo)")).c_str());
-                    ShowValue("Sample Rate: ", std::to_string(sound.GetWavFormat().sampleRate).c_str());
-                    ShowValue("Byte Rate: ", std::string(std::to_string(sound.GetWavFormat().byteRate) + " Hz").c_str());
-                    ShowValue("Bits Per Sample: ", std::to_string(sound.GetWavFormat().bitsPerSample).c_str());
-                    ShowValue("Duration (sec): ", std::string(std::to_string(sound.GetDuration()) + " secs").c_str());
-                    ShowValue("Duration: ", WaveFile::FormatDuration(sound.GetDuration()).c_str());
-                    if (sound.GetWavFormat().tempo != 0.0f)
-                    {
-                        ShowValue("Tempo: ", std::to_string(sound.GetWavFormat().tempo).c_str());
-                    }
-                    if (strcmp(std::string(&sound.GetWavFormat().origination_date[0], &sound.GetWavFormat().origination_date[0] + std::size(sound.GetWavFormat().origination_date)).c_str(), "") != 0)
-                    {
-                        ShowValue("Origination Date: ", std::string(&sound.GetWavFormat().origination_date[0], &sound.GetWavFormat().origination_date[0] + std::size(sound.GetWavFormat().origination_date)).c_str());
-                    }
-                    if (strcmp(std::string(&sound.GetWavFormat().origination_time[0], &sound.GetWavFormat().origination_time[0] + std::size(sound.GetWavFormat().origination_time)).c_str(), "") != 0)
-                    {
-                        ShowValue("Origination Time: ", std::string(&sound.GetWavFormat().origination_time[0], &sound.GetWavFormat().origination_time[0] + std::size(sound.GetWavFormat().origination_time)).c_str());
-                    }
+                    ShowValue("Name: ", sound->GetSoundTitle());
+                    ShowValue("Format: ", std::to_string(sound->GetWavFormat().audioFormat).c_str());
+                    ShowValue("Number Of Channels: ", std::string(std::to_string(sound->GetWavFormat().numChannels) + (sound->GetWavFormat().numChannels == 1 ? " (mono)" : " (stereo)")).c_str());
+                    ShowValue("Sample Rate: ", std::to_string(sound->GetWavFormat().sampleRate).c_str());
+                    ShowValue("Byte Rate: ", std::string(std::to_string(sound->GetWavFormat().byteRate) + " Hz").c_str());
+                    ShowValue("Bits Per Sample: ", std::to_string(sound->GetWavFormat().bitsPerSample).c_str());
+                    ShowValue("Duration (sec): ", std::string(std::to_string(sound->GetDuration()) + " secs").c_str());
+                    ShowValue("Duration: ", WaveFile::FormatDuration(sound->GetDuration()).c_str());
+                    if (sound->GetWavFormat().tempo != 0.0f)
+                        ShowValue("Tempo: ", std::to_string(sound->GetWavFormat().tempo).c_str());
+                    if (strcmp(std::string(&sound->GetWavFormat().origination_date[0], &sound->GetWavFormat().origination_date[0] + std::size(sound->GetWavFormat().origination_date)).c_str(), "") != 0)
+                        ShowValue("Origination Date: ", std::string(&sound->GetWavFormat().origination_date[0], &sound->GetWavFormat().origination_date[0] + std::size(sound->GetWavFormat().origination_date)).c_str());
+                    if (strcmp(std::string(&sound->GetWavFormat().origination_time[0], &sound->GetWavFormat().origination_time[0] + std::size(sound->GetWavFormat().origination_time)).c_str(), "") != 0)
+                        ShowValue("Origination Time: ", std::string(&sound->GetWavFormat().origination_time[0], &sound->GetWavFormat().origination_time[0] + std::size(sound->GetWavFormat().origination_time)).c_str());
 
                     ImGui::Unindent(16.0f);
                 }
@@ -158,35 +151,27 @@ void AudioImGuiWindow::RenderImGui()
                 {
                     ImGui::Indent(16.0f);
 
-                    bool isLooping = sound.IsLooping();
+                    bool isLooping = sound->IsLooping();
                     ImGui::Checkbox("Loop", &isLooping);
-                    sound.SetLooping(isLooping);
+                    sound->SetLooping(isLooping);
 
                     ImGui::Text("Volume");
                     ImGui::SameLine();
-                    float volume = sound.GetVolume();
+                    float volume = sound->GetVolume();
                     ImGui::SliderFloat(std::string("###Volume_Sound_" + std::to_string(i)).c_str(), &volume, 0, 1);
-                    sound.SetVolume(volume);
+                    sound->SetVolume(volume);
 
                     if (ImGui::Button(std::string("Play###Play_Sound_" + std::to_string(i)).c_str()))
-                    {
                         m_AudioSystem.Play(i);
-                    }
-	                if (ImGui::Button(std::string("Remove###Remove_Sound_" + std::to_string(i)).c_str()))
-	                {
-	                    m_AudioSystem.RemoveSound(i);
-	                }
-	                if (ImGui::Button(std::string("Pause All Channels With This Sound###PauseAllChannelsWith_Sound_" + std::to_string(i)).c_str()))
-	                {
-	                    m_AudioSystem.PauseAllChannelsWithSound(i);
-	                }
-	                if (ImGui::Button(std::string("Resume All Channels With This Sound###ResumeAllChannelsWith_Sound_" + std::to_string(i)).c_str()))
-	                {
-	                    m_AudioSystem.ResumeAllChannelsWithSound(i);
-	                }
+                    if (ImGui::Button(std::string("Remove###Remove_Sound_" + std::to_string(i)).c_str()))
+                        m_AudioSystem.RemoveSound(i);
+                    if (ImGui::Button(std::string("Pause All Channels With This Sound###PauseAllChannelsWith_Sound_" + std::to_string(i)).c_str()))
+                        m_AudioSystem.PauseAllChannelsWithSound(i);
+                    if (ImGui::Button(std::string("Resume All Channels With This Sound###ResumeAllChannelsWith_Sound_" + std::to_string(i)).c_str()))
+                        m_AudioSystem.ResumeAllChannelsWithSound(i);
 
                     ImGui::Unindent(16.0f);
-	            }
+                }
                 ImGui::Unindent(16.0f);
             }
         }
@@ -209,32 +194,34 @@ void AudioImGuiWindow::RenderImGui()
 
         ImGui::Dummy(ImVec2(0.0f, 1.0f));
 
-        const std::vector<BaseChannel *> &channels = m_AudioSystem.GetChannels();
-        for (int i = 0; i < static_cast<int>(channels.size()); i++)
+        for (uint32_t i = 0; i < m_AudioSystem.ChannelSize(); i++)
         {
-            BaseChannel &channel = *channels[i];
+            XAudio2Channel *channel = m_AudioSystem.GetChannel(i);
+
+            if (channel == nullptr)
+                continue;
+
             if (ImGui::CollapsingHeader(std::string("Channel_" + std::to_string(i)).c_str()))
             {
                 ImGui::Indent(16.0f);
 
-                ShowValue("Is in use: ", channel.IsInUse() ? "true" : "false");
+                ShowValue("Is in use: ", channel->IsInUse() ? "true" : "false");
 
-                if (channel.IsInUse())
+                if (channel->IsInUse())
                 {
                     if (ImGui::CollapsingHeader(std::string("Channel Info###ChannelInfo_" + std::to_string(i)).c_str()))
                     {
                         ImGui::Indent(16.0f);
 
-                        ShowValue("Currently playing: ", channel.GetSound().GetSoundTitle());
+                        ShowValue("Currently playing: ", channel->GetSound().GetSoundTitle());
                         ShowValue("Progress", std::string(
-                            WaveFile::FormatDuration(channel.GetCurrentDataPos() / channel.GetSound().GetWavFormat().byteRate) +
-                            "/" +
-                            WaveFile::FormatDuration(channel.GetSound().GetDuration()))
-                            .c_str()
-                        );
+                                                  WaveFile::FormatDuration(static_cast<float>(channel->GetCurrentDataPos()) / static_cast<float>(channel->GetSound().GetWavFormat().byteRate)) +
+                                                  "/" +
+                                                  WaveFile::FormatDuration(channel->GetSound().GetDuration()))
+                                                  .c_str());
                         ShowValue("Time Left", std::string(
-                            WaveFile::FormatDuration(channel.GetSound().GetDuration() - (channel.GetCurrentDataPos() / channel.GetSound().GetWavFormat().byteRate))
-                        ).c_str());
+                                                   WaveFile::FormatDuration(channel->GetSound().GetDuration() - (static_cast<float>(channel->GetCurrentDataPos()) / static_cast<float>(channel->GetSound().GetWavFormat().byteRate))))
+                                                   .c_str());
 
                         ImGui::Unindent(16.0f);
                     }
@@ -245,25 +232,25 @@ void AudioImGuiWindow::RenderImGui()
 
                         ImGui::Text("Panning");
                         ImGui::SameLine();
-                        float panning = channel.GetPanning();
+                        float panning = channel->GetPanning();
                         ImGui::SliderFloat(std::string("###Panning_Channel_" + std::to_string(i)).c_str(), &panning, -1, 1);
-                        channel.SetPanning(panning);
+                        channel->SetPanning(panning);
 
                         ImGui::Text("Volume");
                         ImGui::SameLine();
-                        float volume = channel.GetVolume();
+                        float volume = channel->GetVolume();
                         ImGui::SliderFloat(std::string("###Volume_Channel_" + std::to_string(i)).c_str(), &volume, 0, 1);
-                        channel.SetVolume(volume);
+                        channel->SetVolume(volume);
 
-                        if (channel.IsPlaying())
+                        if (channel->IsPlaying())
                         {
                             if (ImGui::Button(std::string("Pause###Pause_Channel_" + std::to_string(i)).c_str()))
-                                channel.Pause();
+                                channel->Pause();
                         }
                         else
                         {
                             if (ImGui::Button(std::string("Resume###Resume_Channel_" + std::to_string(i)).c_str()))
-                                channel.Resume();
+                                channel->Resume();
                         }
 
                         ImGui::Unindent(16.0f);
@@ -282,7 +269,7 @@ void AudioImGuiWindow::RenderImGui()
             controls_width -= 10;
             controls_width /= 3;
 
-            m_ControlsWindow.m_Pos = ImVec2((controls_width * 2), 10);
+            m_ControlsWindow.m_Pos = ImVec2(static_cast<float>(controls_width) * 2.0f, 10.0f);
 
             ImGui::SetNextWindowPos(m_ControlsWindow.m_Pos, ImGuiCond_Always);
 
@@ -339,7 +326,7 @@ void AudioImGuiWindow::OpenFile()
     ofn.lpstrInitialDir = nullptr;
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
-    if (GetOpenFileName(&ofn) == true)
+    if (GetOpenFileName(&ofn))
     {
         char *path = new char[wcslen(ofn.lpstrFile) + 1];
         wsprintfA(path, "%S", ofn.lpstrFile);

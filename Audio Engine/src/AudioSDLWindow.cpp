@@ -7,7 +7,7 @@
 
 AudioSDLWindow::AudioSDLWindow()
 {
-	CreateWindow();
+	CreateSDLWindow();
 	CreateContext();
 	CreateGlad();
 	CreateImGui();
@@ -24,7 +24,7 @@ AudioSDLWindow::~AudioSDLWindow()
 	SDL_Quit();
 }
 
-int AudioSDLWindow::CreateWindow()
+uint32_t AudioSDLWindow::CreateSDLWindow()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
@@ -38,15 +38,14 @@ int AudioSDLWindow::CreateWindow()
 		SDL_WINDOWPOS_CENTERED,
 		windowWidth,
 		windowHeight,
-		SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL
-	);
+		SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL);
 
 	SDL_SetWindowMinimumSize(m_Window, 500, 300);
 
 	return 0;
 }
 
-int AudioSDLWindow::CreateContext()
+uint32_t AudioSDLWindow::CreateContext()
 {
 	m_glContext = SDL_GL_CreateContext(m_Window);
 	SDL_GL_MakeCurrent(m_Window, m_glContext);
@@ -56,7 +55,7 @@ int AudioSDLWindow::CreateContext()
 	return 0;
 }
 
-int AudioSDLWindow::CreateGlad()
+uint32_t AudioSDLWindow::CreateGlad()
 {
 	if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
 	{
@@ -68,7 +67,7 @@ int AudioSDLWindow::CreateGlad()
 	return 0;
 }
 
-int AudioSDLWindow::CreateImGui()
+uint32_t AudioSDLWindow::CreateImGui()
 {
 	m_AudioWindow = new AudioImGuiWindow(*m_Window, m_AudioSystem);
 	m_AudioWindow->CreateImGui(m_glContext, "#version 130");
@@ -82,7 +81,7 @@ void AudioSDLWindow::RenderWindow()
 
 	glViewport(0, 0, windowWidth, windowHeight);
 
-	while(m_Running)
+	while (m_Running)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -95,49 +94,49 @@ void AudioSDLWindow::RenderWindow()
 
 			switch (event.type)
 			{
-				case SDL_QUIT:
+			case SDL_QUIT:
+			{
+				m_Running = false;
+				break;
+			}
+			case SDL_WINDOWEVENT:
+			{
+				switch (event.window.event)
 				{
-					m_Running = false;
-					break;
-				}
-				case SDL_WINDOWEVENT:
+				case SDL_WINDOWEVENT_RESIZED:
 				{
-					switch (event.window.event)
-					{
-						case SDL_WINDOWEVENT_RESIZED:
-						{
-							windowWidth = event.window.data1;
-							windowHeight = event.window.data2;
-							glViewport(0, 0, windowWidth, windowHeight);
-							break;
-						}
-						default:
-						{
-							break;
-						}
-					}
-					break;
-				}
-				case SDL_KEYDOWN:
-				{
-					switch (event.key.keysym.sym)
-					{
-						case SDLK_ESCAPE:
-						{
-							m_Running = false;
-							break;
-						}
-						default:
-						{
-							break;
-						}
-					}
+					windowWidth = event.window.data1;
+					windowHeight = event.window.data2;
+					glViewport(0, 0, windowWidth, windowHeight);
 					break;
 				}
 				default:
 				{
 					break;
 				}
+				}
+				break;
+			}
+			case SDL_KEYDOWN:
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_ESCAPE:
+				{
+					m_Running = false;
+					break;
+				}
+				default:
+				{
+					break;
+				}
+				}
+				break;
+			}
+			default:
+			{
+				break;
+			}
 			}
 		}
 

@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-constexpr uint32_t GUI_NULL_HANDLE = -1;
+constexpr uint32_t SOUND_NULL_HANDLE = -1;
 
 struct Handle
 {
@@ -22,9 +22,9 @@ struct Handle
 
 	bool IsValid() const
 	{
-		return m_Handle != GUI_NULL_HANDLE;
+		return m_Handle != SOUND_NULL_HANDLE;
 	}
 
 protected:
-	uint32_t m_Handle = GUI_NULL_HANDLE;
+	uint32_t m_Handle = SOUND_NULL_HANDLE;
 };
