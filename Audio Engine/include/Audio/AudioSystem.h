@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "Audio/XAudio2Channel.h"
-#include "Audio/SoundHandle.h"
-#include "Audio/WaveFile.h"
+#include "./XAudio2Channel.h"
+#include "./SoundHandle.h"
+#include "./WaveFile.h"
 
 constexpr uint32_t NUM_CHANNELS = 20;
 
@@ -39,10 +39,10 @@ public:
 	void SetPanning(float a_Panning);
 	float GetPanning() const;
 
-	int32_t ChannelSize() const;
+	uint32_t ChannelSize() const;
 	XAudio2Channel* GetChannel(Handle a_ChannelHandle) const;
 
-	int32_t SoundSize() const;
+	uint32_t SoundSize() const;
 	WaveFile* GetSound(Handle a_SoundHandle) const;
 private:
 	IXAudio2* m_Engine = nullptr;

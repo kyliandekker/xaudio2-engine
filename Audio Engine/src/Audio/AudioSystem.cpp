@@ -43,11 +43,11 @@ AudioSystem::AudioSystem(const AudioSystem &rhs)
 
 AudioSystem::~AudioSystem()
 {
-	for (int32_t i = static_cast<int32_t>(ChannelSize()) - 1; i > -1; i--)
+	for (int32_t i = static_cast<int32_t>(ChannelSize() - 1); i > -1; i--)
 		delete m_Channels[i];
 	m_Channels.clear();
 
-	for (int32_t i = static_cast<int32_t>(SoundSize()) - 1; i > -1; i--)
+	for (int32_t i = static_cast<int32_t>(SoundSize() - 1); i > -1; i--)
 		RemoveSound(1);
 	m_Sounds.clear();
 
@@ -80,7 +80,7 @@ AudioSystem &AudioSystem::operator=(const AudioSystem &rhs)
 Handle AudioSystem::CreateSound(const char *a_Path)
 {
 	logger::log_info("<XAudio2> Creating sound: \"%s\".", a_Path);
-	const Handle index = SoundSize();
+	const Handle index = static_cast<int32_t>(SoundSize());
 	m_Sounds.push_back(new WaveFile(a_Path));
 	return index;
 }
@@ -91,12 +91,12 @@ Handle AudioSystem::CreateSound(const char *a_Path)
 /// <param name="a_SoundHandle">Handle to the sound that needs to be deleted.</param>
 void AudioSystem::RemoveSound(Handle a_SoundHandle)
 {
-	for (int32_t i = static_cast<int32_t>(ChannelSize()) - 1; i > -1; i--)
+	for (int32_t i = static_cast<int32_t>(ChannelSize() - 1); i > -1; i--)
 	{
 		XAudio2Channel* channel = GetChannel(i);
 		if (channel != nullptr)
 			if (&channel->GetSound() == m_Sounds[a_SoundHandle])
-				channel->RemoveSound();
+				channel->Stop();
 	}
 	delete m_Sounds[a_SoundHandle];
 	m_Sounds.erase(m_Sounds.begin() + a_SoundHandle);
@@ -109,30 +109,30 @@ void AudioSystem::RemoveSound(Handle a_SoundHandle)
 /// <returns>Channel handle.</returns>
 Handle AudioSystem::Play(Handle a_SoundHandle)
 {
-	if (!a_SoundHandle.IsValid() || a_SoundHandle >= SoundSize())
+	if (!a_SoundHandle.IsValid() || a_SoundHandle >= static_cast<int32_t>(SoundSize()))
 		return SOUND_NULL_HANDLE;
 
 	const WaveFile &sound = *m_Sounds[a_SoundHandle];
 
 	// First look for inactive channels.
-	for (uint32_t i = 0; i < static_cast<uint32_t>(ChannelSize()); i++)
+	for (uint32_t i = 0; i < ChannelSize(); i++)
 	{
 		if (!m_Channels[i]->IsInUse())
 		{
 			m_Channels[i]->SetSound(sound);
 			m_Channels[i]->Start();
-			return i;
+			return static_cast<int32_t>(i);
 		}
 	}
 
 	if (ChannelSize() < NUM_CHANNELS)
 	{
-		const uint32_t size = ChannelSize();
+		const int32_t size = static_cast<int32_t>(ChannelSize());
 		XAudio2Channel *channel = new XAudio2Channel(*this);
 		m_Channels.push_back(channel);
 		channel->SetSound(sound);
 		channel->Start();
-		return size;
+		return static_cast<int32_t>(size);
 	}
 	logger::log_error("<XAudio> No inactive channels detected.");
 	return SOUND_NULL_HANDLE;
@@ -143,7 +143,7 @@ Handle AudioSystem::Play(Handle a_SoundHandle)
 /// </summary>
 void AudioSystem::StopAllChannels()
 {
-	for (int32_t i = static_cast<int32_t>(ChannelSize()) - 1; i > -1; i--)
+	for (int32_t i = static_cast<int32_t>(ChannelSize() - 1); i > -1; i--)
 	{
 		XAudio2Channel* channel = GetChannel(i);
 		if (channel != nullptr)
@@ -157,7 +157,7 @@ void AudioSystem::StopAllChannels()
 /// <param name="a_SoundHandle">Handle to the sound.</param>
 void AudioSystem::PauseAllChannelsWithSound(Handle a_SoundHandle)
 {
-	for (int32_t i = static_cast<int32_t>(ChannelSize()) - 1; i > -1; i--)
+	for (int32_t i = static_cast<int32_t>(ChannelSize() - 1); i > -1; i--)
 	{
 		XAudio2Channel* channel = GetChannel(i);
 		if (channel != nullptr)
@@ -172,7 +172,7 @@ void AudioSystem::PauseAllChannelsWithSound(Handle a_SoundHandle)
 /// <param name="a_SoundHandle">Handle to the channel that needs to be resumed.</param>
 void AudioSystem::ResumeAllChannelsWithSound(Handle a_SoundHandle)
 {
-	for (int32_t i = static_cast<int32_t>(ChannelSize()) - 1; i > -1; i--)
+	for (int32_t i = static_cast<int32_t>(ChannelSize() - 1); i > -1; i--)
 	{
 		XAudio2Channel* channel = GetChannel(i);
 		if (channel != nullptr)
@@ -187,7 +187,7 @@ void AudioSystem::ResumeAllChannelsWithSound(Handle a_SoundHandle)
 void AudioSystem::Update()
 {
 	if (m_IsPlaying)
-		for (int32_t i = static_cast<int32_t>(ChannelSize()) - 1; i > -1; i--)
+		for (int32_t i = static_cast<int32_t>(ChannelSize() - 1); i > -1; i--)
 			m_Channels[i]->Update();
 }
 
@@ -267,9 +267,9 @@ float AudioSystem::GetPanning() const
 /// Returns the amount of channels that are currently added.
 /// </summary>
 /// <returns>The amount of channels.</returns>
-int32_t AudioSystem::ChannelSize() const
+uint32_t AudioSystem::ChannelSize() const
 {
-	return static_cast<int32_t>(m_Channels.size());
+	return static_cast<uint32_t>(m_Channels.size());
 }
 
 /// <summary>
@@ -279,7 +279,7 @@ int32_t AudioSystem::ChannelSize() const
 /// <returns>Channel pointer.</returns>
 XAudio2Channel *AudioSystem::GetChannel(Handle a_ChannelHandle) const
 {
-	if (!a_ChannelHandle.IsValid() || a_ChannelHandle >= ChannelSize())
+	if (!a_ChannelHandle.IsValid() || a_ChannelHandle >= static_cast<int32_t>(ChannelSize()))
 		return nullptr;
 
 	return m_Channels[a_ChannelHandle];
@@ -289,7 +289,7 @@ XAudio2Channel *AudioSystem::GetChannel(Handle a_ChannelHandle) const
 /// Returns the amount of sounds in the database.
 /// </summary>
 /// <returns>The amount of sounds.</returns>
-int32_t AudioSystem::SoundSize() const
+uint32_t AudioSystem::SoundSize() const
 {
 	return static_cast<int32_t>(m_Sounds.size());
 }
@@ -301,7 +301,7 @@ int32_t AudioSystem::SoundSize() const
 /// <returns>Sound pointer.</returns>
 WaveFile *AudioSystem::GetSound(Handle a_SoundHandle) const
 {
-	if (!a_SoundHandle.IsValid() || a_SoundHandle >= SoundSize())
+	if (!a_SoundHandle.IsValid() || a_SoundHandle >= static_cast<int32_t>(SoundSize()))
 		return nullptr;
 
 	return m_Sounds[a_SoundHandle];

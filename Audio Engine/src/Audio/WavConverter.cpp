@@ -20,7 +20,7 @@ namespace wav
 		uint16_t* Convert24To16(unsigned char* a_Data, uint32_t& a_Size)
 		{
 			// Determine the size of a 16bit data array.
-			// Chunksize divided by the size of a 32bit int (4) multiplied by the size of a 16bit int (2). 
+			// Chunk size divided by the size of a 32bit int (4) multiplied by the size of a 16bit int (2). 
 			a_Size = a_Size / sizeof(uint24_t) * sizeof(uint16_t);
 
 			uint16_t* array_16 = new uint16_t[a_Size];
@@ -44,7 +44,7 @@ namespace wav
 		uint16_t* Convert32To16(unsigned char* a_Data, uint32_t& a_Size)
 		{
 			// Determine the size of a 16bit data array.
-			// Chunksize divided by the size of a 24bit int (3) multiplied by the size of a 16bit int (2). 
+			// Chunk size divided by the size of a 24bit int (3) multiplied by the size of a 16bit int (2). 
 			a_Size = a_Size / sizeof(uint32_t) * sizeof(uint16_t);
 
 			uint16_t* array_16 = new uint16_t[a_Size];

@@ -72,20 +72,11 @@
     <ClCompile Include="src\Audio\Logger.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\src\imgui\imgui_plot.cpp">
-      <Filter>Source Files\imgui</Filter>
-    </ClCompile>
     <ClCompile Include="src\Audio\WavConverter.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
     <ClCompile Include="src\Audio\Effects.cpp">
       <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\src\imgui\implot.cpp">
-      <Filter>Source Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\external\src\imgui\implot_items.cpp">
-      <Filter>Source Files\imgui</Filter>
     </ClCompile>
     <ClCompile Include="src\Audio\math.cpp">
       <Filter>Source Files\audio</Filter>

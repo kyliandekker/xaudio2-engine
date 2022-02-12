@@ -8,26 +8,22 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 
-#include <imgui/implot.h>
-#include <imgui/imgui_plot.h>
-
 #include <imgui/backends/imgui_impl_sdl.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 
 #include "Audio/XAudio2Callback.h"
-#include "Audio/XAudio2channel.h"
+#include "Audio/XAudio2Channel.h"
 
 AudioImGuiWindow::AudioImGuiWindow(SDL_Window &a_Window, AudioSystem &a_AudioSystem) : m_Window(a_Window), m_AudioSystem(a_AudioSystem)
 {
 }
 
-uint32_t AudioImGuiWindow::CreateImGui(const SDL_GLContext &a_Context, const char *a_Glslversion)
+uint32_t AudioImGuiWindow::CreateImGui(const SDL_GLContext &a_Context, const char *a_Glslversion) const
 {
     // setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImPlot::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
+    const ImGuiIO &io = ImGui::GetIO();
     (void)io;
 
     // setup Dear ImGui style
@@ -115,9 +111,9 @@ void AudioImGuiWindow::RenderImGui()
 
         ImGui::Dummy(ImVec2(0.0f, 1.0f));
 
-        for (uint32_t i = 0; i < static_cast<uint32_t>(m_AudioSystem.SoundSize()); i++)
+        for (uint32_t i = 0; i < m_AudioSystem.SoundSize(); i++)
         {
-            WaveFile *sound = m_AudioSystem.GetSound(i);
+            WaveFile *sound = m_AudioSystem.GetSound(static_cast<int32_t>(i));
 
             if (sound == nullptr)
                 continue;
@@ -162,13 +158,13 @@ void AudioImGuiWindow::RenderImGui()
                     sound->SetVolume(volume);
 
                     if (ImGui::Button(std::string("Play###Play_Sound_" + std::to_string(i)).c_str()))
-                        m_AudioSystem.Play(i);
+                        m_AudioSystem.Play(static_cast<int32_t>(i));
                     if (ImGui::Button(std::string("Remove###Remove_Sound_" + std::to_string(i)).c_str()))
-                        m_AudioSystem.RemoveSound(i);
+                        m_AudioSystem.RemoveSound(static_cast<int32_t>(i));
                     if (ImGui::Button(std::string("Pause All Channels With This Sound###PauseAllChannelsWith_Sound_" + std::to_string(i)).c_str()))
-                        m_AudioSystem.PauseAllChannelsWithSound(i);
+                        m_AudioSystem.PauseAllChannelsWithSound(static_cast<int32_t>(i));
                     if (ImGui::Button(std::string("Resume All Channels With This Sound###ResumeAllChannelsWith_Sound_" + std::to_string(i)).c_str()))
-                        m_AudioSystem.ResumeAllChannelsWithSound(i);
+                        m_AudioSystem.ResumeAllChannelsWithSound(static_cast<int32_t>(i));
 
                     ImGui::Unindent(16.0f);
                 }
@@ -194,9 +190,9 @@ void AudioImGuiWindow::RenderImGui()
 
         ImGui::Dummy(ImVec2(0.0f, 1.0f));
 
-        for (uint32_t i = 0; i < static_cast<uint32_t>(m_AudioSystem.ChannelSize()); i++)
+        for (uint32_t i = 0; i < m_AudioSystem.ChannelSize(); i++)
         {
-            XAudio2Channel *channel = m_AudioSystem.GetChannel(i);
+            XAudio2Channel *channel = m_AudioSystem.GetChannel(static_cast<int32_t>(i));
 
             if (channel == nullptr)
                 continue;
@@ -296,29 +292,28 @@ float GetRGBColor(int color)
 
 void AudioImGuiWindow::ShowValue(const char *a_Text, const char *a_Value)
 {
-    ImVec4 color = ImVec4(GetRGBColor(61), GetRGBColor(133), GetRGBColor(224), 1.0f);
-    ImGui::Text(a_Text);
+	const ImVec4 color = ImVec4(GetRGBColor(61), GetRGBColor(133), GetRGBColor(224), 1.0f);
+    ImGui::Text("%s\n", a_Text);
     ImGui::SameLine();
-    ImGui::TextColored(color, a_Value);
+    ImGui::TextColored(color, "%s\n", a_Value);
 }
 
 void AudioImGuiWindow::DeleteWindow()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
-    ImPlot::DestroyContext();
     ImGui::DestroyContext();
 }
 
-void AudioImGuiWindow::OpenFile()
+void AudioImGuiWindow::OpenFile() const
 {
     OPENFILENAME ofn;
-    TCHAR szFile[260] = {0};
+    TCHAR sz_file[260] = {0};
 
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = sizeof(ofn);
-    ofn.lpstrFile = szFile;
-    ofn.nMaxFile = sizeof(szFile);
+    ofn.lpstrFile = sz_file;
+    ofn.nMaxFile = sizeof(sz_file);
     ofn.lpstrFilter = L"WAV Files (*.wav;*.wave)\0*.wav;*.wave";
     ofn.nFilterIndex = 1;
     ofn.lpstrFileTitle = nullptr;

@@ -135,13 +135,13 @@ void XAudio2Channel::Update()
 		// Make sure we add the size of this read buffer to the total size, so that on the next frame we will get the next part of the wave file.
 		m_CurrentPos += size;
 
-		XAUDIO2_BUFFER xBuffer = {0, 0, nullptr, 0, 0, 0, 0, 0, nullptr};
-		xBuffer.AudioBytes = size;		 // Buffer containing audio data.
-		xBuffer.pAudioData = m_Data; // Size of the audio buffer in bytes.
+		XAUDIO2_BUFFER x_buffer = {0, 0, nullptr, 0, 0, 0, 0, 0, nullptr};
+		x_buffer.AudioBytes = size;		 // Buffer containing audio data.
+		x_buffer.pAudioData = m_Data; // Size of the audio buffer in bytes.
 		HRESULT hr;
 
 		// Submit it.
-		if (FAILED(hr = m_SourceVoice->SubmitSourceBuffer(&xBuffer)))
+		if (FAILED(hr = m_SourceVoice->SubmitSourceBuffer(&x_buffer)))
 			logger::log_error("<XAudio2> Submitting data to XAudio Source Voice failed.");
 	}
 }

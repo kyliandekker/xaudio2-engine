@@ -2,7 +2,7 @@
 
 #include <xaudio2.h>
 
-struct XAudio2Callback : public IXAudio2VoiceCallback
+struct XAudio2Callback : IXAudio2VoiceCallback
 {
 	virtual ~XAudio2Callback() = default;
 

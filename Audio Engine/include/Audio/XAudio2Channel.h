@@ -2,7 +2,7 @@
 
 #include <xaudio2.h>
 
-#include "XAudio2Callback.h"
+#include "./XAudio2Callback.h"
 
 class WaveFile;
 class AudioSystem;

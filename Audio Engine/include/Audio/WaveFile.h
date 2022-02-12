@@ -4,7 +4,7 @@
 #include <string>
 #include <fstream>
 
-#include "WavFormat.h"
+#include "./WavFormat.h"
 
 class WaveFile
 {

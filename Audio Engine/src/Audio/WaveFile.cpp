@@ -230,9 +230,7 @@ void WaveFile::SetRIFFChunk(unsigned char a_ChunkId[4], uint32_t a_ChunkSize, un
     memcpy(m_WavFile.format, a_Format, 4 * sizeof(unsigned char));
 
     logger::log_info("<Wav> (\"%s\") chunkId: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.chunkId[0], &m_WavFile.chunkId[0] + std::size(m_WavFile.chunkId)).c_str());
-
     logger::log_info("<Wav> (\"%s\") chunkSize: %i.", m_SoundTitle.c_str(), m_WavFile.chunkSize);
-
     logger::log_info("<Wav> (\"%s\") format: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.format[0], &m_WavFile.format[0] + std::size(m_WavFile.format)).c_str());
 }
 
@@ -289,7 +287,9 @@ void WaveFile::SetDataChunk(unsigned char a_ChunkId[4], uint32_t a_ChunkSize, un
 
     // Actual data.
     m_WavFile.data = static_cast<unsigned char *>(malloc(sizeof(m_WavFile.data) * a_ChunkSize)); // Set aside sound buffer space.
-    memcpy(m_WavFile.data, a_Data, sizeof(m_WavFile.data) * a_ChunkSize);
+
+    // TODO: Fix this.
+	memcpy(m_WavFile.data, a_Data, sizeof(m_WavFile.data) * a_ChunkSize);
 
     logger::log_info("<Wav> (\"%s\") subchunk2Id: %s.", m_SoundTitle.c_str(), std::string(&m_WavFile.subchunk2Id[0], &m_WavFile.subchunk2Id[0] + std::size(m_WavFile.subchunk2Id)).c_str());
     logger::log_info("<Wav> (\"%s\") subchunk2Size: %i.", m_SoundTitle.c_str(), m_WavFile.subchunk2Size);
@@ -437,8 +437,8 @@ void WaveFile::Read(uint32_t a_StartingPoint, uint32_t &a_ElementCount, unsigned
     // NOTE: This part will reduce the size of the buffer array. It is necessary when reaching the end of the file if we want to loop it.
     if (a_StartingPoint + a_ElementCount >= m_WavFile.subchunk2Size)
     {
-        uint32_t newsize = a_ElementCount - ((a_StartingPoint + a_ElementCount) - m_WavFile.subchunk2Size);
-        a_ElementCount = newsize;
+	    const uint32_t new_size = a_ElementCount - ((a_StartingPoint + a_ElementCount) - m_WavFile.subchunk2Size);
+        a_ElementCount = new_size;
     }
     a_Buffer = m_WavFile.data + a_StartingPoint;
 }
@@ -463,21 +463,21 @@ std::string WaveFile::FormatDuration(float a_Duration)
     const uint32_t minutes = (static_cast<uint32_t>(a_Duration) - (hours * 3600)) / 60;
     const uint32_t seconds = static_cast<uint32_t>(a_Duration) % 60;
     const uint32_t total = (hours * 3600) + (minutes * 60) + seconds;
-    const float milisecondsfloat = a_Duration - static_cast<float>(total);
-    const uint32_t miliseconds = static_cast<uint32_t>(milisecondsfloat * 1000);
+    const float milliseconds_float = a_Duration - static_cast<float>(total);
+    const uint32_t milliseconds = static_cast<uint32_t>(milliseconds_float * 1000);
 
-    char hoursstring[32], minutesstring[32], secondsstring[32], milisecondsstring[32];
-    sprintf_s(hoursstring, "%02d", hours);
-    sprintf_s(minutesstring, "%02d", minutes);
-    sprintf_s(secondsstring, "%02d", seconds);
-    sprintf_s(milisecondsstring, "%03d", miliseconds);
-    return std::string(hoursstring) +
+    char hours_string[32], minutes_string[32], seconds_string[32], milliseconds_string[32];
+    sprintf_s(hours_string, "%02d", hours);
+    sprintf_s(minutes_string, "%02d", minutes);
+    sprintf_s(seconds_string, "%02d", seconds);
+    sprintf_s(milliseconds_string, "%03d", milliseconds);
+    return std::string(hours_string) +
            ":" +
-           std::string(minutesstring) +
+           std::string(minutes_string) +
            ":" +
-           std::string(secondsstring) +
+           std::string(seconds_string) +
            ":" +
-           std::string(milisecondsstring);
+           std::string(milliseconds_string);
 }
 
 /// <summary>
