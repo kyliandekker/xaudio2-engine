@@ -2,19 +2,19 @@
 
 #include <stdint.h>
 
-constexpr uint32_t SOUND_NULL_HANDLE = -1;
+constexpr int32_t SOUND_NULL_HANDLE = -1;
 
 struct Handle
 {
 	Handle() = default;
-	Handle(const uint32_t a_Handle) { m_Handle = a_Handle; }
+	Handle(const int32_t a_Handle) { m_Handle = a_Handle; }
 
-	operator uint32_t() const
+	operator int32_t() const
 	{
 		return m_Handle;
 	}
 
-	Handle& operator=(const uint32_t a_Rhs)
+	Handle& operator=(const int32_t a_Rhs)
 	{
 		m_Handle = a_Rhs;
 		return *this;
@@ -26,5 +26,5 @@ struct Handle
 	}
 
 protected:
-	uint32_t m_Handle = SOUND_NULL_HANDLE;
+	int32_t m_Handle = SOUND_NULL_HANDLE;
 };

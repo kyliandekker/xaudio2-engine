@@ -17,10 +17,10 @@ private:
 	AudioImGuiWindow *m_AudioWindow = nullptr;
 	AudioSystem m_AudioSystem;
 
-	uint32_t CreateSDLWindow();
-	uint32_t CreateContext();
-	uint32_t CreateGlad();
-	uint32_t CreateImGui();
+	int32_t CreateSDLWindow();
+	int32_t CreateContext();
+	int32_t CreateGlad();
+	int32_t CreateImGui();
 
 	SDL_Window *m_Window = nullptr;
 	SDL_GLContext m_glContext = nullptr;

@@ -24,7 +24,7 @@ AudioSDLWindow::~AudioSDLWindow()
 	SDL_Quit();
 }
 
-uint32_t AudioSDLWindow::CreateSDLWindow()
+int32_t AudioSDLWindow::CreateSDLWindow()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
@@ -45,7 +45,7 @@ uint32_t AudioSDLWindow::CreateSDLWindow()
 	return 0;
 }
 
-uint32_t AudioSDLWindow::CreateContext()
+int32_t AudioSDLWindow::CreateContext()
 {
 	m_glContext = SDL_GL_CreateContext(m_Window);
 	SDL_GL_MakeCurrent(m_Window, m_glContext);
@@ -55,7 +55,7 @@ uint32_t AudioSDLWindow::CreateContext()
 	return 0;
 }
 
-uint32_t AudioSDLWindow::CreateGlad()
+int32_t AudioSDLWindow::CreateGlad()
 {
 	if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
 	{
@@ -67,7 +67,7 @@ uint32_t AudioSDLWindow::CreateGlad()
 	return 0;
 }
 
-uint32_t AudioSDLWindow::CreateImGui()
+int32_t AudioSDLWindow::CreateImGui()
 {
 	m_AudioWindow = new AudioImGuiWindow(*m_Window, m_AudioSystem);
 	m_AudioWindow->CreateImGui(m_glContext, "#version 130");

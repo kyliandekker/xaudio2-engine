@@ -115,7 +115,7 @@ void AudioImGuiWindow::RenderImGui()
 
         ImGui::Dummy(ImVec2(0.0f, 1.0f));
 
-        for (uint32_t i = 0; i < m_AudioSystem.SoundSize(); i++)
+        for (uint32_t i = 0; i < static_cast<uint32_t>(m_AudioSystem.SoundSize()); i++)
         {
             WaveFile *sound = m_AudioSystem.GetSound(i);
 
@@ -194,7 +194,7 @@ void AudioImGuiWindow::RenderImGui()
 
         ImGui::Dummy(ImVec2(0.0f, 1.0f));
 
-        for (uint32_t i = 0; i < m_AudioSystem.ChannelSize(); i++)
+        for (uint32_t i = 0; i < static_cast<uint32_t>(m_AudioSystem.ChannelSize()); i++)
         {
             XAudio2Channel *channel = m_AudioSystem.GetChannel(i);
 

@@ -39,10 +39,10 @@ public:
 	void SetPanning(float a_Panning);
 	float GetPanning() const;
 
-	uint32_t ChannelSize() const;
+	int32_t ChannelSize() const;
 	XAudio2Channel* GetChannel(Handle a_ChannelHandle) const;
 
-	uint32_t SoundSize() const;
+	int32_t SoundSize() const;
 	WaveFile* GetSound(Handle a_SoundHandle) const;
 private:
 	IXAudio2* m_Engine = nullptr;

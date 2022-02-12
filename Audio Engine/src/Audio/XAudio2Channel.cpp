@@ -288,7 +288,7 @@ unsigned char* XAudio2Channel::GetData() const
 /// <param name="a_Data">The pcm data that needs to be processed.</param>
 /// <param name="a_BufferSize">The size of the pcm data block.</param>
 /// <returns></returns>
-unsigned char* XAudio2Channel::ApplyEffects(unsigned char* a_Data, uint32_t a_BufferSize)
+unsigned char* XAudio2Channel::ApplyEffects(unsigned char* a_Data, uint32_t)
 {
 	return a_Data;
 }

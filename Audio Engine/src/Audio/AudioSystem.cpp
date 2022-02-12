@@ -32,11 +32,11 @@ AudioSystem::AudioSystem()
 AudioSystem::AudioSystem(const AudioSystem &rhs)
 {
 	m_Sounds = rhs.m_Sounds;
+	m_Channels = rhs.m_Channels;
 
 	m_IsPlaying = rhs.m_IsPlaying;
 	m_Engine = rhs.m_Engine;
 	m_MasterVoice = rhs.m_MasterVoice;
-	m_Channels = rhs.m_Channels;
 	m_Volume = rhs.m_Volume;
 	m_Panning = rhs.m_Panning;
 }
@@ -61,11 +61,11 @@ AudioSystem &AudioSystem::operator=(const AudioSystem &rhs)
 	if (&rhs != this)
 	{
 		m_Sounds = rhs.m_Sounds;
+		m_Channels = rhs.m_Channels;
 
 		m_IsPlaying = rhs.m_IsPlaying;
 		m_Engine = rhs.m_Engine;
 		m_MasterVoice = rhs.m_MasterVoice;
-		m_Channels = rhs.m_Channels;
 		m_Volume = rhs.m_Volume;
 		m_Panning = rhs.m_Panning;
 	}
@@ -80,7 +80,7 @@ AudioSystem &AudioSystem::operator=(const AudioSystem &rhs)
 Handle AudioSystem::CreateSound(const char *a_Path)
 {
 	logger::log_info("<XAudio2> Creating sound: \"%s\".", a_Path);
-	const Handle index = static_cast<uint32_t>(SoundSize());
+	const Handle index = SoundSize();
 	m_Sounds.push_back(new WaveFile(a_Path));
 	return index;
 }
@@ -112,10 +112,10 @@ Handle AudioSystem::Play(Handle a_SoundHandle)
 	if (!a_SoundHandle.IsValid() || a_SoundHandle >= SoundSize())
 		return SOUND_NULL_HANDLE;
 
-	WaveFile &sound = *m_Sounds[a_SoundHandle];
+	const WaveFile &sound = *m_Sounds[a_SoundHandle];
 
 	// First look for inactive channels.
-	for (uint32_t i = 0; i < ChannelSize(); i++)
+	for (uint32_t i = 0; i < static_cast<uint32_t>(ChannelSize()); i++)
 	{
 		if (!m_Channels[i]->IsInUse())
 		{
@@ -267,9 +267,9 @@ float AudioSystem::GetPanning() const
 /// Returns the amount of channels that are currently added.
 /// </summary>
 /// <returns>The amount of channels.</returns>
-uint32_t AudioSystem::ChannelSize() const
+int32_t AudioSystem::ChannelSize() const
 {
-	return static_cast<uint32_t>(m_Channels.size());
+	return static_cast<int32_t>(m_Channels.size());
 }
 
 /// <summary>
@@ -289,9 +289,9 @@ XAudio2Channel *AudioSystem::GetChannel(Handle a_ChannelHandle) const
 /// Returns the amount of sounds in the database.
 /// </summary>
 /// <returns>The amount of sounds.</returns>
-uint32_t AudioSystem::SoundSize() const
+int32_t AudioSystem::SoundSize() const
 {
-	return static_cast<uint32_t>(m_Sounds.size());
+	return static_cast<int32_t>(m_Sounds.size());
 }
 
 /// <summary>
