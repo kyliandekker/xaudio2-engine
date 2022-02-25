@@ -72,13 +72,13 @@ void XAudio2Channel::SetSound(const WaveFile &a_Sound)
 		WAVEFORMATEX wave;
 
 		// Set WAV format default. (what we expect the user to provide).
-		wave.wFormatTag = a_Sound.GetWavFormat().audioFormat;
-		wave.nChannels = a_Sound.GetWavFormat().numChannels;
-		wave.nSamplesPerSec = a_Sound.GetWavFormat().sampleRate; // 44100 hz (should be standard).
+		wave.wFormatTag = a_Sound.GetWavFormat().fmtChunk.audioFormat;
+		wave.nChannels = a_Sound.GetWavFormat().fmtChunk.numChannels;
+		wave.nSamplesPerSec = a_Sound.GetWavFormat().fmtChunk.sampleRate; // 44100 hz (should be standard).
 		wave.cbSize = 0;
-		wave.wBitsPerSample = a_Sound.GetWavFormat().bitsPerSample;
-		wave.nBlockAlign = a_Sound.GetWavFormat().blockAlign;
-		wave.nAvgBytesPerSec = wave.nSamplesPerSec * (wave.wBitsPerSample / a_Sound.GetWavFormat().blockAlign);
+		wave.wBitsPerSample = a_Sound.GetWavFormat().fmtChunk.bitsPerSample;
+		wave.nBlockAlign = a_Sound.GetWavFormat().fmtChunk.blockAlign;
+		wave.nAvgBytesPerSec = a_Sound.GetWavFormat().fmtChunk.byteRate;
 		if (FAILED(hr = m_AudioSystem.GetEngine().CreateSourceVoice(&m_SourceVoice, &wave, 0, 1.0f, &m_VoiceCallback)))
 		{
 			logger::log_error("<XAudio2> Creating XAudio Source Voice failed.");
@@ -161,10 +161,10 @@ void XAudio2Channel::Update()
 		m_Data = effects::ChangeVolume(m_Data, size, m_CurrentSound->GetVolume());
 
 		// Master panning.
-		m_Data = effects::ChangePanning(m_Data, size, m_AudioSystem.GetPanning());
+		m_Data = effects::ChangePanning(m_Data, size, m_AudioSystem.GetPanning(), m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
 
 		// Channel panning.
-		m_Data = effects::ChangePanning(m_Data, size, m_Panning);
+		m_Data = effects::ChangePanning(m_Data, size, m_Panning, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
 
 		// Other effects.
 		m_Data = ApplyEffects(m_Data, size);
@@ -199,6 +199,9 @@ void XAudio2Channel::Stop()
 
 	// Flush the buffers.
 	m_SourceVoice->FlushSourceBuffers();
+
+	m_SourceVoice->DestroyVoice();
+	m_SourceVoice = nullptr;
 }
 
 /// <summary>

@@ -42,8 +42,11 @@ unsigned char* effects::ChangeVolume(unsigned char* a_Data, uint32_t a_Size, flo
 /// <param name="a_Size">The data size.</param>
 /// <param name="a_Amount">The panning amount (-1 is fully left, 1 is fully right, 0 is middle).</param>
 /// <returns></returns>
-unsigned char* effects::ChangePanning(unsigned char* a_Data, uint32_t a_Size, float a_Amount)
+unsigned char* effects::ChangePanning(unsigned char* a_Data, uint32_t a_Size, float a_Amount, uint16_t a_NumChannels)
 {
+	if (a_NumChannels == 1)
+		return a_Data;
+
 	// Amount is a value from -1 to 1.
 	a_Amount = math::ClampF(a_Amount, -1.0f, 1.0f);
 
@@ -66,7 +69,7 @@ unsigned char* effects::ChangePanning(unsigned char* a_Data, uint32_t a_Size, fl
 	}
 
 	int16_t* array_16 = reinterpret_cast<int16_t*>(a_Data);
-	for (uint32_t i = 0; i < a_Size; i += 2)
+	for (uint32_t i = 0; i < a_Size; i += a_NumChannels)
 	{
 		array_16[i] = ChangeByteVolume(array_16[i], left);
 		array_16[i + 1] = ChangeByteVolume(array_16[i + 1], right);

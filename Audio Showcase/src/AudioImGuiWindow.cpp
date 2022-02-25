@@ -127,19 +127,19 @@ void AudioImGuiWindow::RenderImGui()
                     ImGui::Indent(16.0f);
 
                     ShowValue("Name: ", sound->GetSoundTitle());
-                    ShowValue("Format: ", std::to_string(sound->GetWavFormat().audioFormat).c_str());
-                    ShowValue("Number Of Channels: ", std::string(std::to_string(sound->GetWavFormat().numChannels) + (sound->GetWavFormat().numChannels == 1 ? " (mono)" : " (stereo)")).c_str());
-                    ShowValue("Sample Rate: ", std::to_string(sound->GetWavFormat().sampleRate).c_str());
-                    ShowValue("Byte Rate: ", std::string(std::to_string(sound->GetWavFormat().byteRate) + " Hz").c_str());
-                    ShowValue("Bits Per Sample: ", std::to_string(sound->GetWavFormat().bitsPerSample).c_str());
+                    ShowValue("Format: ", std::to_string(sound->GetWavFormat().fmtChunk.audioFormat).c_str());
+                    ShowValue("Number Of Channels: ", std::string(std::to_string(sound->GetWavFormat().fmtChunk.numChannels) + (sound->GetWavFormat().fmtChunk.numChannels == 1 ? " (mono)" : " (stereo)")).c_str());
+                    ShowValue("Sample Rate: ", std::to_string(sound->GetWavFormat().fmtChunk.sampleRate).c_str());
+                    ShowValue("Byte Rate: ", std::string(std::to_string(sound->GetWavFormat().fmtChunk.byteRate) + " Hz").c_str());
+                    ShowValue("Bits Per Sample: ", std::to_string(sound->GetWavFormat().fmtChunk.bitsPerSample).c_str());
                     ShowValue("Duration (sec): ", std::string(std::to_string(sound->GetDuration()) + " secs").c_str());
                     ShowValue("Duration: ", WaveFile::FormatDuration(sound->GetDuration()).c_str());
-                    if (sound->GetWavFormat().tempo != 0.0f)
-                        ShowValue("Tempo: ", std::to_string(sound->GetWavFormat().tempo).c_str());
-                    if (strcmp(std::string(&sound->GetWavFormat().origination_date[0], &sound->GetWavFormat().origination_date[0] + std::size(sound->GetWavFormat().origination_date)).c_str(), "") != 0)
-                        ShowValue("Origination Date: ", std::string(&sound->GetWavFormat().origination_date[0], &sound->GetWavFormat().origination_date[0] + std::size(sound->GetWavFormat().origination_date)).c_str());
-                    if (strcmp(std::string(&sound->GetWavFormat().origination_time[0], &sound->GetWavFormat().origination_time[0] + std::size(sound->GetWavFormat().origination_time)).c_str(), "") != 0)
-                        ShowValue("Origination Time: ", std::string(&sound->GetWavFormat().origination_time[0], &sound->GetWavFormat().origination_time[0] + std::size(sound->GetWavFormat().origination_time)).c_str());
+                    if (sound->GetWavFormat().acidChunk.tempo != 0.0f)
+                        ShowValue("Tempo: ", std::to_string(sound->GetWavFormat().acidChunk.tempo).c_str());
+                    if (strcmp(std::string(&sound->GetWavFormat().bextChunk.origination_date[0], &sound->GetWavFormat().bextChunk.origination_date[0] + std::size(sound->GetWavFormat().bextChunk.origination_date)).c_str(), "") != 0)
+                        ShowValue("Origination Date: ", std::string(&sound->GetWavFormat().bextChunk.origination_date[0], &sound->GetWavFormat().bextChunk.origination_date[0] + std::size(sound->GetWavFormat().bextChunk.origination_date)).c_str());
+                    if (strcmp(std::string(&sound->GetWavFormat().bextChunk.origination_time[0], &sound->GetWavFormat().bextChunk.origination_time[0] + std::size(sound->GetWavFormat().bextChunk.origination_time)).c_str(), "") != 0)
+                        ShowValue("Origination Time: ", std::string(&sound->GetWavFormat().bextChunk.origination_time[0], &sound->GetWavFormat().bextChunk.origination_time[0] + std::size(sound->GetWavFormat().bextChunk.origination_time)).c_str());
 
                     ImGui::Unindent(16.0f);
                 }
@@ -211,12 +211,12 @@ void AudioImGuiWindow::RenderImGui()
 
                         ShowValue("Currently playing: ", channel->GetSound().GetSoundTitle());
                         ShowValue("Progress", std::string(
-                                                  WaveFile::FormatDuration(static_cast<float>(channel->GetCurrentDataPos()) / static_cast<float>(channel->GetSound().GetWavFormat().byteRate)) +
+                                                  WaveFile::FormatDuration(static_cast<float>(channel->GetCurrentDataPos()) / static_cast<float>(channel->GetSound().GetWavFormat().fmtChunk.byteRate)) +
                                                   "/" +
                                                   WaveFile::FormatDuration(channel->GetSound().GetDuration()))
                                                   .c_str());
                         ShowValue("Time Left", std::string(
-                                                   WaveFile::FormatDuration(channel->GetSound().GetDuration() - (static_cast<float>(channel->GetCurrentDataPos()) / static_cast<float>(channel->GetSound().GetWavFormat().byteRate))))
+                                                   WaveFile::FormatDuration(channel->GetSound().GetDuration() - (static_cast<float>(channel->GetCurrentDataPos()) / static_cast<float>(channel->GetSound().GetWavFormat().fmtChunk.byteRate))))
                                                    .c_str());
 
                         ImGui::Unindent(16.0f);
