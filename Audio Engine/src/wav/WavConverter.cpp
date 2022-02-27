@@ -1,4 +1,5 @@
-﻿#include <iostream>
+﻿#include <cassert>
+#include <iostream>
 
 #include <xaudio2_engine/wav/WavConverter.h>
 
@@ -65,6 +66,8 @@ namespace wav
 
 		unsigned char* ConvertMonoToStereo(unsigned char* a_Data, uint32_t& a_Size, uint16_t a_BlockAlign)
 		{
+			assert(a_Size % a_BlockAlign == 0);
+
 			// Double the size.
 			a_Size = a_Size * 2;
 
@@ -91,6 +94,8 @@ namespace wav
 
 		unsigned char* ConvertStereoToMono(unsigned char* a_Data, uint32_t& a_Size, uint16_t a_BlockAlign)
 		{
+			assert(a_Size % a_BlockAlign == 0);
+
 			// Double the size.
 			a_Size = a_Size / 2;
 
