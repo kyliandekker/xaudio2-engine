@@ -62,5 +62,31 @@ namespace wav
 			}
 			return array_16;
 		}
+
+		unsigned char* ConvertMonoToStereo(unsigned char* a_Data, uint32_t& a_Size, uint16_t a_BlockAlign)
+		{
+			// Double the size.
+			a_Size = a_Size * 2;
+
+			unsigned char* array_16 = new unsigned char[a_Size];
+
+			int newIndex = 0;
+
+			for (uint32_t i = 0; i <= a_Size / 2; i += a_BlockAlign)
+			{
+				int echo = 0;
+				while (echo < 2)
+				{
+					for (int j = 0; j < a_BlockAlign; j++)
+					{
+						array_16[newIndex] = static_cast<uint16_t>(a_Data[i + j]);
+						newIndex++;
+					}
+					echo++;
+				}
+			}
+
+			return array_16;
+		}
 	}
 }
