@@ -237,7 +237,6 @@ WaveFile::WaveFile(const char* a_FilePath)
             fseek(m_File, static_cast<int32_t>(chunksize), SEEK_CUR);
         }
     }
-
     if (m_WavFile.fmtChunk.bitsPerSample == 32)
     {
         logger::log_info("<Wav> (\"%s\") Wav file is 32bit. Converting now.", m_SoundTitle.c_str());
@@ -249,15 +248,6 @@ WaveFile::WaveFile(const char* a_FilePath)
         logger::log_info("<Wav> (\"%s\") Wav file is 24bit. Converting now.", m_SoundTitle.c_str());
 
         Convert24To16();
-    }
-
-    if (m_WavFile.fmtChunk.numChannels == WAVE_CHANNELS_MONO)
-    {
-        m_WavFile.fmtChunk.numChannels = WAVE_CHANNELS_STEREO;
-
-        unsigned char* array_16 = wav::wav_converter::ConvertMonoToStereo(m_WavFile.dataChunk.data, m_WavFile.dataChunk.chunkSize, m_WavFile.fmtChunk.blockAlign);
-        free(m_WavFile.dataChunk.data);
-        m_WavFile.dataChunk.data = array_16;
     }
 
     m_WavFile.fmtChunk.audioFormat = WAVE_FORMAT_PCM;
