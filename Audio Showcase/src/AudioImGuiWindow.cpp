@@ -132,8 +132,8 @@ void AudioImGuiWindow::RenderImGui()
                     ShowValue("Sample Rate: ", std::to_string(sound->GetWavFormat().fmtChunk.sampleRate).c_str());
                     ShowValue("Byte Rate: ", std::string(std::to_string(sound->GetWavFormat().fmtChunk.byteRate) + " Hz").c_str());
                     ShowValue("Bits Per Sample: ", std::to_string(sound->GetWavFormat().fmtChunk.bitsPerSample).c_str());
-                    ShowValue("Duration (sec): ", std::string(std::to_string(sound->GetDuration()) + " secs").c_str());
-                    ShowValue("Duration: ", WaveFile::FormatDuration(sound->GetDuration()).c_str());
+                    ShowValue("Duration (sec): ", std::string(std::to_string(WaveFile::GetDuration(sound->GetWavFormat().dataChunk.chunkSize, sound->GetWavFormat().fmtChunk.byteRate)) + " secs").c_str());
+                    ShowValue("Duration: ", WaveFile::FormatDuration(WaveFile::GetDuration(sound->GetWavFormat().dataChunk.chunkSize, sound->GetWavFormat().fmtChunk.byteRate)).c_str());
                     if (sound->GetWavFormat().acidChunk.tempo != 0.0f)
                         ShowValue("Tempo: ", std::to_string(sound->GetWavFormat().acidChunk.tempo).c_str());
                     if (strcmp(std::string(&sound->GetWavFormat().bextChunk.origination_date[0], &sound->GetWavFormat().bextChunk.origination_date[0] + std::size(sound->GetWavFormat().bextChunk.origination_date)).c_str(), "") != 0)
@@ -200,58 +200,6 @@ void AudioImGuiWindow::RenderImGui()
             if (ImGui::CollapsingHeader(std::string("Channel_" + std::to_string(i)).c_str()))
             {
                 ImGui::Indent(16.0f);
-
-                ShowValue("Is in use: ", channel->IsInUse() ? "true" : "false");
-
-                if (channel->IsInUse())
-                {
-                    if (ImGui::CollapsingHeader(std::string("Channel Info###ChannelInfo_" + std::to_string(i)).c_str()))
-                    {
-                        ImGui::Indent(16.0f);
-
-                        ShowValue("Currently playing: ", channel->GetSound().GetSoundTitle());
-                        ShowValue("Progress", std::string(
-                                                  WaveFile::FormatDuration(static_cast<float>(channel->GetCurrentDataPos()) / static_cast<float>(channel->GetSound().GetWavFormat().fmtChunk.byteRate)) +
-                                                  "/" +
-                                                  WaveFile::FormatDuration(channel->GetSound().GetDuration()))
-                                                  .c_str());
-                        ShowValue("Time Left", std::string(
-                                                   WaveFile::FormatDuration(channel->GetSound().GetDuration() - (static_cast<float>(channel->GetCurrentDataPos()) / static_cast<float>(channel->GetSound().GetWavFormat().fmtChunk.byteRate))))
-                                                   .c_str());
-
-                        ImGui::Unindent(16.0f);
-                    }
-
-                    if (ImGui::CollapsingHeader(std::string("Channel Actions###ChannelActions_" + std::to_string(i)).c_str()))
-                    {
-                        ImGui::Indent(16.0f);
-
-                        ImGui::Text("Panning");
-                        ImGui::SameLine();
-                        float panning = channel->GetPanning();
-                        ImGui::SliderFloat(std::string("###Panning_Channel_" + std::to_string(i)).c_str(), &panning, -1, 1);
-                        channel->SetPanning(panning);
-
-                        ImGui::Text("Volume");
-                        ImGui::SameLine();
-                        float volume = channel->GetVolume();
-                        ImGui::SliderFloat(std::string("###Volume_Channel_" + std::to_string(i)).c_str(), &volume, 0, 1);
-                        channel->SetVolume(volume);
-
-                        if (channel->IsPlaying())
-                        {
-                            if (ImGui::Button(std::string("Pause###Pause_Channel_" + std::to_string(i)).c_str()))
-                                channel->Pause();
-                        }
-                        else
-                        {
-                            if (ImGui::Button(std::string("Resume###Resume_Channel_" + std::to_string(i)).c_str()))
-                                channel->Resume();
-                        }
-
-                        ImGui::Unindent(16.0f);
-                    }
-                }
 
                 ImGui::Unindent(16.0f);
             }

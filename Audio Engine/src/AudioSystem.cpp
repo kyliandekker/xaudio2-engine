@@ -1,30 +1,30 @@
 ﻿#include <xaudio2_engine/AudioSystem.h>
 
 #include <xaudio2_engine/utils/Logger.h>
-#include <xaudio2_engine/utils/math.h>
 
 #include <xaudio2.h>
+#include <algorithm>
 
 AudioSystem::AudioSystem()
 {
 	HRESULT hr;
 	if (FAILED(hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
 	{
-		logger::log_error("<XAudio> Initializing COM library failed.");
+		logger::log_error("<XAudio2> Initializing COM library failed.");
 		return;
 	}
 
 	m_Engine = nullptr;
 	if (FAILED(hr = XAudio2Create(&m_Engine, 0, XAUDIO2_DEFAULT_PROCESSOR)))
 	{
-		logger::log_error("<XAudio> Creating XAudio failed.");
+		logger::log_error("<XAudio2> Creating XAudio failed.");
 		return;
 	}
 
 	m_MasterVoice = nullptr;
 	if (FAILED(hr = m_Engine->CreateMasteringVoice(&m_MasterVoice)))
 	{
-		logger::log_error("<XAudio> Creating XAudio Mastering Voice failed.");
+		logger::log_error("<XAudio2> Creating XAudio Mastering Voice failed.");
 		return;
 	}
 }
@@ -134,7 +134,7 @@ Handle AudioSystem::Play(Handle a_SoundHandle)
 		channel->Start();
 		return static_cast<int32_t>(size);
 	}
-	logger::log_error("<XAudio> No inactive channels detected.");
+	logger::log_error("<XAudio2> No inactive channels detected.");
 	return SOUND_NULL_HANDLE;
 }
 
@@ -231,7 +231,7 @@ IXAudio2 &AudioSystem::GetEngine() const
 /// <param name="a_Volume">The volume.</param>
 void AudioSystem::SetVolume(float a_Volume)
 {
-	a_Volume = math::ClampF(a_Volume, 0.0f, 1.0f);
+	a_Volume = std::clamp(a_Volume, 0.0f, 1.0f);
 	m_Volume = a_Volume;
 }
 
@@ -250,7 +250,7 @@ float AudioSystem::GetVolume() const
 /// <param name="a_Panning">The panning.</param>
 void AudioSystem::SetPanning(float a_Panning)
 {
-	a_Panning = math::ClampF(a_Panning, -1.0f, 1.0f);
+	a_Panning = std::clamp(a_Panning, -1.0f, 1.0f);
 	m_Panning = a_Panning;
 }
 
@@ -305,4 +305,9 @@ WaveFile *AudioSystem::GetSound(Handle a_SoundHandle) const
 		return nullptr;
 
 	return m_Sounds[a_SoundHandle];
+}
+
+uint32_t AudioSystem::GetBufferSize()
+{
+	return static_cast<int>(m_BufferSize);
 }

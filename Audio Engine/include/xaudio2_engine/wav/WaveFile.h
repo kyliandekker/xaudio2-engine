@@ -25,7 +25,7 @@ public:
 
     void Read(uint32_t a_StartingPoint, uint32_t &a_ElementCount, unsigned char *&a_Buffer) const;
 
-    float GetDuration() const;
+    static float GetDuration(uint32_t a_ChunkSize, uint32_t a_ByteRate);
     static std::string FormatDuration(float a_Duration);
     bool IsEndOfFile(uint32_t a_StartingPoint) const;
 

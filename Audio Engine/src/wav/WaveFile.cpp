@@ -627,9 +627,9 @@ void WaveFile::Read(uint32_t a_StartingPoint, uint32_t &a_ElementCount, unsigned
 /// Returns the duration in seconds.
 /// </summary>
 /// <returns></returns>
-float WaveFile::GetDuration() const
+float WaveFile::GetDuration(uint32_t a_ChunkSize, uint32_t a_ByteRate)
 {
-    return static_cast<float>(m_WavFile.dataChunk.chunkSize) / static_cast<float>(m_WavFile.fmtChunk.byteRate);
+    return static_cast<float>(a_ChunkSize) / static_cast<float>(a_ByteRate);
 }
 
 /// <summary>

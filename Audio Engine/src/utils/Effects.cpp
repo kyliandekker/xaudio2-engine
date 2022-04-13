@@ -1,6 +1,5 @@
 ﻿#include <xaudio2_engine/utils/Effects.h>
-
-#include <xaudio2_engine/utils/math.h>
+#include <algorithm>
 
 /// <summary>
 /// Changes the value of a byte.
@@ -26,7 +25,7 @@ int16_t ChangeByteVolume(int16_t value, float volume)
 unsigned char* effects::ChangeVolume(unsigned char* a_Data, uint32_t a_Size, float a_Volume)
 {
 	// Clamp the volume to 0.0 min and 1.0 max.
-	a_Volume = math::ClampF(a_Volume, 0.0f, 1.0f);
+	a_Volume = std::clamp(a_Volume, 0.0f, 1.0f);
 
 	int16_t* array_16 = reinterpret_cast<int16_t*>(a_Data);
 	for (uint32_t i = 0; i < a_Size; i++)
@@ -48,7 +47,7 @@ unsigned char* effects::ChangePanning(unsigned char* a_Data, uint32_t a_Size, fl
 		return a_Data;
 
 	// Amount is a value from -1 to 1.
-	a_Amount = math::ClampF(a_Amount, -1.0f, 1.0f);
+	a_Amount = std::clamp(a_Amount, -1.0f, 1.0f);
 
 	// Set the values to 1.0 as default.
 	float left = 1.0f, right = 1.0f;
@@ -58,14 +57,14 @@ unsigned char* effects::ChangePanning(unsigned char* a_Data, uint32_t a_Size, fl
 	{
 		right += a_Amount;
 		// Clamp the volume to 0.0 min and 1.0 max.
-		right = math::ClampF(right, 0.0f, 1.0f);
+		right = std::clamp(right, 0.0f, 1.0f);
 	}
 	// If the slider is more to the right.
 	else if (a_Amount > 0)
 	{
 		left -= a_Amount;
 		// Clamp the volume to 0.0 min and 1.0 max.
-		left = math::ClampF(left, 0.0f, 1.0f);
+		left = std::clamp(left, 0.0f, 1.0f);
 	}
 
 	int16_t* array_16 = reinterpret_cast<int16_t*>(a_Data);

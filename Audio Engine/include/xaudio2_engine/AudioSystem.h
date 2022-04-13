@@ -8,6 +8,15 @@
 
 constexpr uint32_t NUM_CHANNELS = 20;
 
+enum class BUFFERSIZE
+{
+	BUFFERSIZE_256 = 256,
+	BUFFERSIZE_384 = 384,
+	BUFFERSIZE_512 = 512,
+	BUFFERSIZE_1024 = 1024,
+	BUFFERSIZE_2048 = 2048,
+};
+
 class AudioSystem
 {
 public:
@@ -44,9 +53,12 @@ public:
 
 	uint32_t SoundSize() const;
 	WaveFile* GetSound(Handle a_SoundHandle) const;
+	uint32_t GetBufferSize();
 private:
 	IXAudio2* m_Engine = nullptr;
 	IXAudio2MasteringVoice* m_MasterVoice = nullptr;
+
+	BUFFERSIZE m_BufferSize = BUFFERSIZE::BUFFERSIZE_2048;
 
 	std::vector<XAudio2Channel*> m_Channels = std::vector<XAudio2Channel*>();
 

@@ -4,7 +4,7 @@
 
 #include <xaudio2_engine/utils/Effects.h>
 #include <xaudio2_engine/utils/Logger.h>
-#include <xaudio2_engine/utils/math.h>
+#include <algorithm>
 
 XAudio2Channel::XAudio2Channel(AudioSystem& a_AudioSystem) : m_AudioSystem(a_AudioSystem)
 {
@@ -82,13 +82,17 @@ void XAudio2Channel::SetSound(const WaveFile &a_Sound)
 		if (FAILED(hr = m_AudioSystem.GetEngine().CreateSourceVoice(&m_SourceVoice, &wave, 0, 1.0f, &m_VoiceCallback)))
 		{
 			logger::log_error("<XAudio2> Creating XAudio Source Voice failed.");
+			m_IsPlaying = false;
 			return;
 		}
 	}
 	if (FAILED(hr = m_SourceVoice->Start(0, 0)))
 	{
 		logger::log_error("<XAudio2> Starting XAudio Source Voice failed.");
+		m_IsPlaying = false;
 	}
+	if (m_CurrentSound->GetWavFormat().acidChunk.tempo != 0.0f)
+		m_Tick = 60000.0f / m_CurrentSound->GetWavFormat().acidChunk.tempo;
 }
 
 /// <summary>
@@ -120,6 +124,10 @@ void XAudio2Channel::Pause()
 /// </summary>
 void XAudio2Channel::Update()
 {
+	// The initial size we want to retrieve from the audio file.
+	// int bitrate = m_CurrentSound->GetWavFormat().bufferSize / m_CurrentSound->GetWavFormat() * 1000;
+	uint32_t size = m_AudioSystem.GetBufferSize();
+
 	if (m_CurrentSound == nullptr)
 		return;
 
@@ -140,42 +148,103 @@ void XAudio2Channel::Update()
 		}
 		m_CurrentPos = 0;
 	}
+
+	PlayRanged(m_CurrentPos, size);
+
+	if (m_CurrentSound->GetWavFormat().acidChunk.tempo != 0.0f)
+	{
+		if (GetPos(TIMEUNIT::TIMEUNIT_MS) > m_Ticks)
+		{
+			m_Ticks += m_Tick;
+			HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+			int beat = static_cast<int>(m_Ticks / m_Tick);
+			int color = 15;
+			if (beat % 2 == 0)
+				color = 14;
+			else
+				color = 4;
+			SetConsoleTextAttribute(hConsole, static_cast<WORD>(color));
+
+			logger::log_info("(\"%s\") %f BPM: Beat has taken place (beat %i).", m_CurrentSound->GetSoundTitle(), m_CurrentSound->GetWavFormat().acidChunk.tempo, beat);
+		}
+	}
+}
+
+void XAudio2Channel::SetPos(uint32_t a_StartPos)
+{
+	m_CurrentPos = a_StartPos;
+}
+
+float XAudio2Channel::GetPos(TIMEUNIT a_TimeUnit) const
+{
+	switch (a_TimeUnit)
+	{
+		case TIMEUNIT::TIMEUNIT_MS:
+		{
+			float seconds = static_cast<float>(m_CurrentPos) / static_cast<float>(m_CurrentSound->GetWavFormat().fmtChunk.byteRate);
+			float milliseconds = seconds * 1000;
+			return milliseconds;
+			break;
+		}
+		case TIMEUNIT::TIMEUNIT_S:
+		{
+			float seconds = static_cast<float>(m_CurrentPos) / static_cast<float>(m_CurrentSound->GetWavFormat().fmtChunk.byteRate);
+			return seconds;
+			break;
+		}
+		case TIMEUNIT::TIMEUNIT_POS:
+		{
+			return static_cast<float>(m_CurrentPos);
+			break;
+		}
+		default:
+		{
+			return 0;
+			break;
+		}
+	}
+}
+
+void XAudio2Channel::PlayRanged(uint32_t a_StartPos, uint32_t a_Size)
+{
+	if (m_CurrentSound == nullptr)
+		return;
+
+	if (m_SourceVoice == nullptr)
+		return;
+
+	// If the sound is done playing, check whether it needs to be repeated or whether it needs to be stopped entirely.
+	if (m_CurrentSound->IsEndOfFile(a_StartPos))
+	{
+		// If the sound is not set to repeat, then stop the channel.
+		if (!m_CurrentSound->IsLooping())
+		{
+			Stop();
+			return;
+		}
+		a_StartPos = 0;
+	}
 	XAUDIO2_VOICE_STATE state;
 	m_SourceVoice->GetState(&state);
 	if (state.BuffersQueued < m_CurrentSound->GetWavFormat().bufferSize)
 	{
-		// The initial size we want to retrieve from the audio file.
-		// TODO: Understand what I am doing here.
-		uint32_t size = 8184;
-
 		// Read the part of the wave file and store it back in the read buffer.
-		m_CurrentSound->Read(m_CurrentPos, size, m_Data);
-
-		// Master volume.
-		m_Data = effects::ChangeVolume(m_Data, size, m_AudioSystem.GetVolume());
-
-		// Channel volume.
-		m_Data = effects::ChangeVolume(m_Data, size, m_Volume);
-
-		// Sound volume (not sure why you would want this but I want it in here damn it)
-		m_Data = effects::ChangeVolume(m_Data, size, m_CurrentSound->GetVolume());
-
-		// Master panning.
-		m_Data = effects::ChangePanning(m_Data, size, m_AudioSystem.GetPanning(), m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
-
-		// Channel panning.
-		m_Data = effects::ChangePanning(m_Data, size, m_Panning, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
+		m_CurrentSound->Read(a_StartPos, a_Size, m_Data);
 
 		// Other effects.
-		m_Data = ApplyEffects(m_Data, size);
+		m_Data = ApplyEffects(m_Data, a_Size);
 
-		m_DataSize = size;
+		m_DataSize = a_Size;
+
+		// Make sure the new pos is the current pos.
+		m_CurrentPos = a_StartPos;
 
 		// Make sure we add the size of this read buffer to the total size, so that on the next frame we will get the next part of the wave file.
-		m_CurrentPos += size;
+		m_CurrentPos += a_Size;
 
-		XAUDIO2_BUFFER x_buffer = {0, 0, nullptr, 0, 0, 0, 0, 0, nullptr};
-		x_buffer.AudioBytes = size;		 // Buffer containing audio data.
+		XAUDIO2_BUFFER x_buffer = { 0, 0, nullptr, 0, 0, 0, 0, 0, nullptr };
+		x_buffer.AudioBytes = a_Size;		 // Buffer containing audio data.
 		x_buffer.pAudioData = m_Data; // Size of the audio buffer in bytes.
 		HRESULT hr;
 
@@ -244,7 +313,7 @@ XAudio2Callback &XAudio2Channel::GetVoiceCallback()
 /// <param name="a_Volume">The volume.</param>
 void XAudio2Channel::SetVolume(float a_Volume)
 {
-	a_Volume = math::ClampF(a_Volume, 0.0f, 1.0f);
+	a_Volume = std::clamp(a_Volume, 0.0f, 1.0f);
 	m_Volume = a_Volume;
 }
 
@@ -263,7 +332,7 @@ float XAudio2Channel::GetVolume() const
 /// <param name="a_Panning">The panning of the channel.</param>
 void XAudio2Channel::SetPanning(float a_Panning)
 {
-	a_Panning = math::ClampF(a_Panning, -1.0f, 1.0f);
+	a_Panning = std::clamp(a_Panning, -1.0f, 1.0f);
 	m_Panning = a_Panning;
 }
 
@@ -295,15 +364,6 @@ bool XAudio2Channel::IsInUse() const
 }
 
 /// <summary>
-/// Returns the current data position (the playback point).
-/// </summary>
-/// <returns>The current data position (the playback point).</returns>
-uint32_t XAudio2Channel::GetCurrentDataPos() const
-{
-	return m_CurrentPos;
-}
-
-/// <summary>
 /// Returns the data size.
 /// </summary>
 /// <returns>The data size.</returns>
@@ -325,10 +385,25 @@ unsigned char* XAudio2Channel::GetData() const
 /// Applies all the effects.
 /// </summary>
 /// <param name="a_Data">The pcm data that needs to be processed.</param>
-/// <param name="a_BufferSize">The size of the pcm data block.</param>
+/// <param name="a_Size">The size of the pcm data block.</param>
 /// <returns></returns>
-unsigned char* XAudio2Channel::ApplyEffects(unsigned char* a_Data, uint32_t)
+unsigned char* XAudio2Channel::ApplyEffects(unsigned char* a_Data, uint32_t a_Size)
 {
+	// Master volume.
+	a_Data = effects::ChangeVolume(m_Data, a_Size, m_AudioSystem.GetVolume());
+
+	// Channel volume.
+	a_Data = effects::ChangeVolume(m_Data, a_Size, m_Volume);
+
+	// Sound volume (not sure why you would want this but I want it in here damn it)
+	a_Data = effects::ChangeVolume(m_Data, a_Size, m_CurrentSound->GetVolume());
+
+	// Master panning.
+	a_Data = effects::ChangePanning(m_Data, a_Size, m_AudioSystem.GetPanning(), m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
+
+	// Channel panning.
+	a_Data = effects::ChangePanning(m_Data, a_Size, m_Panning, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
+
 	return a_Data;
 }
 

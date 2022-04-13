@@ -9,6 +9,12 @@ class AudioSystem;
 
 class XAudio2Channel
 {
+	enum class TIMEUNIT
+	{
+		TIMEUNIT_MS,
+		TIMEUNIT_S,
+		TIMEUNIT_POS
+	};
 public:
 	XAudio2Channel(AudioSystem& a_AudioSystem);
 	XAudio2Channel(const XAudio2Channel& rhs);
@@ -22,6 +28,9 @@ public:
 	void Resume();
 	void Pause();
 	void Update();
+	void SetPos(uint32_t a_StartPos);
+	float GetPos(TIMEUNIT a_TimeUnit) const;
+	void PlayRanged(uint32_t a_StartPos, uint32_t a_Size);
 	void Stop();
 	void Reset();
 	void RemoveSound();
@@ -38,7 +47,6 @@ public:
 	bool IsPlaying() const;
 	bool IsInUse() const;
 
-	uint32_t GetCurrentDataPos() const;
 	uint32_t GetDataSize() const;
 	unsigned char* GetData() const;
 
@@ -54,6 +62,9 @@ private:
 
 	uint32_t m_CurrentPos = 0;
 	uint32_t m_DataSize = 0;
+
+	float m_Tick = 0.0f;
+	float m_Ticks = 0.0f;
 
 	unsigned char* m_Data = nullptr;
 

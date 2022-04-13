@@ -64,6 +64,13 @@ namespace wav
 			return array_16;
 		}
 
+		/// <summary>
+		/// Converts mono data to stereo data.
+		/// </summary>
+		/// <param name="a_Data"></param>
+		/// <param name="a_Size"></param>
+		/// <param name="a_BlockAlign"></param>
+		/// <returns></returns>
 		unsigned char* ConvertMonoToStereo(unsigned char* a_Data, uint32_t& a_Size, uint16_t a_BlockAlign)
 		{
 			assert(a_Size % a_BlockAlign == 0);
@@ -92,6 +99,13 @@ namespace wav
 			return array_16;
 		}
 
+		/// <summary>
+		/// Converts stereo data to mono data.
+		/// </summary>
+		/// <param name="a_Data"></param>
+		/// <param name="a_Size"></param>
+		/// <param name="a_BlockAlign"></param>
+		/// <returns></returns>
 		unsigned char* ConvertStereoToMono(unsigned char* a_Data, uint32_t& a_Size, uint16_t a_BlockAlign)
 		{
 			assert(a_Size % a_BlockAlign == 0);
