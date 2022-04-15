@@ -33,55 +33,79 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\wav\WavConverter.cpp">
-      <Filter>Source Files\wav</Filter>
+    <ClInclude Include="include\utils\uint24_t.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\Effects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\Logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wav\WaveFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wav\WavFormat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wav\WavConverter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xaudio2\XAudio2Callback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xaudio2\XAudio2Channel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AudioSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Handle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Includes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SoundSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Hash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wav\WaveReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\allocator\UAudioAllocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\utils\Effects.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\wav\WaveFile.cpp">
-      <Filter>Source Files\wav</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wav\WavConverter.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\xaudio2\XAudio2Channel.cpp">
-      <Filter>Source Files\xaudio2</Filter>
-    </ClCompile>
-    <ClCompile Include="src\utils\Effects.cpp">
-      <Filter>Source Files\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\utils\Logger.cpp">
-      <Filter>Source Files\utils</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\AudioSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\xaudio2_engine\AudioSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\xaudio2_engine\Handle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\xaudio2_engine\xaudio2\XAudio2Callback.h">
-      <Filter>Header Files\xaudio2</Filter>
-    </ClInclude>
-    <ClInclude Include="include\xaudio2_engine\xaudio2\XAudio2Channel.h">
-      <Filter>Header Files\xaudio2</Filter>
-    </ClInclude>
-    <ClInclude Include="include\xaudio2_engine\wav\WavConverter.h">
-      <Filter>Header Files\wav</Filter>
-    </ClInclude>
-    <ClInclude Include="include\xaudio2_engine\wav\WaveFile.h">
-      <Filter>Header Files\wav</Filter>
-    </ClInclude>
-    <ClInclude Include="include\xaudio2_engine\wav\WavFormat.h">
-      <Filter>Header Files\wav</Filter>
-    </ClInclude>
-    <ClInclude Include="include\xaudio2_engine\utils\Effects.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="include\xaudio2_engine\utils\Logger.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="include\xaudio2_engine\utils\uint24_t.h">
-      <Filter>Header Files\utils</Filter>
-    </ClInclude>
+    <ClCompile Include="src\SoundSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wav\WavFormat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wav\WaveReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\allocator\UAudioAllocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

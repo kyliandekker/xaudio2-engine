@@ -1,4 +1,4 @@
-﻿#include <xaudio2_engine/wav/WavConverter.h>
+﻿#include <wav/WavConverter.h>
 #include <array>
 #include <assert.h>
 #include <cstdio>
@@ -65,7 +65,7 @@ void MonoToStereo()
 
 		printf("Size before conversion: %i\n", size);
 
-		data = wav::wav_converter::ConvertMonoToStereo(data, size, blockalign);
+		data = uaudio::conversion::ConvertMonoToStereo(data, size, blockalign);
 
 		printf("Size after conversion: %i\n", size);
 
@@ -117,7 +117,7 @@ void MonoToStereo()
 
 		printf("Size before conversion: %i\n", size);
 
-		data = wav::wav_converter::ConvertMonoToStereo(data, size, blockalign);
+		data = uaudio::conversion::ConvertMonoToStereo(data, size, blockalign);
 
 		printf("Size after conversion: %i\n", size);
 
@@ -172,7 +172,7 @@ void MonoToStereo()
 
 		printf("Size before conversion: %i\n", size);
 
-		data = wav::wav_converter::ConvertMonoToStereo(data, size, blockalign);
+		data = uaudio::conversion::ConvertMonoToStereo(data, size, blockalign);
 
 		printf("Size after conversion: %i\n", size);
 
@@ -232,7 +232,7 @@ void StereoToMono()
 
 		printf("Size before conversion: %i\n", size);
 
-		data = wav::wav_converter::ConvertStereoToMono(data, size, blockalign);
+		data = uaudio::conversion::ConvertStereoToMono(data, size, blockalign);
 
 		printf("Size after conversion: %i\n", size);
 
@@ -284,7 +284,7 @@ void StereoToMono()
 
 		printf("Size before conversion: %i\n", size);
 
-		data = wav::wav_converter::ConvertStereoToMono(data, size, blockalign);
+		data = uaudio::conversion::ConvertStereoToMono(data, size, blockalign);
 
 		printf("Size after conversion: %i\n", size);
 
@@ -339,7 +339,7 @@ void StereoToMono()
 
 		printf("Size before conversion: %i\n", size);
 
-		data = wav::wav_converter::ConvertStereoToMono(data, size, blockalign);
+		data = uaudio::conversion::ConvertStereoToMono(data, size, blockalign);
 
 		printf("Size after conversion: %i\n", size);
 

@@ -1,16 +1,16 @@
 ﻿#include <cassert>
 #include <iostream>
 
-#include <xaudio2_engine/wav/WavConverter.h>
+#include <wav/WavConverter.h>
 
-#include <xaudio2_engine/utils/uint24_t.h>
+#include <utils/uint24_t.h>
 
-namespace wav
+namespace uaudio
 {
 	// Square root of 2 (size of uint16_t)
 	constexpr float SQRT_TWO = 1.4142135623730950488016887242097f;
 
-	namespace wav_converter
+	namespace conversion
 	{
 		/// <summary>
 		/// Converts 24 bit pcm data to 16 bit pcm data.

@@ -3,7 +3,7 @@
 #include <sdl/SDL.h>
 
 #include "AudioImGuiWindow.h"
-#include <xaudio2_engine/AudioSystem.h>
+#include <AudioSystem.h>
 
 class AudioSDLWindow
 {
@@ -15,12 +15,17 @@ public:
 
 private:
 	AudioImGuiWindow *m_AudioWindow = nullptr;
-	AudioSystem m_AudioSystem;
+	uaudio::AudioSystem m_AudioSystem;
 
 	int32_t CreateSDLWindow();
 	int32_t CreateContext();
 	int32_t CreateGlad();
 	int32_t CreateImGui();
+
+	float GetRGBColor(int color);
+	void ShowValue(const char* a_Text, const char* a_Value);
+
+	void RenderSound(uaudio::WaveFile& a_WaveFile);
 
 	SDL_Window *m_Window = nullptr;
 	SDL_GLContext m_glContext = nullptr;

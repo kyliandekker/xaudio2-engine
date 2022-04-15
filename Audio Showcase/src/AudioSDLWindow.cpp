@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <xaudio2_engine/utils/Logger.h>
+#include <utils/Logger.h>
 #include <glad/glad.h>
 
 AudioSDLWindow::AudioSDLWindow()
@@ -28,7 +28,7 @@ int32_t AudioSDLWindow::CreateSDLWindow()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
-		logger::log_error("%s.", SDL_GetError());
+		uaudio::logger::log_error("%s.", SDL_GetError());
 		return -1;
 	}
 
@@ -59,10 +59,10 @@ int32_t AudioSDLWindow::CreateGlad()
 {
 	if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
 	{
-		logger::log_error("Couldn't initialize GLAD.");
+		uaudio::logger::log_error("Couldn't initialize GLAD.");
 		return -1;
 	}
-	logger::log_info("Initialized GLAD.");
+	uaudio::logger::log_info("Initialized GLAD.");
 
 	return 0;
 }
@@ -140,10 +140,9 @@ void AudioSDLWindow::RenderWindow()
 			}
 		}
 
-		m_AudioSystem.Update();
 		m_AudioWindow->RenderImGui();
 
 		SDL_GL_SwapWindow(m_Window);
 	}
-	logger::log_info("Main loop ended.");
+	uaudio::logger::log_info("Main loop ended.");
 }
