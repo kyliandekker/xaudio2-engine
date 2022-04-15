@@ -10,7 +10,7 @@ namespace uaudio
 
     Chunk::Chunk(const Chunk &rhs)
     {
-        memcpy(chunkId, chunkId, sizeof(chunkId));
+        memcpy(chunkId, rhs.chunkId, sizeof(chunkId));
         chunkSize = rhs.chunkSize;
     }
 
@@ -20,7 +20,7 @@ namespace uaudio
     {
         if (&rhs != this)
         {
-            memcpy(chunkId, chunkId, sizeof(chunkId));
+            memcpy(chunkId, rhs.chunkId, sizeof(chunkId));
             chunkSize = rhs.chunkSize;
         }
         return *this;
@@ -45,7 +45,7 @@ namespace uaudio
         if (&rhs != this)
         {
             Chunk::operator=(rhs);
-            memcpy(chunkId, rhs.format, sizeof(format));
+            memcpy(format, rhs.format, sizeof(format));
         }
         return *this;
     }
@@ -111,10 +111,13 @@ namespace uaudio
         Chunk::operator=(rhs);
         if (&rhs != this)
         {
-            data = static_cast<unsigned char *>(UAUDIO_DEFAULT_ALLOC(sizeof(rhs.data) * rhs.chunkSize)); // Set aside sound buffer space.
+            if (rhs.data != nullptr)
+            {
+                data = static_cast<unsigned char*>(UAUDIO_DEFAULT_ALLOC(sizeof(rhs.data) * rhs.chunkSize)); // Set aside sound buffer space.
 
-            if (data != nullptr)
-                memcpy(data, rhs.data, sizeof(unsigned char) * rhs.chunkSize);
+                if (data != nullptr)
+                    memcpy(data, rhs.data, sizeof(unsigned char) * rhs.chunkSize);
+            }
         }
         return *this;
     }

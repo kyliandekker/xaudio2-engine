@@ -2,7 +2,7 @@
 
 #include <wav/WaveReader.h>
 
-#include <wav/WavConverter.h>
+#include <wav/WaveConverter.h>
 #include <utils/Logger.h>
 
 #include "wav/WaveFile.h"
@@ -24,7 +24,7 @@ namespace uaudio
         fopen_s(&file, a_FilePath, "rb");
         if (file == nullptr)
         {
-            logger::log_error("<Wav> Failed opening file: \"%s\".", a_FilePath);
+            logger::log_error("<WaveReader> Failed opening file: \"%s\".", a_FilePath);
             return wav_format;
         }
 
@@ -35,7 +35,13 @@ namespace uaudio
             unsigned char chunkid[4];
 
             if (strcmp(std::string(&previousChunkid[0], &previousChunkid[0] + std::size(previousChunkid)).c_str(), std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str()) == 0)
+            {
+                logger::log_error("<WaveReader> Failed to load wave file (\"%s\").", a_FilePath);
+                return wav_format;
                 break;
+            }
+
+            memcpy(previousChunkid, chunkid, sizeof(chunkid));
 
             uint32_t chunksize;
 
@@ -100,7 +106,7 @@ namespace uaudio
                 uint32_t expected_chunksize = sizeof(FMT_Chunk) - sizeof(Chunk);
                 if (expected_chunksize < chunksize)
                 {
-                    logger::log_info("<Wav> (\"%s\") Bigger fmt chunk than usual, skipping rest of data.", a_FilePath);
+                    logger::log_info("<WaveReader> (\"%s\") Bigger fmt chunk than usual, skipping rest of data.", a_FilePath);
                     fseek(file, static_cast<int32_t>(chunksize - expected_chunksize), SEEK_CUR);
                 }
             }
@@ -149,7 +155,7 @@ namespace uaudio
                 uint32_t expected_chunksize = sizeof(ACID_Chunk) - sizeof(Chunk);
                 if (expected_chunksize < chunksize)
                 {
-                    logger::log_info("<Wav> (\"%s\") Bigger acid chunk than usual, skipping rest of data.", a_FilePath);
+                    logger::log_info("<WaveReader> (\"%s\") Bigger acid chunk than usual, skipping rest of data.", a_FilePath);
                     fseek(file, static_cast<int32_t>(chunksize - expected_chunksize), SEEK_CUR);
                 }
             }
@@ -216,7 +222,7 @@ namespace uaudio
                 uint32_t expected_chunksize = sizeof(BEXT_Chunk) - sizeof(Chunk);
                 if (expected_chunksize < chunksize)
                 {
-                    logger::log_info("<Wav> (\"%s\") Bigger bext chunk than usual, skipping rest of data.", a_FilePath);
+                    logger::log_info("<WaveReader> (\"%s\") Bigger bext chunk than usual, skipping rest of data.", a_FilePath);
                     fseek(file, static_cast<int32_t>(chunksize - expected_chunksize), SEEK_CUR);
                 }
             }
@@ -230,7 +236,7 @@ namespace uaudio
                 wav_format.dataChunk.chunkSize = chunksize;
                 wav_format.otherChunks.push_back(otherChunk);
 
-                logger::log_info("<Wav> (\"%s\") Found subchunk %s with size %i. Skipping.", a_FilePath, std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), chunksize);
+                logger::log_info("<WaveReader> (\"%s\") Found subchunk %s with size %i. Skipping.", a_FilePath, std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), chunksize);
 
                 fseek(file, static_cast<int32_t>(chunksize), SEEK_CUR);
             }
@@ -238,13 +244,13 @@ namespace uaudio
 
         if (wav_format.fmtChunk.bitsPerSample == 32)
         {
-            logger::log_info("<Wav> (\"%s\") Wav file is 32bit. Converting now.", a_FilePath);
+            logger::log_info("<WaveReader> (\"%s\") Wav file is 32bit. Converting now.", a_FilePath);
 
             Convert32To16(wav_format);
         }
         else if (wav_format.fmtChunk.bitsPerSample == 24)
         {
-            logger::log_info("<Wav> (\"%s\") Wav file is 24bit. Converting now.", a_FilePath);
+            logger::log_info("<WaveReader> (\"%s\") Wav file is 24bit. Converting now.", a_FilePath);
 
             Convert24To16(wav_format);
         }

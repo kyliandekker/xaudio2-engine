@@ -48,7 +48,7 @@
     <ClInclude Include="include\wav\WavFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\wav\WavConverter.h">
+    <ClInclude Include="include\wav\WaveConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\xaudio2\XAudio2Callback.h">
@@ -86,7 +86,7 @@
     <ClCompile Include="src\wav\WaveFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\wav\WavConverter.cpp">
+    <ClCompile Include="src\wav\WaveConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\xaudio2\XAudio2Channel.cpp">

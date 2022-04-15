@@ -21,8 +21,6 @@ namespace uaudio::xaudio2
 		m_IsPlaying = rhs.m_IsPlaying;
 		m_CurrentPos = rhs.m_CurrentPos;
 		m_DataSize = rhs.m_DataSize;
-		m_Tick = rhs.m_Tick;
-		m_Ticks = rhs.m_Ticks;
 		SetSound(*m_CurrentSound);
 		m_VoiceCallback = rhs.m_VoiceCallback;
 	}
@@ -47,9 +45,6 @@ namespace uaudio::xaudio2
 			m_IsPlaying = rhs.m_IsPlaying;
 			m_CurrentPos = rhs.m_CurrentPos;
 			m_DataSize = rhs.m_DataSize;
-			m_Tick = rhs.m_Tick;
-			m_Ticks = rhs.m_Ticks;
-			m_Ticks = rhs.m_Ticks;
 			m_SourceVoice = rhs.m_SourceVoice;
 			m_VoiceCallback = rhs.m_VoiceCallback;
 		}

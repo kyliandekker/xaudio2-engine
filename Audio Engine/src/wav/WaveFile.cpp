@@ -2,7 +2,7 @@
 
 #include <wav/WaveFile.h>
 
-#include <wav/WavConverter.h>
+#include <wav/WaveConverter.h>
 #include <utils/Logger.h>
 
 #include "wav/WaveReader.h"

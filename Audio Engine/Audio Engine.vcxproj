@@ -27,7 +27,7 @@
     <ClInclude Include="include\utils\Effects.h" />
     <ClInclude Include="include\utils\Logger.h" />
     <ClInclude Include="include\utils\uint24_t.h" />
-    <ClInclude Include="include\wav\WavConverter.h" />
+    <ClInclude Include="include\wav\WaveConverter.h" />
     <ClInclude Include="include\wav\WaveFile.h" />
     <ClInclude Include="include\wav\WaveReader.h" />
     <ClInclude Include="include\wav\WavFormat.h" />
@@ -40,7 +40,7 @@
     <ClCompile Include="src\SoundSystem.cpp" />
     <ClCompile Include="src\allocator\UAudioAllocator.cpp" />
     <ClCompile Include="src\utils\Effects.cpp" />
-    <ClCompile Include="src\wav\WavConverter.cpp" />
+    <ClCompile Include="src\wav\WaveConverter.cpp" />
     <ClCompile Include="src\wav\WaveFile.cpp" />
     <ClCompile Include="src\wav\WaveReader.cpp" />
     <ClCompile Include="src\wav\WavFormat.cpp" />

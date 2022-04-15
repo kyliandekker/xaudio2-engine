@@ -63,9 +63,6 @@ namespace uaudio
 			uint32_t m_CurrentPos = 0;
 			uint32_t m_DataSize = 0;
 
-			float m_Tick = 0.0f;
-			float m_Ticks = 0.0f;
-
 			IXAudio2SourceVoice* m_SourceVoice = nullptr;
 			XAudio2Callback m_VoiceCallback;
 		};
