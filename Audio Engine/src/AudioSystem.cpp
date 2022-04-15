@@ -138,9 +138,18 @@ namespace uaudio
 	/// Returns the buffer size.
 	/// </summary>
 	/// <returns>Returns the buffer size.</returns>
-	uint32_t AudioSystem::GetBufferSize() const
+	BUFFERSIZE AudioSystem::GetBufferSize() const
 	{
-		return static_cast<int>(m_BufferSize);
+		return m_BufferSize;
+	}
+
+	/// <summary>
+	/// Sets the buffer size.
+	/// </summary>
+	/// <param name="a_BufferSize">The buffer size for every channel.</param>
+	void AudioSystem::SetBufferSize(BUFFERSIZE a_BufferSize)
+	{
+		m_BufferSize = a_BufferSize;
 	}
 
 	/// <summary>

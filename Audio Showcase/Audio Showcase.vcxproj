@@ -182,11 +182,21 @@
     <ClCompile Include="src\AudioImGuiWindow.cpp" />
     <ClCompile Include="src\AudioSDLWindow.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\tools\BaseTool.cpp" />
+    <ClCompile Include="src\tools\ChannelsTool.cpp" />
+    <ClCompile Include="src\tools\MainWindow.cpp" />
+    <ClCompile Include="src\tools\MasterTool.cpp" />
+    <ClCompile Include="src\tools\SoundsTool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AudioImGuiWindow.h" />
     <ClInclude Include="include\AudioSDLWindow.h" />
     <ClInclude Include="include\ImguiWindowStruct.h" />
+    <ClInclude Include="include\tools\BaseTool.h" />
+    <ClInclude Include="include\tools\ChannelsTool.h" />
+    <ClInclude Include="include\tools\MainWindow.h" />
+    <ClInclude Include="include\tools\MasterTool.h" />
+    <ClInclude Include="include\tools\SoundsTool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

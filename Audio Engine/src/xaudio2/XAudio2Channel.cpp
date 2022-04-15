@@ -131,7 +131,7 @@ namespace uaudio::xaudio2
 		if (!m_IsPlaying)
 			return;
 
-		PlayRanged(m_CurrentPos, m_AudioSystem->GetBufferSize());
+		PlayRanged(m_CurrentPos, static_cast<int>(m_AudioSystem->GetBufferSize()));
 	}
 
 	void XAudio2Channel::SetPos(uint32_t a_StartPos)

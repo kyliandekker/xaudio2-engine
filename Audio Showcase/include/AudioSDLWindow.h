@@ -13,9 +13,11 @@ public:
 
 	void RenderWindow();
 
+	AudioImGuiWindow& GetImGuiWindow();
+
 	ImVec2 GetWindowSize() const;
 private:
-	AudioImGuiWindow m_AudioWindow;
+	AudioImGuiWindow* m_AudioWindow = nullptr;
 	uaudio::AudioSystem& m_AudioSystem;
 	uaudio::SoundSystem& m_SoundSystem;
 

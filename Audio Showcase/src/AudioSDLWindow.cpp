@@ -18,6 +18,8 @@ AudioSDLWindow::~AudioSDLWindow()
 {
 	m_Running = false;
 
+	delete m_AudioWindow;
+
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 
@@ -30,7 +32,7 @@ ImVec2 AudioSDLWindow::GetWindowSize() const
 {
 	int sdl_width = 0, sdl_height = 0;
 	SDL_GetWindowSize(m_Window, &sdl_width, &sdl_height);
-	return ImVec2(sdl_width, sdl_height);
+	return ImVec2(static_cast<float>(sdl_width), static_cast<float>(sdl_height));
 }
 
 int32_t AudioSDLWindow::CreateSDLWindow()
@@ -85,8 +87,8 @@ int32_t AudioSDLWindow::CreateImGui()
 	// setup platform/renderer bindings
 	ImGui_ImplSDL2_InitForOpenGL(m_Window, m_glContext);
 	ImGui_ImplOpenGL3_Init("#version 130");
-	m_AudioWindow = AudioImGuiWindow(this, &m_AudioSystem, &m_SoundSystem);
-	m_AudioWindow.CreateImGui();
+	m_AudioWindow = new AudioImGuiWindow(this, &m_AudioSystem, &m_SoundSystem);
+	m_AudioWindow->CreateImGui();
 
 	return 0;
 }
@@ -158,10 +160,15 @@ void AudioSDLWindow::RenderWindow()
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL2_NewFrame(m_Window);
-		m_AudioWindow.RenderImGui();
+		m_AudioWindow->Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		SDL_GL_SwapWindow(m_Window);
 	}
 	uaudio::logger::log_info("Main loop ended.");
+}
+
+AudioImGuiWindow& AudioSDLWindow::GetImGuiWindow()
+{
+	return *m_AudioWindow;
 }

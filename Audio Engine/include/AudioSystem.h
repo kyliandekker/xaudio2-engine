@@ -32,7 +32,8 @@ namespace uaudio
 		void SetMasterPanning(float a_Panning);
 		float GetMasterPanning() const;
 
-		uint32_t GetBufferSize() const;
+		BUFFERSIZE GetBufferSize() const;
+		void SetBufferSize(BUFFERSIZE a_BufferSize);
 
 		// Channel-related methods.
 		ChannelHandle Play(WaveFile& a_WaveFile);
