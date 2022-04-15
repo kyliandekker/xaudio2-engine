@@ -4,8 +4,9 @@
 
 #include <utils/Logger.h>
 #include <glad/glad.h>
+#include <imgui/backends/imgui_impl_opengl3.h>
 
-AudioSDLWindow::AudioSDLWindow()
+AudioSDLWindow::AudioSDLWindow(uaudio::AudioSystem* a_AudioSystem, uaudio::SoundSystem* a_SoundSystem) : m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
 {
 	CreateSDLWindow();
 	CreateContext();
@@ -17,11 +18,19 @@ AudioSDLWindow::~AudioSDLWindow()
 {
 	m_Running = false;
 
-	delete m_AudioWindow;
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
 
 	SDL_GL_DeleteContext(m_glContext);
 	SDL_DestroyWindow(m_Window);
 	SDL_Quit();
+}
+
+ImVec2 AudioSDLWindow::GetWindowSize() const
+{
+	int sdl_width = 0, sdl_height = 0;
+	SDL_GetWindowSize(m_Window, &sdl_width, &sdl_height);
+	return ImVec2(sdl_width, sdl_height);
 }
 
 int32_t AudioSDLWindow::CreateSDLWindow()
@@ -69,15 +78,22 @@ int32_t AudioSDLWindow::CreateGlad()
 
 int32_t AudioSDLWindow::CreateImGui()
 {
-	m_AudioWindow = new AudioImGuiWindow(*m_Window, m_AudioSystem);
-	m_AudioWindow->CreateImGui(m_glContext, "#version 130");
+	// setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+
+	// setup platform/renderer bindings
+	ImGui_ImplSDL2_InitForOpenGL(m_Window, m_glContext);
+	ImGui_ImplOpenGL3_Init("#version 130");
+	m_AudioWindow = AudioImGuiWindow(this, m_AudioSystem, m_SoundSystem);
+	m_AudioWindow.CreateImGui();
 
 	return 0;
 }
 
 void AudioSDLWindow::RenderWindow()
 {
-	const ImVec4 background = ImVec4(35 / 255.0f, 35 / 255.0f, 35 / 255.0f, 1.00f);
+	const ImVec4 background = ImVec4(15 / 255.0f, 15 / 255.0f, 15 / 255.0f, 1.00f);
 
 	glViewport(0, 0, windowWidth, windowHeight);
 
@@ -140,7 +156,10 @@ void AudioSDLWindow::RenderWindow()
 			}
 		}
 
-		m_AudioWindow->RenderImGui();
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplSDL2_NewFrame(m_Window);
+		m_AudioWindow.RenderImGui();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		SDL_GL_SwapWindow(m_Window);
 	}

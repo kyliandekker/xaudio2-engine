@@ -8,24 +8,21 @@
 class AudioSDLWindow
 {
 public:
-	AudioSDLWindow();
+	AudioSDLWindow(uaudio::AudioSystem* a_AudioSystem, uaudio::SoundSystem* a_SoundSystem);
 	~AudioSDLWindow();
 
 	void RenderWindow();
 
+	ImVec2 GetWindowSize() const;
 private:
-	AudioImGuiWindow *m_AudioWindow = nullptr;
-	uaudio::AudioSystem m_AudioSystem;
+	AudioImGuiWindow m_AudioWindow;
+	uaudio::AudioSystem* m_AudioSystem;
+	uaudio::SoundSystem* m_SoundSystem;
 
 	int32_t CreateSDLWindow();
 	int32_t CreateContext();
 	int32_t CreateGlad();
 	int32_t CreateImGui();
-
-	float GetRGBColor(int color);
-	void ShowValue(const char* a_Text, const char* a_Value);
-
-	void RenderSound(uaudio::WaveFile& a_WaveFile);
 
 	SDL_Window *m_Window = nullptr;
 	SDL_GLContext m_glContext = nullptr;

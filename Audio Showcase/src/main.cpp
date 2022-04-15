@@ -4,7 +4,9 @@
 
 int main(int, char* [])
 {
-	AudioSDLWindow* audioSDLWindow = new AudioSDLWindow();
+	uaudio::AudioSystem aSys;
+	uaudio::SoundSystem sSys;
+	AudioSDLWindow* audioSDLWindow = new AudioSDLWindow(&aSys, &sSys);
 	audioSDLWindow->RenderWindow();
 	delete audioSDLWindow;
 
