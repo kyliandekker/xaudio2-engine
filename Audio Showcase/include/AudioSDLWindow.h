@@ -8,7 +8,7 @@
 class AudioSDLWindow
 {
 public:
-	AudioSDLWindow(uaudio::AudioSystem* a_AudioSystem, uaudio::SoundSystem* a_SoundSystem);
+	AudioSDLWindow(uaudio::AudioSystem& a_AudioSystem, uaudio::SoundSystem& a_SoundSystem);
 	~AudioSDLWindow();
 
 	void RenderWindow();
@@ -16,8 +16,8 @@ public:
 	ImVec2 GetWindowSize() const;
 private:
 	AudioImGuiWindow m_AudioWindow;
-	uaudio::AudioSystem* m_AudioSystem;
-	uaudio::SoundSystem* m_SoundSystem;
+	uaudio::AudioSystem& m_AudioSystem;
+	uaudio::SoundSystem& m_SoundSystem;
 
 	int32_t CreateSDLWindow();
 	int32_t CreateContext();

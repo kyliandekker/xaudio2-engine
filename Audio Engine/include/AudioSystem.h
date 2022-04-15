@@ -18,8 +18,10 @@ namespace uaudio
 		virtual ~AudioSystem();
 
 		// Basic default methods for the system.
-		void SetActive(bool a_Enabled);
-		bool IsActive() const;
+		void SetPlaybackStatus(bool a_Playback);
+		void Stop();
+		void Start();
+		bool HasPlayback() const;
 
 		IXAudio2 &GetEngine() const;
 
@@ -49,6 +51,7 @@ namespace uaudio
 		std::vector<xaudio2::XAudio2Channel, UAUDIO_DEFAULT_ALLOCATOR<xaudio2::XAudio2Channel>> m_Channels;
 
 		bool m_Active = true;
+		bool m_Playback = true;
 		float m_Volume = UAUDIO_DEFAULT_VOLUME;
 		float m_Panning = UAUDIO_DEFAULT_PANNING;
 

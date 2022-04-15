@@ -342,17 +342,17 @@ void AudioImGuiWindow::RenderImGui()
             ImGui::SliderFloat("###Volume_Master_0", &volume, 0, 1);
             m_AudioSystem->SetMasterVolume(volume);
 
-            if (m_AudioSystem->IsActive())
+            if (m_AudioSystem->HasPlayback())
             {
                 std::string pause_button = std::string(PAUSE) + " Pause Whole Playback##Pause_Whole_Playback";
                 if (ImGui::Button(pause_button.c_str()))
-                    m_AudioSystem->SetActive(false);
+                    m_AudioSystem->SetPlaybackStatus(false);
             }
             else
             {
                 std::string play_button = std::string(PLAY) + " Resume Whole Playback##Resume_Whole_Playback";
                 if (ImGui::Button(play_button.c_str()))
-                    m_AudioSystem->SetActive(true);
+                    m_AudioSystem->SetPlaybackStatus(true);
             }
             std::string add_sound = std::string(ADD) + " Add Sound";
             if (ImGui::Button(add_sound.c_str()))

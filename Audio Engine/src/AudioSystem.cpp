@@ -30,13 +30,11 @@ namespace uaudio
 			logger::log_error("<XAudio2> Creating XAudio Mastering Voice failed.");
 			return;
 		}
-		m_Thread = std::thread(&AudioSystem::Update, this);
 	}
 
 	AudioSystem::~AudioSystem()
 	{
 		m_Active = false;
-		m_Thread.join();
 
 		m_Channels.clear();
 
@@ -51,28 +49,42 @@ namespace uaudio
 	/// </summary>
 	void AudioSystem::Update()
 	{
-		while (true)
-			if (m_Active)
+		while (m_Active)
+			if (m_Playback)
 				for (int32_t i = static_cast<int32_t>(ChannelSize() - 1); i > -1; i--)
 					m_Channels[i].Update();
 	}
 
-	/// <summary>
-	/// Sets the status of the audio system.
-	/// </summary>
-	/// <param name="a_Enabled">Sets the status of the audio system.</param>
-	void AudioSystem::SetActive(bool a_Enabled)
+	void AudioSystem::SetPlaybackStatus(bool a_Playback)
 	{
-		m_Active = a_Enabled;
+		m_Playback = a_Playback;
+	}
+
+	/// <summary>
+	/// Stops the audio thread.
+	/// </summary>
+	void AudioSystem::Stop()
+	{
+		m_Active = false;
+		m_Thread.join();
+	}
+
+	/// <summary>
+	/// Starts the audio thread.
+	/// </summary>
+	void AudioSystem::Start()
+	{
+		m_Active = true;
+		m_Thread = std::thread(&AudioSystem::Update, this);
 	}
 
 	/// <summary>
 	/// Whether the audio system is active.
 	/// </summary>
 	/// <returns>Whether the audio system is active.</returns>
-	bool AudioSystem::IsActive() const
+	bool AudioSystem::HasPlayback() const
 	{
-		return m_Active;
+		return m_Playback;
 	}
 
 	/// <summary>

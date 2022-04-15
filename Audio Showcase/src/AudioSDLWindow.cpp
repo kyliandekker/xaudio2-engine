@@ -6,7 +6,7 @@
 #include <glad/glad.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 
-AudioSDLWindow::AudioSDLWindow(uaudio::AudioSystem* a_AudioSystem, uaudio::SoundSystem* a_SoundSystem) : m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
+AudioSDLWindow::AudioSDLWindow(uaudio::AudioSystem& a_AudioSystem, uaudio::SoundSystem& a_SoundSystem) : m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
 {
 	CreateSDLWindow();
 	CreateContext();
@@ -85,7 +85,7 @@ int32_t AudioSDLWindow::CreateImGui()
 	// setup platform/renderer bindings
 	ImGui_ImplSDL2_InitForOpenGL(m_Window, m_glContext);
 	ImGui_ImplOpenGL3_Init("#version 130");
-	m_AudioWindow = AudioImGuiWindow(this, m_AudioSystem, m_SoundSystem);
+	m_AudioWindow = AudioImGuiWindow(this, &m_AudioSystem, &m_SoundSystem);
 	m_AudioWindow.CreateImGui();
 
 	return 0;
