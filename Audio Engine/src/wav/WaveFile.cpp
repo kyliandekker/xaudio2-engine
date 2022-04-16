@@ -20,7 +20,6 @@ namespace uaudio
     {
         m_Looping = rhs.m_Looping;
         m_Volume = rhs.m_Volume;
-        m_File = rhs.m_File;
         m_WavFile = rhs.m_WavFile;
     }
 
@@ -30,7 +29,6 @@ namespace uaudio
         {
             m_Looping = rhs.m_Looping;
             m_Volume = rhs.m_Volume;
-            m_File = rhs.m_File;
             m_WavFile = rhs.m_WavFile;
         }
         return *this;
@@ -48,10 +46,7 @@ namespace uaudio
     }
 
     WaveFile::~WaveFile()
-    {
-        if (m_File != nullptr)
-            fclose(m_File);
-    }
+    { }
 
     /// <summary>
     /// Reads a part of the data array of the wave file.

@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <queue>
 #include <xaudio2.h>
 
 #include "XAudio2Callback.h"
@@ -51,6 +52,7 @@ namespace uaudio
 
 			const WaveFile& GetSound() const;
 		private:
+			std::queue<unsigned char*> m_Buffers;
 			float m_Volume = 1;
 			float m_Panning = 0.0f;
 
@@ -61,7 +63,6 @@ namespace uaudio
 			AudioSystem* m_AudioSystem = nullptr;
 
 			uint32_t m_CurrentPos = 0;
-			uint32_t m_DataSize = 0;
 
 			IXAudio2SourceVoice* m_SourceVoice = nullptr;
 			XAudio2Callback m_VoiceCallback;

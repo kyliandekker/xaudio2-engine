@@ -20,7 +20,6 @@ namespace uaudio::xaudio2
 		m_CurrentSound = rhs.m_CurrentSound;
 		m_IsPlaying = rhs.m_IsPlaying;
 		m_CurrentPos = rhs.m_CurrentPos;
-		m_DataSize = rhs.m_DataSize;
 		SetSound(*m_CurrentSound);
 		m_VoiceCallback = rhs.m_VoiceCallback;
 	}
@@ -44,7 +43,6 @@ namespace uaudio::xaudio2
 			m_CurrentSound = rhs.m_CurrentSound;
 			m_IsPlaying = rhs.m_IsPlaying;
 			m_CurrentPos = rhs.m_CurrentPos;
-			m_DataSize = rhs.m_DataSize;
 			m_SourceVoice = rhs.m_SourceVoice;
 			m_VoiceCallback = rhs.m_VoiceCallback;
 		}
@@ -115,6 +113,8 @@ namespace uaudio::xaudio2
 
 		m_SourceVoice->DestroyVoice();
 		m_SourceVoice = nullptr;
+
+		m_CurrentPos = 0;
 	}
 
 	/// <summary>
@@ -127,7 +127,7 @@ namespace uaudio::xaudio2
 
 		if (m_SourceVoice == nullptr)
 			return;
-		
+
 		if (!m_IsPlaying)
 			return;
 
@@ -180,7 +180,8 @@ namespace uaudio::xaudio2
 			// If the sound is not set to repeat, then stop the channel.
 			if (!m_CurrentSound->IsLooping())
 			{
-				m_IsPlaying = false;
+				Stop();
+				RemoveSound();
 				return;
 			}
 			a_StartPos = 0;
@@ -195,9 +196,7 @@ namespace uaudio::xaudio2
 			m_CurrentSound->Read(a_StartPos, a_Size, data);
 
 			// Other effects.
-			ApplyEffects(data, a_Size);
-
-			m_DataSize = a_Size;
+			// ApplyEffects(modified_data, a_Size);
 
 			// Make sure the new pos is the current pos.
 			m_CurrentPos = a_StartPos;

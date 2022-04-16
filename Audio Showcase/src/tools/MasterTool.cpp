@@ -21,20 +21,20 @@ void MasterTool::Render()
 
         float panning = m_AudioSystem.GetMasterPanning();
         std::string master_panning = std::string(PANNING) + " Master Panning";
-        ImGui::Text(master_panning.c_str());
+        ImGui::Text("%s", master_panning.c_str());
         ImGui::SameLine();
         ImGui::SliderFloat("###Panning_Master_0", &panning, -1, 1);
         m_AudioSystem.SetMasterPanning(panning);
 
         float volume = m_AudioSystem.GetMasterVolume();
         std::string master_volume = std::string(VOLUME_UP) + " Master Volume";
-        ImGui::Text(master_volume.c_str());
+        ImGui::Text("%s", master_volume.c_str());
         ImGui::SameLine();
         ImGui::SliderFloat("###Volume_Master_0", &volume, 0, 1);
         m_AudioSystem.SetMasterVolume(volume);
 
         std::string buffer_size_text = "Buffer Size";
-        ImGui::Text(buffer_size_text.c_str());
+        ImGui::Text("%s", buffer_size_text.c_str());
         if (ImGui::BeginCombo("##Buffer_Size", std::string(m_BufferSizeSelection == -1 ? "CHOOSE BUFFERSIZE" : m_BufferSizeTextOptions[m_BufferSizeSelection]).c_str(), ImGuiComboFlags_PopupAlignLeft))
         {
             for (int n = 0; n < m_BufferSizeTextOptions.size(); n++)

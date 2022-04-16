@@ -42,8 +42,6 @@ namespace uaudio
         bool m_Looping = false;
         float m_Volume = 1.0f;
 
-        FILE* m_File = nullptr;
-
         WavFormat m_WavFile = {};
     };
 }
