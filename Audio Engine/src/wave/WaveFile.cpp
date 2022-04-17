@@ -1,29 +1,29 @@
 #include <algorithm>
 
-#include <wav/WaveFile.h>
+#include <wave/WaveFile.h>
 
-#include <wav/WaveConverter.h>
+#include <wave/WaveConverter.h>
 #include <utils/Logger.h>
 
-#include "wav/WaveReader.h"
+#include "wave/WaveReader.h"
 
 namespace uaudio
 {
     WaveFile::WaveFile() = default;
 
-    WaveFile::WaveFile(const char* a_FilePath)
+    WaveFile::WaveFile(const char *a_FilePath, WAVE_CONFIG a_Config) : m_Config(a_Config)
     {
         LoadSound(a_FilePath);
     }
 
-    WaveFile::WaveFile(const WaveFile& rhs)
+    WaveFile::WaveFile(const WaveFile &rhs)
     {
         m_Looping = rhs.m_Looping;
         m_Volume = rhs.m_Volume;
         m_WavFile = rhs.m_WavFile;
     }
 
-    WaveFile& WaveFile::operator=(const WaveFile& rhs)
+    WaveFile &WaveFile::operator=(const WaveFile &rhs)
     {
         if (&rhs != this)
         {
@@ -38,15 +38,16 @@ namespace uaudio
     /// Loads the sound.
     /// </summary>
     /// <param name="a_FilePath">The path to the file.</param>
-    void WaveFile::LoadSound(const char* a_FilePath)
+    void WaveFile::LoadSound(const char *a_FilePath)
     {
         m_WavFile = {};
 
-        m_WavFile = WaveReader::LoadSound(a_FilePath);
+        WaveReader::LoadSound(a_FilePath, m_WavFile, m_File, m_Config);
     }
 
     WaveFile::~WaveFile()
-    { }
+    {
+    }
 
     /// <summary>
     /// Reads a part of the data array of the wave file.
@@ -54,7 +55,7 @@ namespace uaudio
     /// <param name="a_StartingPoint">The starting point of where to read from.</param>
     /// <param name="a_ElementCount">The element count of which to search for (will be reduced when reaching end of file)</param>
     /// <param name="a_Buffer">The buffer that will store the data.</param>
-    void WaveFile::Read(uint32_t a_StartingPoint, uint32_t& a_ElementCount, unsigned char*& a_Buffer) const
+    void WaveFile::Read(uint32_t a_StartingPoint, uint32_t &a_ElementCount, unsigned char *&a_Buffer) const
     {
         // NOTE: This part will reduce the size of the buffer array. It is necessary when reaching the end of the file if we want to loop it.
         if (a_StartingPoint + a_ElementCount >= m_WavFile.dataChunk.chunkSize)
@@ -94,12 +95,12 @@ namespace uaudio
         sprintf_s(seconds_string, "%02d", seconds);
         sprintf_s(milliseconds_string, "%03d", milliseconds);
         return std::string(hours_string) +
-            ":" +
-            std::string(minutes_string) +
-            ":" +
-            std::string(seconds_string) +
-            ":" +
-            std::string(milliseconds_string);
+               ":" +
+               std::string(minutes_string) +
+               ":" +
+               std::string(seconds_string) +
+               ":" +
+               std::string(milliseconds_string);
     }
 
     /// <summary>
@@ -152,7 +153,7 @@ namespace uaudio
     /// Returns the wav file.
     /// </summary>
     /// <returns></returns>
-    const WavFormat& WaveFile::GetWavFormat() const
+    const WaveFormat &WaveFile::GetWavFormat() const
     {
         return m_WavFile;
     }
@@ -161,7 +162,7 @@ namespace uaudio
     /// Returns the sound title.
     /// </summary>
     /// <returns></returns>
-    const char* WaveFile::GetSoundTitle() const
+    const char *WaveFile::GetSoundTitle() const
     {
         return m_WavFile.m_FilePath.c_str();
     }

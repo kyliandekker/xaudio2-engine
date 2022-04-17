@@ -3,7 +3,7 @@
 #include <map>
 
 #include "Includes.h"
-#include "wav/WaveFile.h"
+#include "wave/WaveFile.h"
 
 namespace uaudio
 {

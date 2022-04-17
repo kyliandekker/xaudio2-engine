@@ -6,7 +6,7 @@
 #include <glad/glad.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 
-AudioSDLWindow::AudioSDLWindow(uaudio::AudioSystem& a_AudioSystem, uaudio::SoundSystem& a_SoundSystem) : m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
+AudioSDLWindow::AudioSDLWindow(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &a_SoundSystem) : m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
 {
 	CreateSDLWindow();
 	CreateContext();
@@ -39,7 +39,7 @@ int32_t AudioSDLWindow::CreateSDLWindow()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
-		uaudio::logger::log_error("%s.", SDL_GetError());
+		uaudio::logger::ASSERT(false, "%s.", SDL_GetError());
 		return -1;
 	}
 
@@ -70,7 +70,7 @@ int32_t AudioSDLWindow::CreateGlad()
 {
 	if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
 	{
-		uaudio::logger::log_error("Couldn't initialize GLAD.");
+		uaudio::logger::ASSERT(false, "Couldn't initialize GLAD.");
 		return -1;
 	}
 	uaudio::logger::log_info("Initialized GLAD.");
@@ -161,6 +161,7 @@ void AudioSDLWindow::RenderWindow()
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL2_NewFrame(m_Window);
 		m_AudioWindow->Render();
+		m_AudioSystem.UpdateNonExtraThread();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		SDL_GL_SwapWindow(m_Window);
@@ -168,7 +169,7 @@ void AudioSDLWindow::RenderWindow()
 	uaudio::logger::log_info("Main loop ended.");
 }
 
-AudioImGuiWindow& AudioSDLWindow::GetImGuiWindow()
+AudioImGuiWindow &AudioSDLWindow::GetImGuiWindow()
 {
 	return *m_AudioWindow;
 }

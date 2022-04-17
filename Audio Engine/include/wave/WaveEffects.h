@@ -1,4 +1,6 @@
-﻿#include <utils/Effects.h>
+#pragma once
+
+#include <cstdint>
 #include <algorithm>
 
 namespace uaudio
@@ -11,12 +13,13 @@ namespace uaudio
 		/// <param name="a_Value">The byte.</param>
 		/// <param name="a_Volume">The volume.</param>
 		/// <returns></returns>
-		int16_t ChangeByteVolume(int16_t a_Value, float a_Volume)
+		template <class T>
+		inline T ChangeByteVolume(T a_Value, float a_Volume)
 		{
 			float converted_value = static_cast<float>(a_Value);
 			converted_value *= a_Volume;
 
-			return static_cast<int16_t>(converted_value);
+			return static_cast<T>(converted_value);
 		}
 
 		/// <summary>
@@ -26,14 +29,15 @@ namespace uaudio
 		/// <param name="a_Size">The data size.</param>
 		/// <param name="a_Volume">The volume.</param>
 		/// <returns></returns>
-		void ChangeVolume(unsigned char*& a_Data, uint32_t a_Size, float a_Volume)
+		template <class T>
+		inline void ChangeVolume(unsigned char*& a_Data, uint32_t a_Size, float a_Volume)
 		{
 			// Clamp the volume to 0.0 min and 1.0 max.
 			a_Volume = std::clamp(a_Volume, 0.0f, 1.0f);
 
-			int16_t* array_16 = reinterpret_cast<int16_t*>(a_Data);
-			for (uint32_t i = 0; i < a_Size; i++)
-				array_16[i] = ChangeByteVolume(array_16[i], a_Volume);
+			T* array_16 = reinterpret_cast<T*>(a_Data);
+			for (uint32_t i = 0; i < (a_Size / sizeof(T)); i++)
+				array_16[i] = ChangeByteVolume<T>(array_16[i], a_Volume);
 
 			a_Data = reinterpret_cast<unsigned char*>(array_16);
 		}
@@ -45,7 +49,8 @@ namespace uaudio
 		/// <param name="a_Size">The data size.</param>
 		/// <param name="a_Amount">The panning amount (-1 is fully left, 1 is fully right, 0 is middle).</param>
 		/// <returns></returns>
-		void ChangePanning(unsigned char*& a_Data, uint32_t a_Size, float a_Amount, uint16_t a_NumChannels)
+		template <class T>
+		inline void ChangePanning(unsigned char*& a_Data, uint32_t a_Size, float a_Amount, uint16_t a_NumChannels)
 		{
 			if (a_NumChannels == 1)
 				return;
@@ -71,11 +76,11 @@ namespace uaudio
 				left = std::clamp(left, 0.0f, 1.0f);
 			}
 
-			int16_t* array_16 = reinterpret_cast<int16_t*>(a_Data);
-			for (uint32_t i = 0; i < a_Size; i += a_NumChannels)
+			T* array_16 = reinterpret_cast<T*>(a_Data);
+			for (uint32_t i = 0; i < (a_Size / sizeof(T)); i += a_NumChannels)
 			{
-				array_16[i] = ChangeByteVolume(array_16[i], left);
-				array_16[i + 1] = ChangeByteVolume(array_16[i + 1], right);
+				array_16[i] = ChangeByteVolume<T>(array_16[i], left);
+				array_16[i + 1] = ChangeByteVolume<T>(array_16[i + 1], right);
 			}
 
 			a_Data = reinterpret_cast<unsigned char*>(array_16);

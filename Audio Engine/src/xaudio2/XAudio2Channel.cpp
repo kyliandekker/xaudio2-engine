@@ -1,19 +1,20 @@
 ﻿#include <AudioSystem.h>
-#include <wav/WaveFile.h>
+#include <wave/WaveFile.h>
 #include <xaudio2/XAudio2Channel.h>
+#include <comdef.h>
 
-#include <utils/Effects.h>
+#include <wave/WaveEffects.h>
 #include <utils/Logger.h>
 #include <algorithm>
 
 namespace uaudio::xaudio2
 {
-	XAudio2Channel::XAudio2Channel(AudioSystem& a_AudioSystem) : m_AudioSystem(&a_AudioSystem)
+	XAudio2Channel::XAudio2Channel(AudioSystem &a_AudioSystem) : m_AudioSystem(&a_AudioSystem)
 	{
 		m_VoiceCallback = XAudio2Callback();
 	}
 
-	XAudio2Channel::XAudio2Channel(const XAudio2Channel& rhs) : m_AudioSystem(rhs.m_AudioSystem)
+	XAudio2Channel::XAudio2Channel(const XAudio2Channel &rhs) : m_AudioSystem(rhs.m_AudioSystem)
 	{
 		m_Volume = rhs.m_Volume;
 		m_Panning = rhs.m_Panning;
@@ -33,7 +34,7 @@ namespace uaudio::xaudio2
 		}
 	}
 
-	XAudio2Channel& XAudio2Channel::operator=(const XAudio2Channel& rhs)
+	XAudio2Channel &XAudio2Channel::operator=(const XAudio2Channel &rhs)
 	{
 		if (this != &rhs)
 		{
@@ -53,7 +54,7 @@ namespace uaudio::xaudio2
 	/// Sets the sound of a channel and starts the playback.
 	/// </summary>
 	/// <param name="a_Sound">A pointer to a wave file.</param>
-	void XAudio2Channel::SetSound(const WaveFile& a_Sound)
+	void XAudio2Channel::SetSound(const WaveFile &a_Sound)
 	{
 		m_CurrentSound = &a_Sound;
 		HRESULT hr;
@@ -71,14 +72,14 @@ namespace uaudio::xaudio2
 			wave.nAvgBytesPerSec = a_Sound.GetWavFormat().fmtChunk.byteRate;
 			if (FAILED(hr = m_AudioSystem->GetEngine().CreateSourceVoice(&m_SourceVoice, &wave, 0, 1.0f, &m_VoiceCallback)))
 			{
-				logger::log_error("<XAudio2> Creating XAudio Source Voice failed.");
+				logger::ASSERT(false, "<XAudio2> Creating XAudio2 Source Voice failed.");
 				m_IsPlaying = false;
 				return;
 			}
 		}
 		if (FAILED(hr = m_SourceVoice->Start(0, 0)))
 		{
-			logger::log_error("<XAudio2> Starting XAudio Source Voice failed.");
+			logger::ASSERT(false, "<XAudio2> Starting XAudio2 Source Voice failed.");
 			m_IsPlaying = false;
 		}
 	}
@@ -143,24 +144,24 @@ namespace uaudio::xaudio2
 	{
 		switch (a_TimeUnit)
 		{
-			case TIMEUNIT::TIMEUNIT_MS:
-			{
-				const float seconds = static_cast<float>(m_CurrentPos) / static_cast<float>(m_CurrentSound->GetWavFormat().fmtChunk.byteRate);
-				const float milliseconds = seconds * 1000;
-				return milliseconds;
-				break;
-			}
-			case TIMEUNIT::TIMEUNIT_S:
-			{
-				const float seconds = static_cast<float>(m_CurrentPos) / static_cast<float>(m_CurrentSound->GetWavFormat().fmtChunk.byteRate);
-				return seconds;
-				break;
-			}
-			case TIMEUNIT::TIMEUNIT_POS:
-			{
-				return static_cast<float>(m_CurrentPos);
-				break;
-			}
+		case TIMEUNIT::TIMEUNIT_MS:
+		{
+			const float seconds = static_cast<float>(m_CurrentPos) / static_cast<float>(m_CurrentSound->GetWavFormat().fmtChunk.byteRate);
+			const float milliseconds = seconds * 1000;
+			return milliseconds;
+			break;
+		}
+		case TIMEUNIT::TIMEUNIT_S:
+		{
+			const float seconds = static_cast<float>(m_CurrentPos) / static_cast<float>(m_CurrentSound->GetWavFormat().fmtChunk.byteRate);
+			return seconds;
+			break;
+		}
+		case TIMEUNIT::TIMEUNIT_POS:
+		{
+			return static_cast<float>(m_CurrentPos);
+			break;
+		}
 		}
 
 		return 0.0f;
@@ -174,29 +175,30 @@ namespace uaudio::xaudio2
 		if (m_SourceVoice == nullptr)
 			return;
 
-		// If the sound is done playing, check whether it needs to be repeated or whether it needs to be stopped entirely.
-		if (m_CurrentSound->IsEndOfFile(a_StartPos))
-		{
-			// If the sound is not set to repeat, then stop the channel.
-			if (!m_CurrentSound->IsLooping())
-			{
-				Stop();
-				RemoveSound();
-				return;
-			}
-			a_StartPos = 0;
-		}
 		XAUDIO2_VOICE_STATE state;
 		m_SourceVoice->GetState(&state);
 		if (state.BuffersQueued < m_CurrentSound->GetWavFormat().GetBufferSize())
 		{
-			unsigned char* data;
+			// If the sound is done playing, check whether it needs to be repeated or whether it needs to be stopped entirely.
+			if (m_CurrentSound->IsEndOfFile(a_StartPos))
+			{
+				a_StartPos = 0;
+				// If the sound is not set to repeat, then stop the channel.
+				if (!m_CurrentSound->IsLooping())
+				{
+					Stop();
+					RemoveSound();
+					return;
+				}
+			}
+
+			unsigned char *data = {};
 
 			// Read the part of the wave file and store it back in the read buffer.
 			m_CurrentSound->Read(a_StartPos, a_Size, data);
 
 			// Other effects.
-			// ApplyEffects(modified_data, a_Size);
+			ApplyEffects(data, a_Size);
 
 			// Make sure the new pos is the current pos.
 			m_CurrentPos = a_StartPos;
@@ -204,13 +206,17 @@ namespace uaudio::xaudio2
 			// Make sure we add the size of this read buffer to the total size, so that on the next frame we will get the next part of the wave file.
 			m_CurrentPos += a_Size;
 
-			XAUDIO2_BUFFER x_buffer = { 0, 0, nullptr, 0, 0, 0, 0, 0, nullptr };
-			x_buffer.AudioBytes = a_Size;		 // Buffer containing audio data.
-			x_buffer.pAudioData = data; // Size of the audio buffer in bytes.
+			XAUDIO2_BUFFER x_buffer = {0, 0, nullptr, 0, 0, 0, 0, 0, nullptr};
+			x_buffer.AudioBytes = a_Size; // Buffer containing audio data.
+			x_buffer.pAudioData = data;	  // Size of the audio buffer in bytes.
 
 			HRESULT hr;
 			if (FAILED(hr = m_SourceVoice->SubmitSourceBuffer(&x_buffer)))
-				logger::log_error("<XAudio2> Submitting data to XAudio Source Voice failed.");
+			{
+				_com_error err(hr);
+				LPCTSTR errMsg = err.ErrorMessage();
+				logger::log_warning("<XAudio2> Submitting data to XAudio2 Source Voice failed: 0x%08x: %s.", hr, errMsg);
+			}
 		}
 	}
 
@@ -234,7 +240,7 @@ namespace uaudio::xaudio2
 	/// Returns the XAudio2 source voice.
 	/// </summary>
 	/// <returns>The XAudio2 source voice.</returns>
-	IXAudio2SourceVoice& XAudio2Channel::GetSourceVoice() const
+	IXAudio2SourceVoice &XAudio2Channel::GetSourceVoice() const
 	{
 		return *m_SourceVoice;
 	}
@@ -243,7 +249,7 @@ namespace uaudio::xaudio2
 	/// Returns the XAudio2 voice callback.
 	/// </summary>
 	/// <returns>The XAudio2 voice callback</returns>
-	XAudio2Callback& XAudio2Channel::GetVoiceCallback()
+	XAudio2Callback &XAudio2Channel::GetVoiceCallback()
 	{
 		return m_VoiceCallback;
 	}
@@ -310,29 +316,29 @@ namespace uaudio::xaudio2
 	/// <param name="a_Data">The pcm data that needs to be processed.</param>
 	/// <param name="a_Size">The size of the pcm data block.</param>
 	/// <returns></returns>
-	void XAudio2Channel::ApplyEffects(unsigned char*& a_Data, uint32_t a_Size) const
+	void XAudio2Channel::ApplyEffects(unsigned char *&a_Data, uint32_t a_Size) const
 	{
 		// Master volume.
-		effects::ChangeVolume(a_Data, a_Size, m_AudioSystem->GetMasterVolume());
+		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_AudioSystem->GetMasterVolume());
 
 		// Channel volume.
-		effects::ChangeVolume(a_Data, a_Size, m_Volume);
+		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_Volume);
 
 		// Sound volume (not sure why you would want this but I want it in here damn it)
-		effects::ChangeVolume(a_Data, a_Size, m_CurrentSound->GetVolume());
+		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_CurrentSound->GetVolume());
 
 		// Master panning.
-		effects::ChangePanning(a_Data, a_Size, m_AudioSystem->GetMasterPanning(), m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
+		effects::ChangePanning<int16_t>(a_Data, a_Size, m_AudioSystem->GetMasterPanning(), m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
 
 		// Channel panning.
-		effects::ChangePanning(a_Data, a_Size, m_Panning, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
+		effects::ChangePanning<int16_t>(a_Data, a_Size, m_Panning, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
 	}
 
 	/// <summary>
 	/// Returns the sound.
 	/// </summary>
 	/// <returns>The sound.</returns>
-	const WaveFile& XAudio2Channel::GetSound() const
+	const WaveFile &XAudio2Channel::GetSound() const
 	{
 		return *m_CurrentSound;
 	}

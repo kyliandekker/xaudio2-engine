@@ -1,6 +1,6 @@
 #include "tools/ChannelsTool.h"
 
-#include "wav/WaveFile.h"
+#include "wave/WaveFile.h"
 
 #include <imgui/imgui.h>
 

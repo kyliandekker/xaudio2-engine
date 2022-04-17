@@ -4,7 +4,6 @@
 
 #include <xaudio2.h>
 #include <algorithm>
-#include <cassert>
 
 namespace uaudio
 {
@@ -13,6 +12,7 @@ namespace uaudio
 		HRESULT hr;
 		if (FAILED(hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
 		{
+			logger::ASSERT(false, "Initializing COM library failed.");
 			logger::log_error("<XAudio2> Initializing COM library failed.");
 			return;
 		}
@@ -20,14 +20,16 @@ namespace uaudio
 		m_Engine = nullptr;
 		if (FAILED(hr = XAudio2Create(&m_Engine, 0, XAUDIO2_DEFAULT_PROCESSOR)))
 		{
-			logger::log_error("<XAudio2> Creating XAudio failed.");
+			logger::ASSERT(false, "Creating XAudio2 failed.");
+			logger::log_error("<XAudio2> Creating XAudio2 failed.");
 			return;
 		}
 
 		m_MasterVoice = nullptr;
 		if (FAILED(hr = m_Engine->CreateMasteringVoice(&m_MasterVoice)))
 		{
-			logger::log_error("<XAudio2> Creating XAudio Mastering Voice failed.");
+			logger::ASSERT(false, "Creating XAudio2 Mastering Voice failed.");
+			logger::log_error("<XAudio2> Creating XAudio2 Mastering Voice failed.");
 			return;
 		}
 	}
@@ -55,6 +57,16 @@ namespace uaudio
 					m_Channels[i].Update();
 	}
 
+	/// <summary>
+	/// Updates the audio.
+	/// </summary>
+	void AudioSystem::UpdateNonExtraThread()
+	{
+		if (m_Playback)
+			for (int32_t i = static_cast<int32_t>(ChannelSize() - 1); i > -1; i--)
+				m_Channels[i].Update();
+	}
+
 	void AudioSystem::SetPlaybackStatus(bool a_Playback)
 	{
 		m_Playback = a_Playback;
@@ -66,7 +78,7 @@ namespace uaudio
 	void AudioSystem::Stop()
 	{
 		m_Active = false;
-		m_Thread.join();
+		// m_Thread.join();
 	}
 
 	/// <summary>
@@ -75,7 +87,7 @@ namespace uaudio
 	void AudioSystem::Start()
 	{
 		m_Active = true;
-		m_Thread = std::thread(&AudioSystem::Update, this);
+		// m_Thread = std::thread(&AudioSystem::Update, this);
 	}
 
 	/// <summary>
@@ -91,7 +103,7 @@ namespace uaudio
 	/// The XAudio2 Engine.
 	/// </summary>
 	/// <returns>The XAudio2 Engine.</returns>
-	IXAudio2& AudioSystem::GetEngine() const
+	IXAudio2 &AudioSystem::GetEngine() const
 	{
 		return *m_Engine;
 	}
@@ -157,7 +169,7 @@ namespace uaudio
 	/// </summary>
 	/// <param name="a_WaveFile">The sound that needs to be played.</param>
 	/// <returns>Channel handle.</returns>
-	ChannelHandle AudioSystem::Play(WaveFile& a_WaveFile)
+	ChannelHandle AudioSystem::Play(WaveFile &a_WaveFile)
 	{
 		// First look for inactive channels.
 		for (uint32_t i = 0; i < ChannelSize(); i++)
@@ -179,7 +191,7 @@ namespace uaudio
 			m_Channels.push_back(channel);
 			return static_cast<int32_t>(size);
 		}
-		logger::log_error("<XAudio2> No inactive channels detected.");
+		logger::log_warning("<XAudio2> No inactive channels detected.");
 		return SOUND_NULL_HANDLE;
 	}
 
@@ -197,9 +209,9 @@ namespace uaudio
 	/// </summary>
 	/// <param name="a_ChannelHandle">Handle to the channel.</param>
 	/// <returns>Channel pointer.</returns>
-	xaudio2::XAudio2Channel* AudioSystem::GetChannel(ChannelHandle a_ChannelHandle)
+	xaudio2::XAudio2Channel *AudioSystem::GetChannel(ChannelHandle a_ChannelHandle)
 	{
-		ASSERT(a_ChannelHandle.IsValid() && a_ChannelHandle < static_cast<int32_t>(ChannelSize()), "");
+		logger::ASSERT(a_ChannelHandle.IsValid() && a_ChannelHandle < static_cast<int32_t>(ChannelSize()), "");
 
 		return &m_Channels[a_ChannelHandle];
 	}

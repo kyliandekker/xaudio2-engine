@@ -1,20 +1,20 @@
 #include "tools/SoundsTool.h"
 
-#include "wav/WaveFile.h"
+#include "wave/WaveFile.h"
 
 #include <imgui/imgui.h>
 
-SoundsTool::SoundsTool(uaudio::AudioSystem& a_AudioSystem, uaudio::SoundSystem& a_SoundSystem) : BaseTool(0, "Sounds", "Sounds"), m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
+SoundsTool::SoundsTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &a_SoundSystem) : BaseTool(0, "Sounds", "Sounds"), m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
 {
 }
 
 void SoundsTool::Render()
 {
-    for (auto* sound : m_SoundSystem.GetSounds())
+    for (auto *sound : m_SoundSystem.GetSounds())
         RenderSound(*sound);
 }
 
-void SoundsTool::RenderSound(uaudio::WaveFile& a_WaveFile)
+void SoundsTool::RenderSound(uaudio::WaveFile &a_WaveFile)
 {
     if (ImGui::CollapsingHeader(a_WaveFile.GetSoundTitle()))
     {
@@ -45,6 +45,12 @@ void SoundsTool::RenderSound(uaudio::WaveFile& a_WaveFile)
             ShowValue("Duration: ", uaudio::WaveFile::FormatDuration(uaudio::WaveFile::GetDuration(a_WaveFile.GetWavFormat().dataChunk.chunkSize, a_WaveFile.GetWavFormat().fmtChunk.byteRate)).c_str());
             if (a_WaveFile.GetWavFormat().filledAcidChunk)
                 ShowValue("Tempo: ", std::to_string(a_WaveFile.GetWavFormat().acidChunk.tempo).c_str());
+            std::string sound_loop_text = "##Loop_Sound_" + std::string(a_WaveFile.GetSoundTitle());
+            bool isLooping = a_WaveFile.IsLooping();
+            ImGui::Text("Loop");
+            ImGui::SameLine();
+            ImGui::Checkbox(sound_loop_text.c_str(), &isLooping);
+            a_WaveFile.SetLooping(isLooping);
 
             std::string play_button = std::string(PLAY) + " Play##Play_Sound_" + a_WaveFile.GetSoundTitle();
             if (ImGui::Button(play_button.c_str()))
@@ -54,8 +60,8 @@ void SoundsTool::RenderSound(uaudio::WaveFile& a_WaveFile)
             std::string remove_sound = std::string(MINUS) + " Remove##Remove_Sound_" + a_WaveFile.GetSoundTitle();
             if (ImGui::Button(remove_sound.c_str()))
             {
-                //m_Sounds.erase(m_Sounds.begin() + i);
-                //m_Channels.erase(m_Channels.begin() + i);
+                // m_Sounds.erase(m_Sounds.begin() + i);
+                // m_Channels.erase(m_Channels.begin() + i);
             }
 
             ImGui::Unindent(IMGUI_INDENT);

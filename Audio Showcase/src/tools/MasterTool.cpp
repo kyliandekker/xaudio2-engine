@@ -1,15 +1,15 @@
 #include "tools/MasterTool.h"
 
-#include "wav/WaveFile.h"
+#include "wave/WaveFile.h"
 
 #include <imgui/imgui.h>
 
-MasterTool::MasterTool(uaudio::AudioSystem& a_AudioSystem, uaudio::SoundSystem& a_SoundSystem) : BaseTool(0, "Actions", "Master Actions"), m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
+MasterTool::MasterTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &a_SoundSystem) : BaseTool(0, "Actions", "Master Actions"), m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
 {
-	uaudio::BUFFERSIZE buffer_size = m_AudioSystem.GetBufferSize();
+    uaudio::BUFFERSIZE buffer_size = m_AudioSystem.GetBufferSize();
     for (int i = 0; i < m_BufferSizeOptions.size(); i++)
         if (m_BufferSizeOptions[i] == buffer_size)
-			m_BufferSizeSelection = i;
+            m_BufferSizeSelection = i;
 }
 
 void MasterTool::Render()
@@ -73,7 +73,7 @@ void MasterTool::Render()
 void MasterTool::OpenFile()
 {
     OPENFILENAME ofn;
-    TCHAR sz_file[260] = { 0 };
+    TCHAR sz_file[260] = {0};
 
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = sizeof(ofn);
@@ -88,7 +88,7 @@ void MasterTool::OpenFile()
 
     if (GetOpenFileName(&ofn))
     {
-        char* path = new char[wcslen(ofn.lpstrFile) + 1];
+        char *path = new char[wcslen(ofn.lpstrFile) + 1];
         wsprintfA(path, "%S", ofn.lpstrFile);
         uaudio::Hash hash = m_SoundSystem.LoadSound(path, path);
         delete[] path;

@@ -23,6 +23,8 @@ namespace uaudio
 		void Start();
 		bool HasPlayback() const;
 
+		void UpdateNonExtraThread();
+
 		IXAudio2 &GetEngine() const;
 
 		// Master effects such as volume and panning.
@@ -55,7 +57,5 @@ namespace uaudio
 		bool m_Playback = true;
 		float m_Volume = UAUDIO_DEFAULT_VOLUME;
 		float m_Panning = UAUDIO_DEFAULT_PANNING;
-
-		std::thread m_Thread;
 	};
 }

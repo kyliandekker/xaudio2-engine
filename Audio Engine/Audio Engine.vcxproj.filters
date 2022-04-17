@@ -36,19 +36,19 @@
     <ClInclude Include="include\utils\uint24_t.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\utils\Effects.h">
+    <ClInclude Include="include\wave\WaveEffects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\utils\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\wav\WaveFile.h">
+    <ClInclude Include="include\wave\WaveFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\wav\WavFormat.h">
+    <ClInclude Include="include\wave\WaveFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\wav\WaveConverter.h">
+    <ClInclude Include="include\wave\WaveConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\xaudio2\XAudio2Callback.h">
@@ -72,7 +72,7 @@
     <ClInclude Include="include\Hash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\wav\WaveReader.h">
+    <ClInclude Include="include\wave\WaveReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\allocator\UAudioAllocator.h">
@@ -80,13 +80,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\utils\Effects.cpp">
+    <ClCompile Include="src\wave\WaveEffects.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\wav\WaveFile.cpp">
+    <ClCompile Include="src\wave\WaveFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\wav\WaveConverter.cpp">
+    <ClCompile Include="src\wave\WaveConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\xaudio2\XAudio2Channel.cpp">
@@ -98,10 +98,10 @@
     <ClCompile Include="src\SoundSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\wav\WavFormat.cpp">
+    <ClCompile Include="src\wave\WaveFormat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\wav\WaveReader.cpp">
+    <ClCompile Include="src\wave\WaveReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\allocator\UAudioAllocator.cpp">

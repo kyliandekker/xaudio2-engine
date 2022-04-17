@@ -24,13 +24,13 @@
     <ClInclude Include="include\Hash.h" />
     <ClInclude Include="include\Includes.h" />
     <ClInclude Include="include\SoundSystem.h" />
-    <ClInclude Include="include\utils\Effects.h" />
+    <ClInclude Include="include\wave\WaveEffects.h" />
     <ClInclude Include="include\utils\Logger.h" />
     <ClInclude Include="include\utils\uint24_t.h" />
-    <ClInclude Include="include\wav\WaveConverter.h" />
-    <ClInclude Include="include\wav\WaveFile.h" />
-    <ClInclude Include="include\wav\WaveReader.h" />
-    <ClInclude Include="include\wav\WavFormat.h" />
+    <ClInclude Include="include\wave\WaveConverter.h" />
+    <ClInclude Include="include\wave\WaveFile.h" />
+    <ClInclude Include="include\wave\WaveReader.h" />
+    <ClInclude Include="include\wave\WaveFormat.h" />
     <ClInclude Include="include\allocator\UAudioAllocator.h" />
     <ClInclude Include="include\xaudio2\XAudio2Callback.h" />
     <ClInclude Include="include\xaudio2\XAudio2Channel.h" />
@@ -39,11 +39,11 @@
     <ClCompile Include="src\AudioSystem.cpp" />
     <ClCompile Include="src\SoundSystem.cpp" />
     <ClCompile Include="src\allocator\UAudioAllocator.cpp" />
-    <ClCompile Include="src\utils\Effects.cpp" />
-    <ClCompile Include="src\wav\WaveConverter.cpp" />
-    <ClCompile Include="src\wav\WaveFile.cpp" />
-    <ClCompile Include="src\wav\WaveReader.cpp" />
-    <ClCompile Include="src\wav\WavFormat.cpp" />
+    <ClCompile Include="src\wave\WaveEffects.cpp" />
+    <ClCompile Include="src\wave\WaveConverter.cpp" />
+    <ClCompile Include="src\wave\WaveFile.cpp" />
+    <ClCompile Include="src\wave\WaveReader.cpp" />
+    <ClCompile Include="src\wave\WaveFormat.cpp" />
     <ClCompile Include="src\xaudio2\XAudio2Channel.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -1,7 +1,6 @@
 ﻿#include <SoundSystem.h>
 
 #include "utils/Logger.h"
-#include <assert.h>
 
 namespace uaudio
 {
@@ -20,8 +19,8 @@ namespace uaudio
 		if (DoesSoundExist(a_Hash))
 			return &m_Sounds[a_Hash];
 
-		assert(false);
-		logger::log_error("<ResourceManager> Could not find requested sound with hash number %i. Using default sound instead.", a_Hash);
+		logger::ASSERT(false, "Hash %i not found.", a_Hash);
+		logger::log_warning("<ResourceManager> Could not find requested sound with hash number %i. Using default sound instead.", a_Hash);
 
 		return nullptr;
 	}
