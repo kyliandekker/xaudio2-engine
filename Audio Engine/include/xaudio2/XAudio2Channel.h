@@ -26,6 +26,8 @@ namespace uaudio
 
 			void SetSound(const WaveFile& a_Sound);
 
+			void SetActive(bool a_Active);
+			bool GetActive() const;
 			void Play();
 			void Pause();
 			void Stop();
@@ -48,17 +50,22 @@ namespace uaudio
 			bool IsPlaying() const;
 			bool IsInUse() const;
 
+			bool IsLooping() const;
+			void SetLooping(bool a_Looping);
+
 			void ApplyEffects(unsigned char*& a_Data, uint32_t a_BufferSize) const;
 
 			const WaveFile& GetSound() const;
 		private:
+			bool m_Looping = false;
+
 			std::queue<unsigned char*> m_Buffers;
 			float m_Volume = 1;
 			float m_Panning = 0.0f;
 
 			const WaveFile* m_CurrentSound = nullptr;
 
-			bool m_IsPlaying = false;
+			bool m_IsPlaying = false, m_Active = true;
 
 			AudioSystem* m_AudioSystem = nullptr;
 

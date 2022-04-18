@@ -80,7 +80,7 @@ namespace uaudio
     /// </summary>
     /// <param name="a_Duration"></param>
     /// <returns></returns>
-    std::string WaveFile::FormatDuration(float a_Duration)
+    std::string WaveFile::FormatDuration(float a_Duration, bool a_Miliseconds)
     {
         const uint32_t hours = static_cast<uint32_t>(a_Duration) / 3600;
         const uint32_t minutes = (static_cast<uint32_t>(a_Duration) - (hours * 3600)) / 60;
@@ -98,9 +98,9 @@ namespace uaudio
                ":" +
                std::string(minutes_string) +
                ":" +
-               std::string(seconds_string) +
+               std::string(seconds_string) + (a_Miliseconds ? 
                ":" +
-               std::string(milliseconds_string);
+               std::string(milliseconds_string) : "");
     }
 
     /// <summary>

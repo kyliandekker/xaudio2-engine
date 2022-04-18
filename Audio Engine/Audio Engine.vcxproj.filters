@@ -80,9 +80,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\wave\WaveEffects.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\wave\WaveFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

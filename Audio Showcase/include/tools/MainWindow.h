@@ -3,6 +3,7 @@
 #include "AudioSystem.h"
 #include "SoundSystem.h"
 #include "tools/BaseTool.h"
+#include "imgui/imgui_helpers.h"
 
 class MainWindow : public BaseTool
 {

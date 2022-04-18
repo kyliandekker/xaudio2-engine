@@ -1,6 +1,7 @@
 #include "tools/BaseTool.h"
 
 #include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
 
 BaseTool::BaseTool(ImGuiWindowFlags a_Flags, std::string a_Name, std::string a_Category, bool a_FullScreen) : m_Flags(a_Flags), m_Name(a_Name), m_Category(a_Category), m_FullScreen(a_FullScreen)
 { }
@@ -14,9 +15,10 @@ float BaseTool::GetRGBColor(int color)
 
 void BaseTool::ShowValue(const char* a_Text, const char* a_Value)
 {
+    ImVec4 color = ImGui::GetStyleColorVec4(ImGuiCol_Button);
     ImGui::Text("%s\n", a_Text);
     ImGui::SameLine();
-    ImGui::Text("%s\n", a_Value);
+    ImGui::TextColored(color, "%s\n", a_Value);
 }
 
 void BaseTool::WindowBegin()

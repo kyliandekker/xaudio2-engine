@@ -93,7 +93,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)external\include;$(ProjectDir)include;$(SolutionDir)Audio Engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -114,7 +114,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)external\include;$(ProjectDir)include;$(SolutionDir)Audio Engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -177,8 +177,10 @@
     <ClCompile Include="..\external\src\imgui\imgui.cpp" />
     <ClCompile Include="..\external\src\imgui\imgui_demo.cpp" />
     <ClCompile Include="..\external\src\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\external\src\imgui\imgui_helpers.cpp" />
     <ClCompile Include="..\external\src\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\external\src\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\external\src\imgui\piano.cpp" />
     <ClCompile Include="src\AudioImGuiWindow.cpp" />
     <ClCompile Include="src\AudioSDLWindow.cpp" />
     <ClCompile Include="src\main.cpp" />

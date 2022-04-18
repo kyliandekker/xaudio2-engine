@@ -30,7 +30,7 @@ namespace uaudio
 		/// <param name="a_Volume">The volume.</param>
 		/// <returns></returns>
 		template <class T>
-		inline void ChangeVolume(unsigned char*& a_Data, uint32_t a_Size, float a_Volume)
+		inline void ChangeVolume(unsigned char*& a_Data, uint32_t a_Size, float a_Volume, uint16_t, uint16_t)
 		{
 			// Clamp the volume to 0.0 min and 1.0 max.
 			a_Volume = std::clamp(a_Volume, 0.0f, 1.0f);

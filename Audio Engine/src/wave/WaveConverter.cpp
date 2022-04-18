@@ -19,17 +19,18 @@ namespace uaudio
 		/// <returns></returns>
 		uint16_t *Convert24To16(unsigned char *a_Data, uint32_t &a_Size)
 		{
+			uint16_t* array_16 = new uint16_t[a_Size];
+
 			// TODO: Fix.
 			// Determine the size of a 16bit data array.
 			// Chunk size divided by the size of a 32bit int (4) multiplied by the size of a 16bit int (2).
 			a_Size = a_Size / sizeof(uint24_t) * sizeof(uint16_t);
 
-			uint16_t *array_16 = new uint16_t[a_Size];
-
 			for (uint32_t a = 0; a < a_Size; a++)
 			{
 				// Add the size of a 24bit int (3) to move the data pointer.
-				uint24_t converted_value = *reinterpret_cast<uint24_t *>(a_Data + (a * sizeof(uint24_t)) + 1);
+				uint32_t t = (a * 3);
+				uint24_t converted_value = *reinterpret_cast<uint24_t *>(a_Data + t);
 
 				array_16[a] = static_cast<uint16_t>(converted_value);
 			}

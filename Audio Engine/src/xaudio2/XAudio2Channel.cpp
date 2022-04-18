@@ -57,6 +57,8 @@ namespace uaudio::xaudio2
 	void XAudio2Channel::SetSound(const WaveFile &a_Sound)
 	{
 		m_CurrentSound = &a_Sound;
+		if (m_CurrentSound->IsLooping())
+			m_Looping = m_CurrentSound->IsLooping();
 		HRESULT hr;
 		if (m_SourceVoice == nullptr)
 		{
@@ -82,6 +84,24 @@ namespace uaudio::xaudio2
 			logger::ASSERT(false, "<XAudio2> Starting XAudio2 Source Voice failed.");
 			m_IsPlaying = false;
 		}
+	}
+
+	/// <summary>
+	/// Sets whether the channel submits sound.
+	/// </summary>
+	/// <param name="a_Active"></param>
+	void XAudio2Channel::SetActive(bool a_Active)
+	{
+		m_Active = a_Active;
+	}
+
+	/// <summary>
+	/// Returns whether the channel is currently submitting sound.
+	/// </summary>
+	/// <returns></returns>
+	bool XAudio2Channel::GetActive() const
+	{
+		return m_Active;
 	}
 
 	/// <summary>
@@ -184,7 +204,7 @@ namespace uaudio::xaudio2
 			{
 				a_StartPos = 0;
 				// If the sound is not set to repeat, then stop the channel.
-				if (!m_CurrentSound->IsLooping())
+				if (!m_CurrentSound->IsLooping() && !m_Looping)
 				{
 					Stop();
 					RemoveSound();
@@ -206,7 +226,12 @@ namespace uaudio::xaudio2
 			// Make sure we add the size of this read buffer to the total size, so that on the next frame we will get the next part of the wave file.
 			m_CurrentPos += a_Size;
 
-			XAUDIO2_BUFFER x_buffer = {0, 0, nullptr, 0, 0, 0, 0, 0, nullptr};
+			if (!m_Active)
+			{
+				effects::ChangeVolume<int16_t>(data, a_Size, 0.0f, m_CurrentSound->GetWavFormat().fmtChunk.blockAlign, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
+			}
+
+			XAUDIO2_BUFFER x_buffer = { 0, 0, nullptr, 0, 0, 0, 0, 0, nullptr };
 			x_buffer.AudioBytes = a_Size; // Buffer containing audio data.
 			x_buffer.pAudioData = data;	  // Size of the audio buffer in bytes.
 
@@ -311,6 +336,24 @@ namespace uaudio::xaudio2
 	}
 
 	/// <summary>
+	/// Returns whether the channel needs to repeat itself.
+	/// </summary>
+	/// <returns></returns>
+	bool XAudio2Channel::IsLooping() const
+	{
+		return m_Looping;
+	}
+
+	/// <summary>
+	/// Sets whether the channel should repeat itself.
+	/// </summary>
+	/// <param name="a_Looping"></param>
+	void XAudio2Channel::SetLooping(bool a_Looping)
+	{
+		m_Looping = a_Looping;
+	}
+
+	/// <summary>
 	/// Applies all the effects.
 	/// </summary>
 	/// <param name="a_Data">The pcm data that needs to be processed.</param>
@@ -319,18 +362,18 @@ namespace uaudio::xaudio2
 	void XAudio2Channel::ApplyEffects(unsigned char *&a_Data, uint32_t a_Size) const
 	{
 		// Master volume.
-		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_AudioSystem->GetMasterVolume());
+		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_AudioSystem->GetMasterVolume(), m_CurrentSound->GetWavFormat().fmtChunk.blockAlign, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
 
 		// Channel volume.
-		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_Volume);
+		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_Volume, m_CurrentSound->GetWavFormat().fmtChunk.blockAlign, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
 
 		// Sound volume (not sure why you would want this but I want it in here damn it)
-		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_CurrentSound->GetVolume());
+		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_CurrentSound->GetVolume(), m_CurrentSound->GetWavFormat().fmtChunk.blockAlign, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
 
 		// Master panning.
 		effects::ChangePanning<int16_t>(a_Data, a_Size, m_AudioSystem->GetMasterPanning(), m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
 
-		// Channel panning.
+		//// Channel panning.
 		effects::ChangePanning<int16_t>(a_Data, a_Size, m_Panning, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
 	}
 

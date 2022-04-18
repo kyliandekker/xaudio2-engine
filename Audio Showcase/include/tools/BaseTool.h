@@ -27,6 +27,8 @@
 #define SETTINGS "\xef\x80\x93"
 #define MOON "\xef\x86\x86"
 #define SUN "\xef\x86\x85"
+#define RIGHT "\xef\x81\xa1"
+#define LEFT "\xef\x81\xa0"
 
 #define IMGUI_INDENT 16.0f
 

@@ -3,6 +3,7 @@
 #include "wave/WaveFile.h"
 
 #include <imgui/imgui.h>
+#include <imgui/imgui_helpers.h>
 
 MasterTool::MasterTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &a_SoundSystem) : BaseTool(0, "Actions", "Master Actions"), m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
 {
@@ -17,21 +18,40 @@ void MasterTool::Render()
     std::string master_actions = "Master Actions##Master_Actions_01";
     if (ImGui::CollapsingHeader(master_actions.c_str()))
     {
-        ImGui::Indent(16.0f);
+        if (m_AudioSystem.HasPlayback())
+        {
+            if (ImGui::Button(PAUSE, ImVec2(50, 50)))
+                m_AudioSystem.SetPlaybackStatus(false);
+        }
+        else
+        {
+            if (ImGui::Button(PLAY, ImVec2(50, 50)))
+                m_AudioSystem.SetPlaybackStatus(true);
+        }
+        ImGui::SameLine();
+        if (ImGui::Button(STOP, ImVec2(50, 50)))
+        {
+            m_AudioSystem.SetPlaybackStatus(false);
+            for (int32_t i = 0; i < static_cast<int32_t>(m_AudioSystem.ChannelSize()); i++)
+            {
+                m_AudioSystem.GetChannel(i)->SetPos(0);
+            }
+        }
 
         float panning = m_AudioSystem.GetMasterPanning();
-        std::string master_panning = std::string(PANNING) + " Master Panning";
-        ImGui::Text("%s", master_panning.c_str());
-        ImGui::SameLine();
-        ImGui::SliderFloat("###Panning_Master_0", &panning, -1, 1);
-        m_AudioSystem.SetMasterPanning(panning);
+        std::string master_panning = std::string(PANNING) + " Master Panning (affects all channels)";
+        if (ImGui::Knob("Panning##Master_Panning", &panning, -1.0f, 1.0f, ImVec2(50, 50), master_panning.c_str(), 0.0f))
+        {
+            m_AudioSystem.SetMasterPanning(panning);
+        }
 
-        float volume = m_AudioSystem.GetMasterVolume();
-        std::string master_volume = std::string(VOLUME_UP) + " Master Volume";
-        ImGui::Text("%s", master_volume.c_str());
         ImGui::SameLine();
-        ImGui::SliderFloat("###Volume_Master_0", &volume, 0, 1);
-        m_AudioSystem.SetMasterVolume(volume);
+        float volume = m_AudioSystem.GetMasterVolume();
+        std::string master_volume = std::string(VOLUME_UP) + " Master Volume (affects all channels)";
+        if (ImGui::Knob("Volume##Master_Volume", &volume, 0, 1, ImVec2(50, 50), master_volume.c_str(), 1.0f))
+        {
+            m_AudioSystem.SetMasterVolume(volume);
+        }
 
         std::string buffer_size_text = "Buffer Size";
         ImGui::Text("%s", buffer_size_text.c_str());
@@ -48,19 +68,7 @@ void MasterTool::Render()
             }
             ImGui::EndCombo();
         }
-
-        if (m_AudioSystem.HasPlayback())
-        {
-            std::string pause_button = std::string(PAUSE) + " Pause Whole Playback##Pause_Whole_Playback";
-            if (ImGui::Button(pause_button.c_str()))
-                m_AudioSystem.SetPlaybackStatus(false);
-        }
-        else
-        {
-            std::string play_button = std::string(PLAY) + " Resume Whole Playback##Resume_Whole_Playback";
-            if (ImGui::Button(play_button.c_str()))
-                m_AudioSystem.SetPlaybackStatus(true);
-        }
+        
         std::string add_sound = std::string(ADD) + " Add Sound";
         if (ImGui::Button(add_sound.c_str()))
             OpenFile();

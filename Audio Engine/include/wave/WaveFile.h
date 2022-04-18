@@ -29,7 +29,7 @@ namespace uaudio
         void Read(uint32_t a_StartingPoint, uint32_t &a_ElementCount, unsigned char *&a_Buffer) const;
 
         static float GetDuration(uint32_t a_ChunkSize, uint32_t a_ByteRate);
-        static std::string FormatDuration(float a_Duration);
+        static std::string FormatDuration(float a_Duration, bool a_Miliseconds = true);
         bool IsEndOfFile(uint32_t a_StartingPoint) const;
 
         bool IsLooping() const;
