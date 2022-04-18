@@ -1,36 +1,9 @@
-# XAudio2 Engine
+# Undefiant Audio (UAUDIO)
 
-This is a personal project of mine which I have been working on during my second year at Breda University of Applied Sciences. It uses XAudio2 and has its own wav file converter.
+This is a personal project of mine which I have been working on during my second year at Breda University of Applied Sciences. It uses XAudio2 and has its own conversion and effects. Currently it only supports wav.
 
 ## Usage
 
-The project comes with its own debugging window (SDL is used), but it can also be completely ignored. Using it in something like a game engine is very easy, as you would only have to include the AudioSystem class.
+The engine itself can be used anywhere and it just needs to be compiled into a lib file and the include files need to be moved.
 
-```cpp
-#include "Audio/AudioSystem.h"
-
-void main()
-{
-	AudioSystem audioSystem;
-	while (true)
-	{
-		audioSystem.Update();
-	}
-}
-```
-
-Creating sounds and playing them is also very easy.
-
-```cpp
-#include "Audio/AudioSystem.h"
-
-void main()
-{
-	AudioSystem audioSystem;
-	int soundHandle = audioSystem.CreateSound("./resources/audio/player_hurt.wav"); 
-
-	int channel = audioSystem.Play(soundHandle); 
-
-	audioSystem.Stop(soundHandle); 
-}
-```
+The repository comes with a showcase project that uses ImGui and SDL. Most of the features are shown in there.

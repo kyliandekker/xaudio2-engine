@@ -24,7 +24,7 @@ namespace uaudio
 
     struct WAVE_CONFIG
     {
-        uint32_t m_Flags = UAUDIO_ALL_CHUNKS;
+        uint32_t m_Flags = UAUDIO_DEFAULT_CHUNKS;
         bool HasChunk(uint32_t a_Flag) const
         {
             return m_Flags & a_Flag;

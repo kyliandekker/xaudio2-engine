@@ -97,9 +97,9 @@ void ChannelsTool::RenderChannel(uint32_t a_Index, uaudio::xaudio2::XAudio2Chann
 
     ImGui::SameLine();
     bool isLooping = a_Channel->IsLooping();
-    std::string loop_button = std::string(RETRY) + "##Loop_Sound_" + std::to_string(a_Index);
+    std::string loop_button = std::string(RETRY) + "##Loop_Channel_" + std::to_string(a_Index);
     if (ImGui::CheckboxButton(loop_button.c_str(), ImVec2(25, 25), &isLooping))
-        a_Channel->SetLooping(!a_Channel->IsLooping());
+        a_Channel->SetLooping(isLooping);
 
     if (a_Channel->IsInUse())
     {

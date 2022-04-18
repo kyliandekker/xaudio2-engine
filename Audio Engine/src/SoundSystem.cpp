@@ -4,14 +4,19 @@
 
 namespace uaudio
 {
-	UAUDIO_DEFAULT_HASH SoundSystem::LoadSound(const char *a_Path, const char *a_Name)
+	UAUDIO_DEFAULT_HASH SoundSystem::LoadSound(const char *a_Path, const char *a_Name, WAVE_CONFIG a_Config)
 	{
 		UAUDIO_DEFAULT_HASH hash = UAUDIO_DEFAULT_HASH_FUNCTION(a_Name);
 
 		if (!DoesSoundExist(hash))
-			m_Sounds.insert(std::make_pair(hash, WaveFile(a_Path)));
+			m_Sounds.insert(std::make_pair(hash, WaveFile(a_Path, a_Config)));
 
 		return hash;
+	}
+
+	void SoundSystem::UnloadSound(UAUDIO_DEFAULT_HASH hash)
+	{
+		m_Sounds.erase(hash);
 	}
 
 	WaveFile *SoundSystem::FindSound(UAUDIO_DEFAULT_HASH a_Hash)

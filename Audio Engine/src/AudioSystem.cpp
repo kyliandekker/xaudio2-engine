@@ -5,6 +5,8 @@
 #include <xaudio2.h>
 #include <algorithm>
 
+#include "SoundSystem.h"
+
 namespace uaudio
 {
 	AudioSystem::AudioSystem()

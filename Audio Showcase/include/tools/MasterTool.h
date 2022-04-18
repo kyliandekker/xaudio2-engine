@@ -27,7 +27,7 @@ private:
 		"8192",
 	};
 
-	int m_BufferSizeSelection = -1;
+	uint32_t m_BufferSizeSelection = -1;
 
 	std::array<uaudio::BUFFERSIZE, 7> m_BufferSizeOptions = {
 		uaudio::BUFFERSIZE::BUFFERSIZE_256,
@@ -38,4 +38,17 @@ private:
 		uaudio::BUFFERSIZE::BUFFERSIZE_4096,
 		uaudio::BUFFERSIZE::BUFFERSIZE_8192,
 	};
+
+	bool
+		m_AllChunks = false,
+		m_RiffChunk = true,
+		m_FmtChunk = true,
+		m_DataChunk = true,
+		m_AcidChunk = false,
+		m_BextChunk = false,
+		m_FactChunk = false,
+		m_SmplChunk = false,
+		m_CueChunk = false,
+		m_OtherChunks = false;
+
 };

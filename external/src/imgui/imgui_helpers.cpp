@@ -342,6 +342,8 @@ namespace ImGui
         else
 			ImGui::PushStyleColor(ImGuiCol_Button, color_inactive);
         bool b = ImGui::Button(label, size_arg);
+        if (b)
+            *p_value = !(*p_value);
         ImGui::PopStyleColor();
 
         return b;
