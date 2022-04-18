@@ -105,9 +105,9 @@ TEST_CASE("Testing Hash Function")
 		printf("[LOWERCASE AND UPPERCASE IN HASH FUNCTION]\n");
 		uaudio::logger::print_white();
 
-		uaudio::Hash stdStringA = uaudio::GetHash(_stringLit);
-		uaudio::Hash stdStringB = uaudio::GetHash(_stringLit.c_str());
-		uaudio::Hash charPtrA = uaudio::GetHash(_charptr);
+		UAUDIO_DEFAULT_HASH stdStringA = UAUDIO_DEFAULT_HASH_FUNCTION(_stringLit);
+		UAUDIO_DEFAULT_HASH stdStringB = UAUDIO_DEFAULT_HASH_FUNCTION(_stringLit.c_str());
+		UAUDIO_DEFAULT_HASH charPtrA = UAUDIO_DEFAULT_HASH_FUNCTION(_charptr);
 
 		CHECK(stdStringA == stdStringB);
 		CHECK(stdStringB != charPtrA);
@@ -132,12 +132,12 @@ TEST_CASE("Testing Hash Function")
 											  "secret1.json", "secret2.json", "secret3.json", "secret4.json", "shop1.json", "start0.json", "hello", "h", "he", "hel", "metronome_01.wav",
 											  "metronome_02.wav", "default_sound.wav", "default_soundtrack.wav", "fontawesome.ttf"};
 
-		std::vector<uaudio::Hash> hashes;
+		std::vector<UAUDIO_DEFAULT_HASH> hashes;
 
 		hashes.reserve(tests.size());
 
 		for (size_t i = 0; i < tests.size(); i++)
-			hashes.push_back(uaudio::GetHash(tests[i]));
+			hashes.push_back(UAUDIO_DEFAULT_HASH_FUNCTION(tests[i]));
 
 		for (size_t i = 0; i < tests.size(); i++)
 			for (size_t j = 0; j < tests.size(); j++)

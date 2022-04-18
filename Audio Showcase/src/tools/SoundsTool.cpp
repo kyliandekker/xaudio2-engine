@@ -15,9 +15,9 @@ void SoundsTool::Render()
         RenderSound(hash);
 }
 
-void SoundsTool::RenderSound(uaudio::Hash a_SoundHash)
+void SoundsTool::RenderSound(UAUDIO_DEFAULT_HASH a_SoundHash)
 {
-    uaudio::WaveFile* a_WaveFile = m_SoundSystem.FindSound(a_SoundHash);
+    uaudio::WaveFile *a_WaveFile = m_SoundSystem.FindSound(a_SoundHash);
     ImGui::Text(a_WaveFile->GetSoundTitle());
 
     std::string play_button = std::string(PLAY) + " Play##Play_Sound_" + a_WaveFile->GetSoundTitle();
@@ -25,14 +25,14 @@ void SoundsTool::RenderSound(uaudio::Hash a_SoundHash)
     {
         m_AudioSystem.Play(*a_WaveFile);
     }
-    std::string remove_sound = std::string(MINUS) + " Unload##Unload_Sound_" + a_WaveFile->GetSoundTitle();
 
     ImGui::SameLine();
+    std::string remove_sound = std::string(MINUS) + " Unload##Unload_Sound_" + a_WaveFile->GetSoundTitle();
     if (ImGui::Button(remove_sound.c_str()))
     {
         for (int32_t i = 0; i < m_AudioSystem.ChannelSize(); i++)
         {
-            uaudio::xaudio2::XAudio2Channel* channel = m_AudioSystem.GetChannel(i);
+            uaudio::xaudio2::XAudio2Channel *channel = m_AudioSystem.GetChannel(i);
             if (&channel->GetSound() == a_WaveFile)
             {
                 channel->RemoveSound();
@@ -41,6 +41,13 @@ void SoundsTool::RenderSound(uaudio::Hash a_SoundHash)
             }
         }
         m_SoundSystem.UnloadSound(a_SoundHash);
+    }
+
+    ImGui::SameLine();
+    std::string save_sound = std::string(SAVE) + " Save##Save_Sound_" + a_WaveFile->GetSoundTitle();
+    if (ImGui::Button(save_sound.c_str()))
+    {
+        SaveFile(a_WaveFile);
     }
 
     ImGui::SameLine();
@@ -81,4 +88,33 @@ void SoundsTool::RenderSound(uaudio::Hash a_SoundHash)
         ImGui::Unindent(IMGUI_INDENT);
     }
     ImGui::Separator();
+}
+
+/// <summary>
+/// Opens a wav file and adds it to the resources.
+/// </summary>
+void SoundsTool::SaveFile(uaudio::WaveFile* a_WaveFile)
+{
+    OPENFILENAME ofn;
+    TCHAR sz_file[260] = { 0 };
+
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.lpstrFile = sz_file;
+    ofn.nMaxFile = sizeof(sz_file);
+    ofn.lpstrFilter = L"WAV Files (*.wav;*.wave)\0*.wav;*.wave";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = nullptr;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = nullptr;
+    ofn.Flags = OFN_PATHMUSTEXIST;
+
+    if (GetSaveFileName(&ofn))
+    {
+        char* path = new char[wcslen(ofn.lpstrFile) + 1];
+        wsprintfA(path, "%S", ofn.lpstrFile);
+
+        a_WaveFile->Save(path);
+        delete[] path;
+    }
 }

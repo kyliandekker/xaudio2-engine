@@ -1,10 +1,12 @@
 ﻿#pragma once
 
 #include <intsafe.h>
+#include <map>
 #include <string>
 #include <vector>
 
 #include "Includes.h"
+#include "Wave_Config.h"
 
 namespace uaudio
 {
@@ -64,11 +66,10 @@ constexpr auto CHUNK_ID_SIZE = 4;
 		Chunk(unsigned char a_ChunkID[CHUNK_ID_SIZE], uint32_t a_ChunkSize);
 		Chunk(const Chunk &rhs);
 
-		static uint32_t GetSize();
-
-		~Chunk();
-
 		Chunk &operator=(const Chunk &rhs);
+
+		static uint32_t GetSize();
+		uint32_t GetRuntimeSize() const;
 
 		unsigned char chunkId[CHUNK_ID_SIZE] = {};
 		uint32_t chunkSize = 0;
@@ -102,11 +103,12 @@ constexpr auto  RIFF_CHUNK_ID = "RIFF";
 		RIFF_Chunk(unsigned char a_ChunkID[CHUNK_ID_SIZE], uint32_t a_ChunkSize, unsigned char a_Format[CHUNK_ID_SIZE]);
 		RIFF_Chunk(const RIFF_Chunk &rhs);
 
-		~RIFF_Chunk();
-
 		RIFF_Chunk &operator=(const RIFF_Chunk &rhs);
 
+		void Write(FILE*& a_File);
+
 		static uint32_t GetSize();
+		uint32_t GetRuntimeSize() const;
 
 		unsigned char format[CHUNK_ID_SIZE] = {};
 	};
@@ -175,9 +177,10 @@ constexpr auto FMT_CHUNK_FORMAT = "WAVE";
 		FMT_Chunk(unsigned char a_ChunkID[CHUNK_ID_SIZE], uint32_t a_ChunkSize, uint16_t a_AudioFormat, uint16_t a_NumChannels, uint32_t a_SampleRate, uint32_t a_ByteRate, uint16_t a_BlockAlign, uint16_t a_BitsPerSample);
 		FMT_Chunk(const FMT_Chunk &rhs);
 
-		~FMT_Chunk();
+		void Write(FILE*& a_File);
 
 		static uint32_t GetSize();
+		uint32_t GetRuntimeSize() const;
 
 		FMT_Chunk &operator=(const FMT_Chunk &rhs);
 
@@ -220,7 +223,10 @@ constexpr auto DATA_CHUNK_ID = "data";
 
 		~DATA_Chunk();
 
+		void Write(FILE*& a_File);
+
 		static uint32_t GetSize();
+		uint32_t GetRuntimeSize() const;
 
 		DATA_Chunk &operator=(const DATA_Chunk &rhs);
 
@@ -286,9 +292,10 @@ constexpr auto ACID_CHUNK_ID = "acid";
 			float a_Tempo);
 		ACID_Chunk(const ACID_Chunk &rhs);
 
-		~ACID_Chunk();
+		void Write(FILE*& a_File);
 
 		static uint32_t GetSize();
+		uint32_t GetRuntimeSize() const;
 
 		ACID_Chunk &operator=(const ACID_Chunk &rhs);
 
@@ -414,9 +421,10 @@ constexpr auto BEXT_CHUNK_ID = "bext";
 			unsigned char a_Reserved[180]);
 		BEXT_Chunk(const BEXT_Chunk &rhs);
 
-		~BEXT_Chunk();
+		void Write(FILE*& a_File);
 
 		static uint32_t GetSize();
+		uint32_t GetRuntimeSize() const;
 
 		BEXT_Chunk &operator=(const BEXT_Chunk &rhs);
 
@@ -461,7 +469,10 @@ constexpr auto FACT_CHUNK_ID = "fact";
 		FACT_Chunk(unsigned char a_ChunkID[CHUNK_ID_SIZE], uint32_t a_ChunkSize, uint32_t a_SampleLength);
 		FACT_Chunk(const FACT_Chunk &rhs);
 
+		void Write(FILE*& a_File);
+
 		static uint32_t GetSize();
+		uint32_t GetRuntimeSize() const;
 
 		FACT_Chunk &operator=(const FACT_Chunk &rhs);
 
@@ -671,7 +682,10 @@ constexpr auto SMPL_CHUNK_ID = "smpl";
 
 		~SMPL_Chunk();
 
+		void Write(FILE*& a_File);
+
 		static uint32_t GetSize();
+		uint32_t GetRuntimeSize() const;
 
 		SMPL_Chunk &operator=(const SMPL_Chunk &rhs);
 
@@ -764,9 +778,12 @@ constexpr auto CUE_CHUNK_ID = "cue ";
 		CUE_Chunk(unsigned char a_ChunkID[CHUNK_ID_SIZE], uint32_t a_ChunkSize, uint32_t a_NumCuePoints, CUE_Point *a_QuePoints);
 		CUE_Chunk(const CUE_Chunk &rhs);
 
-		static uint32_t GetSize();
-
 		~CUE_Chunk();
+
+		void Write(FILE*& a_File);
+
+		static uint32_t GetSize();
+		uint32_t GetRuntimeSize() const;
 
 		CUE_Chunk &operator=(const CUE_Chunk &rhs);
 
@@ -796,6 +813,7 @@ constexpr auto CUE_CHUNK_ID = "cue ";
 
 		uint32_t GetBufferSize() const;
 		uint32_t GetBitRate() const;
+		void CalculateRiffChunkSize(WAVE_CONFIG a_Config);
 
 		// EXTRA
 
@@ -814,11 +832,6 @@ constexpr auto CUE_CHUNK_ID = "cue ";
 		// smpl
 		CUE_Chunk cueChunk = CUE_Chunk();
 
-		// other chunks
-		/*
-		 * fact
-		 * junk
-		 */
 		std::vector<Chunk, UAUDIO_DEFAULT_ALLOCATOR<Chunk>> otherChunks = std::vector<Chunk, UAUDIO_DEFAULT_ALLOCATOR<Chunk>>();
 
 		std::string m_FilePath = "";

@@ -1,19 +1,23 @@
 # TODO
 
-[ ] SoundSheet in audio framework.
-[ ] Make vectors and other std data structures use the allocator.
-[ ] Make malloc and stuff use the allocator.
-[ ] Check waveconverter for possible memory leaks.
-[ ] Add a shit ton of ASSERTs.
-[ ] Fix panning and volume.
-[ ] invalid sizes in unit test for mono to stereo and reverse.
-[ ] byte volume unit test.
-[ ] conversion unit test.
-[ ] Set looping point and starting point (with custom slider). https://github.com/ocornut/imgui/issues/76
-[X] Wave settings (load specific chunks only).
-[ ] Fix 32-bit conversion.
-[ ] Fix 24-bit conversion.
-[X] Close when loop crash.
-[X] Play multiple channels crash.
-[ ] Volume and panning templated (so that 32bit and 24bit also works).
-[ ] 8-bit support.
+- [ ] SoundSheet in audio framework.
+- [ ] Make vectors and other std data structures use the allocator.
+- [ ] Make malloc and stuff use the allocator.
+- [ ] Check waveconverter for possible memory leaks.
+- [ ] Add a shit ton of ASSERTs.
+- [ ] Fix panning and volume.
+- [ ] invalid sizes in unit test for mono to stereo and reverse.
+- [ ] byte volume unit test.
+- [ ] conversion unit test.
+- [ ] Set looping point and starting point (with custom slider). https://github.com/ocornut/imgui/issues/76
+- [X] Wave settings (load specific chunks only).
+- [ ] Fix 32-bit conversion.
+- [ ] Fix 24-bit conversion.
+- [X] Close when loop crash.
+- [X] Play multiple channels crash.
+- [ ] Volume and panning templated (so that 32bit and 24bit also works).
+- [ ] 8-bit support.
+- [X] Replace all Hash to DEFAULT_HASH.
+- [ ] Save wave file (needs recalc).
+- [ ] Stream mode.
+- [ ] Recalc all sizes of chunks when they are loaded.

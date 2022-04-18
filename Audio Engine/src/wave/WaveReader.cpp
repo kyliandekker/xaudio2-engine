@@ -109,10 +109,10 @@ namespace uaudio
 				fread(&blockAlign, sizeof(blockAlign), 1, a_File);
 				fread(&bitsPerSample, sizeof(bitsPerSample), 1, a_File);
 
-				SetFMTChunk(a_WavFormat, chunkid, chunksize, audioFormat, numChannels, sampleRate, byteRate, blockAlign, bitsPerSample);
+				SetFMTChunk(a_WavFormat, chunkid, GetChunkSize<FMT_Chunk>(true), audioFormat, numChannels, sampleRate, byteRate, blockAlign, bitsPerSample);
 
 				// NOTE: Sometimes the fmt chunk is bigger than defined on my sources.
-				uint32_t expected_chunksize = GetChunkSize<FMT_Chunk>();
+				uint32_t expected_chunksize = GetChunkSize<FMT_Chunk>(true);
 				if (expected_chunksize < chunksize)
 				{
 					logger::log_info("<WaveReader> (\"%s\") Bigger fmt chunk than usual, skipping rest of data.", a_FilePath);
@@ -126,7 +126,7 @@ namespace uaudio
 			{
 				// Actual data.
 				unsigned char *data = static_cast<unsigned char *>(UAUDIO_DEFAULT_ALLOC(chunksize)); // set aside sound buffer space.
-				fread(data, 1, chunksize, a_File);													 // read in our whole sound data chunk.
+				fread(data, 1, chunksize, a_File);
 
 				SetDataChunk(a_WavFormat, chunkid, chunksize, data);
 
@@ -134,7 +134,7 @@ namespace uaudio
 			}
 			/*
 			 * ACID CHUNK
-			 */
+			*/
 			else if (a_WavConfig.HasChunk(UAUDIO_CHUNK_FLAG::CHUNK_FLAG_ACID) && strcmp(std::string(&chunkid[0], &chunkid[0] + std::size(chunkid)).c_str(), ACID_CHUNK_ID) == 0)
 			{
 				uint32_t type_of_a_File = 0x5;
@@ -152,10 +152,10 @@ namespace uaudio
 				fread(&meter_numerator, sizeof(meter_numerator), 1, a_File);
 				fread(&tempo, sizeof(tempo), 1, a_File);
 
-				SetAcidChunk(a_WavFormat, chunkid, chunksize, type_of_a_File, root_note, num_of_beats, meter_denominator, meter_numerator, tempo);
+				SetAcidChunk(a_WavFormat, chunkid, GetChunkSize<ACID_Chunk>(true), type_of_a_File, root_note, num_of_beats, meter_denominator, meter_numerator, tempo);
 
 				// NOTE: Sometimes the acid chunk is bigger than defined on my sources.
-				uint32_t expected_chunksize = GetChunkSize<ACID_Chunk>();
+				uint32_t expected_chunksize = GetChunkSize<ACID_Chunk>(true);
 				if (expected_chunksize < chunksize)
 				{
 					logger::log_info("<WaveReader> (\"%s\") Bigger acid chunk than usual, skipping rest of data.", a_FilePath);
@@ -199,10 +199,10 @@ namespace uaudio
 				fread(&max_short_term_loudness, sizeof(max_short_term_loudness), 1, a_File);
 				fread(&reserved, sizeof(reserved), 1, a_File);
 
-				SetBextChunk(a_WavFormat, chunkid, chunksize, description, originator, originator_reference, origination_date, origination_time, time_reference_low, time_reference_high, version, umid, loudness_value, loudness_range, max_true_peak_level, max_momentary_loudness, max_short_term_loudness, reserved);
+				SetBextChunk(a_WavFormat, chunkid, GetChunkSize<BEXT_Chunk>(true), description, originator, originator_reference, origination_date, origination_time, time_reference_low, time_reference_high, version, umid, loudness_value, loudness_range, max_true_peak_level, max_momentary_loudness, max_short_term_loudness, reserved);
 
 				// NOTE: Sometimes the bext chunk is bigger than defined on my sources.
-				uint32_t expected_chunksize = GetChunkSize<BEXT_Chunk>();
+				uint32_t expected_chunksize = GetChunkSize<BEXT_Chunk>(true);
 				if (expected_chunksize < chunksize)
 				{
 					logger::log_info("<WaveReader> (\"%s\") Bigger bext chunk than usual, skipping rest of data.", a_FilePath);
@@ -218,10 +218,10 @@ namespace uaudio
 
 				fread(&sample_length, sizeof(sample_length), 1, a_File);
 
-				SetFACTChunk(a_WavFormat, chunkid, chunksize, sample_length);
+				SetFACTChunk(a_WavFormat, chunkid, GetChunkSize<FACT_Chunk>(true), sample_length);
 
 				// NOTE: Sometimes the fact chunk is bigger than defined on my sources.
-				uint32_t expected_chunksize = GetChunkSize<FACT_Chunk>();
+				uint32_t expected_chunksize = GetChunkSize<FACT_Chunk>(true);
 				if (expected_chunksize < chunksize)
 				{
 					logger::log_info("<WaveReader> (\"%s\") Bigger fact chunk than usual, skipping rest of data.", a_FilePath);
@@ -266,10 +266,10 @@ namespace uaudio
 					fread(&samples[i].play_count, sizeof(samples[i].play_count), 1, a_File);
 				}
 
-				SetSMPLChunk(a_WavFormat, chunkid, chunksize, manufacturer, product, sample_period, midi_unity_node, midi_pitch_fraction, smpte_format, smpte_offset, num_sample_loops, sampler_data, samples);
+				SetSMPLChunk(a_WavFormat, chunkid, GetChunkSize<SMPL_Chunk>(true) + (num_sample_loops * sizeof(SMPL_Sample_Loop)), manufacturer, product, sample_period, midi_unity_node, midi_pitch_fraction, smpte_format, smpte_offset, num_sample_loops, sampler_data, samples);
 
 				// NOTE: Sometimes the smpl chunk is bigger than defined on my sources.
-				uint32_t expected_chunksize = GetChunkSize<SMPL_Chunk>() + (num_sample_loops * sizeof(SMPL_Sample_Loop));
+				uint32_t expected_chunksize = GetChunkSize<SMPL_Chunk>(true) + (num_sample_loops * sizeof(SMPL_Sample_Loop));
 				if (expected_chunksize < chunksize)
 				{
 					logger::log_info("<WaveReader> (\"%s\") Bigger smpl chunk than expected, skipping rest of data.", a_FilePath);
@@ -298,10 +298,10 @@ namespace uaudio
 					fread(&cue_points[i].sample_offset, sizeof(cue_points[i].sample_offset), 1, a_File);
 				}
 
-				SetCUEChunk(a_WavFormat, chunkid, chunksize, num_cue_points, cue_points);
+				SetCUEChunk(a_WavFormat, chunkid, GetChunkSize<CUE_Chunk>(true) + (num_cue_points * sizeof(CUE_Point)), num_cue_points, cue_points);
 				
 				// NOTE: Sometimes the cue chunk is bigger than defined on my sources.
-				uint32_t expected_chunksize = GetChunkSize<CUE_Chunk>() + (num_cue_points * sizeof(CUE_Point));
+				uint32_t expected_chunksize = GetChunkSize<CUE_Chunk>(true) + (num_cue_points * sizeof(CUE_Point));
 				if (expected_chunksize < chunksize)
 				{
 					logger::log_info("<WaveReader> (\"%s\") Bigger cue chunk than expected, skipping rest of data.", a_FilePath);
@@ -351,6 +351,8 @@ namespace uaudio
 			a_WavFormat.dataChunk.data = array_16;
 		}
 
+		a_WavFormat.CalculateRiffChunkSize(a_WavConfig);
+
 		// Recalculate block align and byterate.
 		a_WavFormat.fmtChunk.blockAlign = a_WavFormat.fmtChunk.numChannels * a_WavFormat.fmtChunk.bitsPerSample / 8;
 		a_WavFormat.fmtChunk.byteRate = a_WavFormat.fmtChunk.sampleRate * a_WavFormat.fmtChunk.numChannels * a_WavFormat.fmtChunk.bitsPerSample / 8;
@@ -358,6 +360,7 @@ namespace uaudio
 		fclose(a_File);
 		a_File = nullptr;
 
+		logger::log_success("<WaveReader> Opened file successfully: (\"%s\").", a_FilePath);
 		return WAVE_LOADING_STATUS::STATUS_SUCCESSFUL;
 	}
 

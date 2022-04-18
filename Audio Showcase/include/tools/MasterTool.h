@@ -50,5 +50,4 @@ private:
 		m_SmplChunk = false,
 		m_CueChunk = false,
 		m_OtherChunks = false;
-
 };

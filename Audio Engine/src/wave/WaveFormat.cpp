@@ -16,14 +16,7 @@ namespace uaudio
         chunkSize = rhs.chunkSize;
     }
 
-    uint32_t Chunk::GetSize()
-    {
-        return sizeof(Chunk);
-    }
-
-    Chunk::~Chunk() = default;
-
-    Chunk &Chunk::operator=(const Chunk &rhs)
+    Chunk& Chunk::operator=(const Chunk & rhs)
     {
         if (&rhs != this)
         {
@@ -31,6 +24,16 @@ namespace uaudio
             chunkSize = rhs.chunkSize;
         }
         return *this;
+    }
+
+    uint32_t Chunk::GetSize()
+    {
+        return sizeof(Chunk);
+    }
+
+    uint32_t Chunk::GetRuntimeSize() const
+    {
+        return sizeof(Chunk);
     }
 
     RIFF_Chunk::RIFF_Chunk() : Chunk() {}
@@ -45,8 +48,6 @@ namespace uaudio
         memcpy(format, rhs.format, sizeof(format));
     }
 
-    RIFF_Chunk::~RIFF_Chunk() = default;
-
     RIFF_Chunk &RIFF_Chunk::operator=(const RIFF_Chunk &rhs)
     {
         if (&rhs != this)
@@ -57,9 +58,21 @@ namespace uaudio
         return *this;
     }
 
+    void RIFF_Chunk::Write(FILE*& a_File)
+    {
+        fwrite(reinterpret_cast<char*>(&chunkId), sizeof(chunkId), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&chunkSize), sizeof(chunkSize), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&format), sizeof(format), 1, a_File);
+    }
+
     uint32_t RIFF_Chunk::GetSize()
     {
         return sizeof(RIFF_Chunk);
+    }
+
+    uint32_t RIFF_Chunk::GetRuntimeSize() const
+    {
+        return RIFF_Chunk::GetSize();
     }
 
     FMT_Chunk::FMT_Chunk() : Chunk() {}
@@ -72,11 +85,26 @@ namespace uaudio
     {
     }
 
-    FMT_Chunk::~FMT_Chunk() = default;
+    void FMT_Chunk::Write(FILE*& a_File)
+    {
+        fwrite(reinterpret_cast<char*>(&chunkId), sizeof(chunkId), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&chunkSize), sizeof(chunkSize), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&audioFormat), sizeof(audioFormat), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&numChannels), sizeof(numChannels), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&sampleRate), sizeof(sampleRate), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&byteRate), sizeof(byteRate), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&blockAlign), sizeof(blockAlign), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&bitsPerSample), sizeof(bitsPerSample), 1, a_File);
+    }
 
     uint32_t FMT_Chunk::GetSize()
     {
         return sizeof(FMT_Chunk);
+    }
+
+    uint32_t FMT_Chunk::GetRuntimeSize() const
+    {
+        return FMT_Chunk::GetSize();
     }
 
     FMT_Chunk &FMT_Chunk::operator=(const FMT_Chunk &rhs)
@@ -117,9 +145,22 @@ namespace uaudio
         UAUDIO_DEFAULT_FREE(data);
     }
 
+    void DATA_Chunk::Write(FILE*& a_File)
+    {
+        fwrite(reinterpret_cast<char*>(&chunkId), sizeof(chunkId), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&chunkSize), sizeof(chunkSize), 1, a_File);
+        for (uint32_t i = 0; i < chunkSize; i++)
+            fwrite(reinterpret_cast<char*>(&data[i]), 1, 1, a_File);
+    }
+
     uint32_t DATA_Chunk::GetSize()
     {
-        return 0;
+        return Chunk::GetSize();
+    }
+
+    uint32_t DATA_Chunk::GetRuntimeSize() const
+    {
+        return DATA_Chunk::GetSize() + chunkSize;
     }
 
     DATA_Chunk &DATA_Chunk::operator=(const DATA_Chunk &rhs)
@@ -156,11 +197,28 @@ namespace uaudio
     {
     }
 
-    ACID_Chunk::~ACID_Chunk() = default;
+    void ACID_Chunk::Write(FILE*& a_File)
+    {
+        fwrite(reinterpret_cast<char*>(&chunkId), sizeof(chunkId), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&chunkSize), sizeof(chunkSize), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&type_of_file), sizeof(type_of_file), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&root_note), sizeof(root_note), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&unknown1), sizeof(unknown1), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&unknown2), sizeof(unknown2), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&num_of_beats), sizeof(num_of_beats), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&meter_denominator), sizeof(meter_denominator), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&meter_numerator), sizeof(meter_numerator), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&tempo), sizeof(tempo), 1, a_File);
+    }
 
     uint32_t ACID_Chunk::GetSize()
     {
         return sizeof(ACID_Chunk);
+    }
+
+    uint32_t ACID_Chunk::GetRuntimeSize() const
+    {
+        return ACID_Chunk::GetSize();
     }
 
     ACID_Chunk &ACID_Chunk::operator=(const ACID_Chunk &rhs)
@@ -222,11 +280,35 @@ namespace uaudio
         memcpy(reserved, rhs.reserved, sizeof(reserved));
     }
 
-    BEXT_Chunk::~BEXT_Chunk() = default;
+    void BEXT_Chunk::Write(FILE*& a_File)
+    {
+        fwrite(reinterpret_cast<char*>(&chunkId), sizeof(chunkId), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&chunkSize), sizeof(chunkSize), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&description), sizeof(description), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&originator), sizeof(originator), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&originator_reference), sizeof(originator_reference), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&origination_date), sizeof(origination_date), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&origination_time), sizeof(origination_time), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&time_reference_low), sizeof(time_reference_low), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&time_reference_high), sizeof(time_reference_high), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&version), sizeof(version), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&umid), sizeof(umid), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&loudness_value), sizeof(loudness_value), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&loudness_range), sizeof(loudness_range), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&max_true_peak_level), sizeof(max_true_peak_level), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&max_momentary_loudness), sizeof(max_momentary_loudness), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&max_short_term_loudness), sizeof(max_short_term_loudness), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&reserved), sizeof(reserved), 1, a_File);
+    }
 
     uint32_t BEXT_Chunk::GetSize()
     {
         return sizeof(BEXT_Chunk);
+    }
+
+    uint32_t BEXT_Chunk::GetRuntimeSize() const
+    {
+        return BEXT_Chunk::GetSize();
     }
 
     BEXT_Chunk &BEXT_Chunk::operator=(const BEXT_Chunk &rhs)
@@ -271,9 +353,21 @@ namespace uaudio
         sample_length = rhs.sample_length;
     }
 
+    void FACT_Chunk::Write(FILE*& a_File)
+    {
+        fwrite(reinterpret_cast<char*>(&chunkId), sizeof(chunkId), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&chunkSize), sizeof(chunkSize), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&sample_length), sizeof(sample_length), 1, a_File);
+    }
+
     uint32_t FACT_Chunk::GetSize()
     {
         return sizeof(FACT_Chunk);
+    }
+
+    uint32_t FACT_Chunk::GetRuntimeSize() const
+    {
+        return FACT_Chunk::GetSize();
     }
 
     FACT_Chunk &FACT_Chunk::operator=(const FACT_Chunk &rhs)
@@ -374,9 +468,38 @@ namespace uaudio
         UAUDIO_DEFAULT_FREE(samples);
     }
 
+    void SMPL_Chunk::Write(FILE*& a_File)
+    {
+        fwrite(reinterpret_cast<char*>(&chunkId), sizeof(chunkId), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&chunkSize), sizeof(chunkSize), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&manufacturer), sizeof(manufacturer), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&product), sizeof(product), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&sample_period), sizeof(sample_period), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&midi_unity_node), sizeof(midi_unity_node), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&midi_pitch_fraction), sizeof(midi_pitch_fraction), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&smpte_format), sizeof(smpte_format), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&smpte_offset), sizeof(smpte_offset), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&num_sample_loops), sizeof(num_sample_loops), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&sampler_data), sizeof(sampler_data), 1, a_File);
+        for (uint32_t i = 0; i < num_sample_loops; i++)
+        {
+            fwrite(reinterpret_cast<char*>(&samples[i].cue_point_id), sizeof(samples[i].cue_point_id), 1, a_File);
+            fwrite(reinterpret_cast<char*>(&samples[i].type), sizeof(samples[i].type), 1, a_File);
+            fwrite(reinterpret_cast<char*>(&samples[i].start), sizeof(samples[i].start), 1, a_File);
+            fwrite(reinterpret_cast<char*>(&samples[i].end), sizeof(samples[i].end), 1, a_File);
+            fwrite(reinterpret_cast<char*>(&samples[i].fraction), sizeof(samples[i].fraction), 1, a_File);
+            fwrite(reinterpret_cast<char*>(&samples[i].play_count), sizeof(samples[i].play_count), 1, a_File);
+        }
+    }
+
     uint32_t SMPL_Chunk::GetSize()
     {
-        return sizeof(SMPL_Chunk) - sizeof(SMPL_Sample_Loop*);
+        return sizeof(SMPL_Chunk) - sizeof(samples);
+    }
+
+    uint32_t SMPL_Chunk::GetRuntimeSize() const
+    {
+        return SMPL_Chunk::GetSize() + (num_sample_loops * sizeof(SMPL_Sample_Loop));
     }
 
     SMPL_Chunk &SMPL_Chunk::operator=(const SMPL_Chunk &rhs)
@@ -459,9 +582,30 @@ namespace uaudio
         return sizeof(CUE_Chunk) - sizeof(CUE_Point*);
     }
 
+    uint32_t CUE_Chunk::GetRuntimeSize() const
+    {
+        return CUE_Chunk::GetSize() + (num_cue_points * sizeof(CUE_Point));
+    }
+
     CUE_Chunk::~CUE_Chunk()
     {
         UAUDIO_DEFAULT_FREE(cue_points);
+    }
+
+    void CUE_Chunk::Write(FILE*& a_File)
+    {
+        fwrite(reinterpret_cast<char*>(&chunkId), sizeof(chunkId), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&chunkSize), sizeof(chunkSize), 1, a_File);
+        fwrite(reinterpret_cast<char*>(&num_cue_points), sizeof(num_cue_points), 1, a_File);
+        for (uint32_t i = 0; i < num_cue_points; i++)
+        {
+            fwrite(reinterpret_cast<char*>(&cue_points[i].id), sizeof(cue_points[i].id), 1, a_File);
+            fwrite(reinterpret_cast<char*>(&cue_points[i].position), sizeof(cue_points[i].position), 1, a_File);
+            fwrite(reinterpret_cast<char*>(&cue_points[i].data_chunk_id), sizeof(cue_points[i].chunk_start), 1, a_File);
+            fwrite(reinterpret_cast<char*>(&cue_points[i].chunk_start), sizeof(cue_points[i].data_chunk_id), 1, a_File);
+            fwrite(reinterpret_cast<char*>(&cue_points[i].block_start), sizeof(cue_points[i].block_start), 1, a_File);
+            fwrite(reinterpret_cast<char*>(&cue_points[i].sample_offset), sizeof(cue_points[i].sample_offset), 1, a_File);
+        }
     }
 
     CUE_Chunk &CUE_Chunk::operator=(const CUE_Chunk &rhs)
@@ -555,5 +699,56 @@ namespace uaudio
     uint32_t WaveFormat::GetBitRate() const
     {
         return fmtChunk.numChannels * fmtChunk.bitsPerSample * fmtChunk.sampleRate;
+    }
+
+    /// <summary>
+    /// Recalculates the riff chunk size.
+    /// </summary>
+    void WaveFormat::CalculateRiffChunkSize(WAVE_CONFIG a_Config)
+    {
+        uint32_t size = 0;
+
+        if (a_Config.HasChunk(CHUNK_FLAG_RIFF))
+        {
+            uint32_t riffSize = riffChunk.GetRuntimeSize() - sizeof(Chunk);
+            size += riffSize;
+        }
+        if (a_Config.HasChunk(CHUNK_FLAG_FMT))
+        {
+            uint32_t fmtSize = fmtChunk.GetRuntimeSize();
+            size += fmtSize;
+        }
+        if (a_Config.HasChunk(CHUNK_FLAG_DATA))
+        {
+            uint32_t dataSize = dataChunk.GetRuntimeSize();
+            size += dataSize;
+        }
+        if (a_Config.HasChunk(CHUNK_FLAG_ACID))
+        {
+            uint32_t acidSize = acidChunk.GetRuntimeSize();
+            size += acidSize;
+        }
+        if (a_Config.HasChunk(CHUNK_FLAG_BEXT))
+        {
+            uint32_t bextSize = bextChunk.GetRuntimeSize();
+            size += bextSize;
+        }
+        if (a_Config.HasChunk(CHUNK_FLAG_FACT))
+        {
+            uint32_t factSize = factChunk.GetRuntimeSize();
+            size += factSize;
+        }
+        if (a_Config.HasChunk(CHUNK_FLAG_SMPL))
+        {
+            uint32_t smplSize = smplChunk.GetRuntimeSize();
+            size += smplSize;
+        }
+        if (a_Config.HasChunk(CHUNK_FLAG_CUE))
+        {
+            uint32_t cueSize = cueChunk.GetRuntimeSize();
+            size += cueSize;
+        }
+
+        riffChunk.chunkSize = size;
     }
 }

@@ -20,7 +20,8 @@ namespace uaudio
     {
         m_Looping = rhs.m_Looping;
         m_Volume = rhs.m_Volume;
-        m_WavFile = rhs.m_WavFile;
+        m_WaveFile = rhs.m_WaveFile;
+        m_Config = rhs.m_Config;
     }
 
     WaveFile &WaveFile::operator=(const WaveFile &rhs)
@@ -29,7 +30,8 @@ namespace uaudio
         {
             m_Looping = rhs.m_Looping;
             m_Volume = rhs.m_Volume;
-            m_WavFile = rhs.m_WavFile;
+            m_WaveFile = rhs.m_WaveFile;
+            m_Config = rhs.m_Config;
         }
         return *this;
     }
@@ -40,9 +42,49 @@ namespace uaudio
     /// <param name="a_FilePath">The path to the file.</param>
     void WaveFile::LoadSound(const char *a_FilePath)
     {
-        m_WavFile = {};
+        m_WaveFile = {};
 
-        WaveReader::LoadSound(a_FilePath, m_WavFile, m_File, m_Config);
+        WaveReader::LoadSound(a_FilePath, m_WaveFile, m_File, m_Config);
+    }
+
+    /// <summary>
+    /// Saves the file.
+    /// </summary>
+    /// <param name="a_FilePath">The path to the file.</param>
+    void WaveFile::Save(const char *a_FilePath)
+    {
+        m_WaveFile.CalculateRiffChunkSize(m_Config);
+
+        FILE *file;
+
+        // Open the file.
+        fopen_s(&file, a_FilePath, "wb");
+        if (file == nullptr)
+        {
+            logger::log_warning("<WaveReader> Failed saving file: (\"%s\").", a_FilePath);
+            return;
+        }
+
+        if (m_Config.HasChunk(CHUNK_FLAG_RIFF))
+            m_WaveFile.riffChunk.Write(file);
+        if (m_Config.HasChunk(CHUNK_FLAG_FMT))
+            m_WaveFile.fmtChunk.Write(file);
+        if (m_Config.HasChunk(CHUNK_FLAG_DATA))
+            m_WaveFile.dataChunk.Write(file);
+        if (m_Config.HasChunk(CHUNK_FLAG_ACID))
+            m_WaveFile.acidChunk.Write(file);
+        if (m_Config.HasChunk(CHUNK_FLAG_BEXT))
+            m_WaveFile.bextChunk.Write(file);
+        if (m_Config.HasChunk(CHUNK_FLAG_FACT))
+            m_WaveFile.factChunk.Write(file);
+        if (m_Config.HasChunk(CHUNK_FLAG_SMPL))
+            m_WaveFile.smplChunk.Write(file);
+        if (m_Config.HasChunk(CHUNK_FLAG_CUE))
+            m_WaveFile.cueChunk.Write(file);
+
+        fclose(file);
+        file = nullptr;
+        logger::log_success("<WaveReader> Saved file: (\"%s\").", a_FilePath);
     }
 
     WaveFile::~WaveFile()
@@ -58,12 +100,12 @@ namespace uaudio
     void WaveFile::Read(uint32_t a_StartingPoint, uint32_t &a_ElementCount, unsigned char *&a_Buffer) const
     {
         // NOTE: This part will reduce the size of the buffer array. It is necessary when reaching the end of the file if we want to loop it.
-        if (a_StartingPoint + a_ElementCount >= m_WavFile.dataChunk.chunkSize)
+        if (a_StartingPoint + a_ElementCount >= m_WaveFile.dataChunk.chunkSize)
         {
-            const uint32_t new_size = a_ElementCount - ((a_StartingPoint + a_ElementCount) - m_WavFile.dataChunk.chunkSize);
+            const uint32_t new_size = a_ElementCount - ((a_StartingPoint + a_ElementCount) - m_WaveFile.dataChunk.chunkSize);
             a_ElementCount = new_size;
         }
-        a_Buffer = m_WavFile.dataChunk.data + a_StartingPoint;
+        a_Buffer = m_WaveFile.dataChunk.data + a_StartingPoint;
     }
 
     /// <summary>
@@ -98,9 +140,7 @@ namespace uaudio
                ":" +
                std::string(minutes_string) +
                ":" +
-               std::string(seconds_string) + (a_Miliseconds ? 
-               ":" +
-               std::string(milliseconds_string) : "");
+               std::string(seconds_string) + (a_Miliseconds ? ":" + std::string(milliseconds_string) : "");
     }
 
     /// <summary>
@@ -110,7 +150,7 @@ namespace uaudio
     /// <returns></returns>
     bool WaveFile::IsEndOfFile(uint32_t a_StartingPoint) const
     {
-        return a_StartingPoint >= m_WavFile.dataChunk.chunkSize;
+        return a_StartingPoint >= m_WaveFile.dataChunk.chunkSize;
     }
 
     /// <summary>
@@ -155,7 +195,7 @@ namespace uaudio
     /// <returns></returns>
     const WaveFormat &WaveFile::GetWavFormat() const
     {
-        return m_WavFile;
+        return m_WaveFile;
     }
 
     /// <summary>
@@ -164,6 +204,6 @@ namespace uaudio
     /// <returns></returns>
     const char *WaveFile::GetSoundTitle() const
     {
-        return m_WavFile.m_FilePath.c_str();
+        return m_WaveFile.m_FilePath.c_str();
     }
 }

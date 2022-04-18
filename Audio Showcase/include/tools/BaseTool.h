@@ -29,6 +29,7 @@
 #define SUN "\xef\x86\x85"
 #define RIGHT "\xef\x81\xa1"
 #define LEFT "\xef\x81\xa0"
+#define SAVE "\xef\x83\x87"
 
 #define IMGUI_INDENT 16.0f
 

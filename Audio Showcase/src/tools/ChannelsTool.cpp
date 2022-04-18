@@ -108,15 +108,15 @@ void ChannelsTool::RenderChannel(uint32_t a_Index, uaudio::xaudio2::XAudio2Chann
         {
             ImGui::Indent(IMGUI_INDENT);
             ShowValue("Currently playing: ", a_Channel->GetSound().GetSoundTitle());
-            ShowValue("Progress", std::string(
+            ShowValue("Progress: ", std::string(
                 uaudio::WaveFile::FormatDuration(static_cast<float>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS)) / static_cast<float>(a_Channel->GetSound().GetWavFormat().fmtChunk.byteRate)) +
                 "/" +
                 uaudio::WaveFile::FormatDuration(uaudio::WaveFile::GetDuration(a_Channel->GetSound().GetWavFormat().dataChunk.chunkSize, a_Channel->GetSound().GetWavFormat().fmtChunk.byteRate)))
                 .c_str());
-            ShowValue("Time Left", std::string(
+            ShowValue("Time Left: ", std::string(
                 uaudio::WaveFile::FormatDuration(uaudio::WaveFile::GetDuration(a_Channel->GetSound().GetWavFormat().dataChunk.chunkSize, a_Channel->GetSound().GetWavFormat().fmtChunk.byteRate) - (static_cast<float>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS)) / static_cast<float>(a_Channel->GetSound().GetWavFormat().fmtChunk.byteRate))))
                 .c_str());
-            ShowValue("Progress (position)", std::string(
+            ShowValue("Progress (position): ", std::string(
                 std::to_string(static_cast<int>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS))) +
                 "/" +
                 std::to_string(a_Channel->GetSound().GetWavFormat().dataChunk.chunkSize))

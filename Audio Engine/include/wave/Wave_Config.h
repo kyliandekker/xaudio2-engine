@@ -1,0 +1,33 @@
+#pragma once
+
+#include <cstdint>
+
+namespace uaudio
+{
+    enum UAUDIO_CHUNK_FLAG
+    {
+        CHUNK_FLAG_RIFF = (1 << 0),
+        CHUNK_FLAG_FMT = (1 << 1),
+        CHUNK_FLAG_DATA = (1 << 2),
+        CHUNK_FLAG_ACID = (1 << 3),
+        CHUNK_FLAG_BEXT = (1 << 4),
+        CHUNK_FLAG_FACT = (1 << 5),
+        CHUNK_FLAG_SMPL = (1 << 6),
+        CHUNK_FLAG_CUE = (1 << 7),
+        CHUNK_FLAG_UNSUPPORTED_CHUNKS = (1 << 8),
+    };
+
+    constexpr uint32_t UAUDIO_DEFAULT_CHUNKS = UAUDIO_CHUNK_FLAG::CHUNK_FLAG_RIFF | UAUDIO_CHUNK_FLAG::CHUNK_FLAG_FMT | UAUDIO_CHUNK_FLAG::CHUNK_FLAG_DATA;
+    constexpr uint32_t UAUDIO_ALL_CHUNKS = UAUDIO_CHUNK_FLAG::CHUNK_FLAG_RIFF | UAUDIO_CHUNK_FLAG::CHUNK_FLAG_FMT | UAUDIO_CHUNK_FLAG::CHUNK_FLAG_DATA | UAUDIO_CHUNK_FLAG::CHUNK_FLAG_ACID | UAUDIO_CHUNK_FLAG::CHUNK_FLAG_BEXT | UAUDIO_CHUNK_FLAG::CHUNK_FLAG_FACT | UAUDIO_CHUNK_FLAG::CHUNK_FLAG_SMPL | UAUDIO_CHUNK_FLAG::CHUNK_FLAG_CUE | UAUDIO_CHUNK_FLAG::CHUNK_FLAG_UNSUPPORTED_CHUNKS;
+
+    struct WAVE_CONFIG
+    {
+        uint32_t m_Flags = UAUDIO_DEFAULT_CHUNKS;
+        bool HasChunk(uint32_t a_Flag) const
+        {
+            return m_Flags & a_Flag;
+        }
+    };
+
+    constexpr WAVE_CONFIG UAUDIO_DEFAULT_WAV_CONFIG;
+}

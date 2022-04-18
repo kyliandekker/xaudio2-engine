@@ -5,7 +5,7 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_helpers.h>
 
-MasterTool::MasterTool(uaudio::AudioSystem& a_AudioSystem, uaudio::SoundSystem& a_SoundSystem) : BaseTool(0, "Actions", "Master Actions"), m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
+MasterTool::MasterTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &a_SoundSystem) : BaseTool(0, "Actions", "Master Actions"), m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
 {
     uaudio::BUFFERSIZE buffer_size = m_AudioSystem.GetBufferSize();
     for (int i = 0; i < m_BufferSizeOptions.size(); i++)
@@ -101,7 +101,7 @@ void MasterTool::Render()
 void MasterTool::OpenFile()
 {
     OPENFILENAME ofn;
-    TCHAR sz_file[260] = { 0 };
+    TCHAR sz_file[260] = {0};
 
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = sizeof(ofn);
@@ -116,23 +116,23 @@ void MasterTool::OpenFile()
 
     if (GetOpenFileName(&ofn))
     {
-        char* path = new char[wcslen(ofn.lpstrFile) + 1];
+        char *path = new char[wcslen(ofn.lpstrFile) + 1];
         wsprintfA(path, "%S", ofn.lpstrFile);
 
         uaudio::WAVE_CONFIG config = uaudio::WAVE_CONFIG();
 
         config.m_Flags = config.m_Flags |
-            (m_RiffChunk ? uaudio::CHUNK_FLAG_RIFF : 0) |
-            (m_FmtChunk ? uaudio::CHUNK_FLAG_FMT : 0) |
-            (m_DataChunk ? uaudio::CHUNK_FLAG_DATA : 0) |
-            (m_AcidChunk ? uaudio::CHUNK_FLAG_ACID : 0) |
-            (m_BextChunk ? uaudio::CHUNK_FLAG_BEXT : 0) |
-            (m_FactChunk ? uaudio::CHUNK_FLAG_FACT : 0) |
-            (m_SmplChunk ? uaudio::CHUNK_FLAG_SMPL : 0) |
-            (m_CueChunk ? uaudio::CHUNK_FLAG_CUE : 0) |
-            (m_OtherChunks ? uaudio::CHUNK_FLAG_UNSUPPORTED_CHUNKS : 0);
+                         (m_RiffChunk ? uaudio::CHUNK_FLAG_RIFF : 0) |
+                         (m_FmtChunk ? uaudio::CHUNK_FLAG_FMT : 0) |
+                         (m_DataChunk ? uaudio::CHUNK_FLAG_DATA : 0) |
+                         (m_AcidChunk ? uaudio::CHUNK_FLAG_ACID : 0) |
+                         (m_BextChunk ? uaudio::CHUNK_FLAG_BEXT : 0) |
+                         (m_FactChunk ? uaudio::CHUNK_FLAG_FACT : 0) |
+                         (m_SmplChunk ? uaudio::CHUNK_FLAG_SMPL : 0) |
+                         (m_CueChunk ? uaudio::CHUNK_FLAG_CUE : 0) |
+                         (m_OtherChunks ? uaudio::CHUNK_FLAG_UNSUPPORTED_CHUNKS : 0);
 
-        uaudio::Hash hash = m_SoundSystem.LoadSound(path, path, config);
+        UAUDIO_DEFAULT_HASH hash = m_SoundSystem.LoadSound(path, path, config);
         delete[] path;
     }
 }

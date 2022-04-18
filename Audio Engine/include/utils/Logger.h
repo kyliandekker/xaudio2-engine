@@ -99,6 +99,19 @@ namespace uaudio::logger
 	}
 
 	/// <summary>
+	/// Logs a success message to the console.
+	/// </summary>
+	/// <param name="a_Format">The message that will get printed.</param>
+	/// <param name="a_Args">Optional arguments that will replace formatting.</param>
+	template <typename... Args>
+	void log_success(const char *a_Format, Args... a_Args)
+	{
+		print_green();
+		log_to_console("[Success]", a_Format, a_Args...);
+		print_white();
+	}
+
+	/// <summary>
 	/// Check for unintended behaviour. If a_Check is false, the program will stop and post a message.
 	/// </summary>
 	/// <param name="a_Check">If false, the program will print the message and assert.</param>

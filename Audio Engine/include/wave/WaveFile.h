@@ -20,7 +20,7 @@ namespace uaudio
 
         void LoadSound(const char *a_FilePath);
 
-        void AddAcidChunk(float a_Tempo);
+        void Save(const char *a_FilePath);
 
         virtual ~WaveFile();
 
@@ -46,7 +46,7 @@ namespace uaudio
 
         FILE *m_File = nullptr;
 
-        WaveFormat m_WavFile = {};
+        WaveFormat m_WaveFile = {};
         WAVE_CONFIG m_Config;
     };
 }
