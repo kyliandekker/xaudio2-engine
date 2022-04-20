@@ -64,6 +64,10 @@ namespace uaudio
 	/// </summary>
 	void AudioSystem::UpdateNonExtraThread()
 	{
+		for (int32_t i = static_cast<int32_t>(ChannelSize() - 1); i > -1; i--)
+			if (!m_Channels[i].IsInUse())
+				m_Channels.erase(m_Channels.begin() + i);
+
 		if (m_Playback)
 			for (int32_t i = static_cast<int32_t>(ChannelSize() - 1); i > -1; i--)
 				m_Channels[i].Update();

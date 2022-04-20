@@ -13,14 +13,10 @@ namespace uaudio
     {
     public:
         WaveFile();
-        WaveFile(const char *a_FilePath, WAVE_CONFIG a_Config = WAVE_CONFIG());
+        WaveFile(const char *a_FilePath, std::vector<const char *> a_Chunks = {DEFAULT_CHUNKS});
         WaveFile(const WaveFile &rhs);
 
         WaveFile &operator=(const WaveFile &rhs);
-
-        void LoadSound(const char *a_FilePath);
-
-        void Save(const char *a_FilePath);
 
         virtual ~WaveFile();
 
@@ -38,15 +34,22 @@ namespace uaudio
         void SetVolume(float a_Volume);
         float GetVolume() const;
 
-        const WaveFormat &GetWavFormat() const;
+        void SetEndPosition(uint32_t a_EndPosition);
+        uint32_t GetEndPosition() const;
+
+        void SetStartPosition(uint32_t a_StartPosition);
+        uint32_t GetStartPosition() const;
+
+        const WaveFormat &GetWaveFormat() const;
 
     protected:
         bool m_Looping = false;
         float m_Volume = 1.0f;
 
+        uint32_t m_EndPosition = 0, m_StartPosition = 0;
+
         FILE *m_File = nullptr;
 
         WaveFormat m_WaveFile = {};
-        WAVE_CONFIG m_Config;
     };
 }

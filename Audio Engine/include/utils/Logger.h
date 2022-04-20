@@ -3,6 +3,8 @@
 #include <cassert>
 #include <stdio.h>
 
+#include "UserInclude.h"
+
 constexpr uint32_t MAX_BUFFER_LOGGER = 256;
 
 namespace uaudio::logger
@@ -16,19 +18,30 @@ namespace uaudio::logger
 	template <typename... Args>
 	void log_to_console(const char *a_Flag, const char *a_Format, Args... a_Args)
 	{
-		char buffer[256] = {};
+		char buffer[MAX_BUFFER_LOGGER] = {};
 
 		snprintf(buffer, MAX_BUFFER_LOGGER, a_Format, a_Args...);
 
 		printf("%s: %s\n", a_Flag, buffer);
 	}
 
+#ifdef UAUDIO_NO_COLOR_LOGGING
+	constexpr auto COLOR_YELLOW = "";
+	constexpr auto COLOR_WHITE = "";
+	constexpr auto COLOR_GREEN = "";
+	constexpr auto COLOR_RED = "";
+	constexpr auto COLOR_CYAN = "";
+	constexpr auto COLOR_PURPLE = "";
+	constexpr auto COLOR_BLUE = "";
+#else
 	constexpr auto COLOR_YELLOW = "\033[0;33m";
 	constexpr auto COLOR_WHITE = "\033[0;37m";
 	constexpr auto COLOR_GREEN = "\033[0;32m";
 	constexpr auto COLOR_RED = "\033[31m";
 	constexpr auto COLOR_CYAN = "\033[0;36m";
 	constexpr auto COLOR_PURPLE = "\033[0;35m";
+	constexpr auto COLOR_BLUE = "\033[0;34m";
+#endif
 
 	inline void print_yellow()
 	{
@@ -68,8 +81,10 @@ namespace uaudio::logger
 	template <typename... Args>
 	void log_info(const char *a_Format, Args... a_Args)
 	{
-		log_to_console("[Info]", a_Format, a_Args...);
-		print_white();
+		char buffer[MAX_BUFFER_LOGGER] = {};
+		snprintf(buffer, MAX_BUFFER_LOGGER, "%s[%s]%s", COLOR_WHITE, "INFO", COLOR_WHITE);
+
+		log_to_console(buffer, a_Format, a_Args...);
 	}
 
 	/// <summary>
@@ -80,9 +95,10 @@ namespace uaudio::logger
 	template <typename... Args>
 	void log_error(const char *a_Format, Args... a_Args)
 	{
-		print_red();
-		log_to_console("[Error]", a_Format, a_Args...);
-		print_white();
+		char buffer[MAX_BUFFER_LOGGER] = {};
+		snprintf(buffer, MAX_BUFFER_LOGGER, "%s[%s]%s", COLOR_RED, "ERROR", COLOR_WHITE);
+
+		log_to_console(buffer, a_Format, a_Args...);
 	}
 
 	/// <summary>
@@ -93,9 +109,10 @@ namespace uaudio::logger
 	template <typename... Args>
 	void log_warning(const char *a_Format, Args... a_Args)
 	{
-		print_yellow();
-		log_to_console("[Warning]", a_Format, a_Args...);
-		print_white();
+		char buffer[MAX_BUFFER_LOGGER] = {};
+		snprintf(buffer, MAX_BUFFER_LOGGER, "%s[%s]%s", COLOR_YELLOW, "WARNING", COLOR_WHITE);
+
+		log_to_console(buffer, a_Format, a_Args...);
 	}
 
 	/// <summary>
@@ -106,9 +123,10 @@ namespace uaudio::logger
 	template <typename... Args>
 	void log_success(const char *a_Format, Args... a_Args)
 	{
-		print_green();
-		log_to_console("[Success]", a_Format, a_Args...);
-		print_white();
+		char buffer[MAX_BUFFER_LOGGER] = {};
+		snprintf(buffer, MAX_BUFFER_LOGGER, "%s[%s]%s", COLOR_GREEN, "SUCCESS", COLOR_WHITE);
+
+		log_to_console(buffer, a_Format, a_Args...);
 	}
 
 	/// <summary>

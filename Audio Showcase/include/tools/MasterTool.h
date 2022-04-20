@@ -6,6 +6,13 @@
 #include "SoundSystem.h"
 #include "tools/BaseTool.h"
 
+struct chunk_select
+{
+	std::string chunk_id;
+	bool selected = false;
+	bool removable = true;
+};
+
 class MasterTool : public BaseTool
 {
 public:
@@ -39,15 +46,5 @@ private:
 		uaudio::BUFFERSIZE::BUFFERSIZE_8192,
 	};
 
-	bool
-		m_AllChunks = false,
-		m_RiffChunk = true,
-		m_FmtChunk = true,
-		m_DataChunk = true,
-		m_AcidChunk = false,
-		m_BextChunk = false,
-		m_FactChunk = false,
-		m_SmplChunk = false,
-		m_CueChunk = false,
-		m_OtherChunks = false;
+	std::vector<chunk_select> m_ChunkIds;
 };

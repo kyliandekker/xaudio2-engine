@@ -78,7 +78,10 @@
     <ClInclude Include="include\allocator\UAudioAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\wave\Wave_Config.h">
+    <ClInclude Include="include\wave\Chunks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UserInclude.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

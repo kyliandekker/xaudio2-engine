@@ -5,7 +5,10 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_helpers.h>
 
-ChannelsTool::ChannelsTool(uaudio::AudioSystem& a_AudioSystem) : BaseTool(0, "Channels", "Channels"), m_AudioSystem(a_AudioSystem)
+#include "wave/Chunks.h"
+#include "wave/WaveConverter.h"
+
+ChannelsTool::ChannelsTool(uaudio::AudioSystem &a_AudioSystem) : BaseTool(0, "Channels", "Channels"), m_AudioSystem(a_AudioSystem)
 {
 }
 
@@ -15,8 +18,13 @@ void ChannelsTool::Render()
         RenderChannel(i, m_AudioSystem.GetChannel(uaudio::ChannelHandle(i)));
 }
 
-void ChannelsTool::RenderChannel(uint32_t a_Index, uaudio::xaudio2::XAudio2Channel* a_Channel)
+void ChannelsTool::RenderChannel(uint32_t a_Index, uaudio::xaudio2::XAudio2Channel *a_Channel)
 {
+    if (!a_Channel->IsInUse())
+        return;
+
+    uaudio::FMT_Chunk fmt_chunk = a_Channel->GetSound().GetWaveFormat().GetChunkFromData<uaudio::FMT_Chunk>(uaudio::FMT_CHUNK_ID);
+
     bool active = a_Channel->GetActive();
     std::string on_off_button_text = "##OnOff_Channel_" + std::to_string(a_Index);
     if (ImGui::OnOffButton(on_off_button_text.c_str(), &active, ImVec2(25, 25)))
@@ -37,15 +45,14 @@ void ChannelsTool::RenderChannel(uint32_t a_Index, uaudio::xaudio2::XAudio2Chann
         a_Channel->SetVolume(volume);
 
     int32_t pos = static_cast<int32_t>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS));
-    float current_pos = static_cast<float>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS)) / static_cast<float>(a_Channel->IsInUse() ? a_Channel->GetSound().GetWavFormat().fmtChunk.byteRate : 1.0f);
-    float final_pos = a_Channel->IsInUse() ? uaudio::WaveFile::GetDuration(a_Channel->GetSound().GetWavFormat().dataChunk.chunkSize, a_Channel->GetSound().GetWavFormat().fmtChunk.byteRate) : 0.0f;
+    float final_pos = uaudio::conversion::PosToSeconds(a_Channel->GetSound().GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID), fmt_chunk.byteRate);
     ImGui::Text("%s", std::string(
-        uaudio::WaveFile::FormatDuration(current_pos, false) +
-        "/" +
-        uaudio::WaveFile::FormatDuration(final_pos, false))
-        .c_str());
-    int final_pos_slider = a_Channel->IsInUse() ? a_Channel->GetSound().GetWavFormat().dataChunk.chunkSize : 5000;
-    if (ImGui::SliderInt(std::string("###Player_" + std::to_string(a_Index)).c_str(), &pos, 0.0f, final_pos_slider, ""))
+                          uaudio::WaveFile::FormatDuration(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_S), false) +
+                          "/" +
+                          uaudio::WaveFile::FormatDuration(final_pos, false))
+                          .c_str());
+    uint32_t final_pos_slider = a_Channel->IsInUse() ? a_Channel->GetSound().GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID) : 5000;
+    if (ImGui::SliderInt(std::string("###Player_" + std::to_string(a_Index)).c_str(), &pos, 0, static_cast<int>(final_pos_slider), ""))
     {
         uint32_t newtest = pos % static_cast<int>(m_AudioSystem.GetBufferSize());
         uint32_t finaltest = pos - newtest;
@@ -98,7 +105,7 @@ void ChannelsTool::RenderChannel(uint32_t a_Index, uaudio::xaudio2::XAudio2Chann
     ImGui::SameLine();
     bool isLooping = a_Channel->IsLooping();
     std::string loop_button = std::string(RETRY) + "##Loop_Channel_" + std::to_string(a_Index);
-    if (ImGui::CheckboxButton(loop_button.c_str(), ImVec2(25, 25), &isLooping))
+    if (ImGui::CheckboxButton(loop_button.c_str(), &isLooping, ImVec2(25, 25)))
         a_Channel->SetLooping(isLooping);
 
     if (a_Channel->IsInUse())
@@ -109,18 +116,18 @@ void ChannelsTool::RenderChannel(uint32_t a_Index, uaudio::xaudio2::XAudio2Chann
             ImGui::Indent(IMGUI_INDENT);
             ShowValue("Currently playing: ", a_Channel->GetSound().GetSoundTitle());
             ShowValue("Progress: ", std::string(
-                uaudio::WaveFile::FormatDuration(static_cast<float>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS)) / static_cast<float>(a_Channel->GetSound().GetWavFormat().fmtChunk.byteRate)) +
-                "/" +
-                uaudio::WaveFile::FormatDuration(uaudio::WaveFile::GetDuration(a_Channel->GetSound().GetWavFormat().dataChunk.chunkSize, a_Channel->GetSound().GetWavFormat().fmtChunk.byteRate)))
-                .c_str());
+                                        uaudio::WaveFile::FormatDuration(static_cast<float>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS)) / static_cast<float>(fmt_chunk.byteRate)) +
+                                        "/" +
+                                        uaudio::WaveFile::FormatDuration(uaudio::WaveFile::GetDuration(a_Channel->GetSound().GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID), fmt_chunk.byteRate)))
+                                        .c_str());
             ShowValue("Time Left: ", std::string(
-                uaudio::WaveFile::FormatDuration(uaudio::WaveFile::GetDuration(a_Channel->GetSound().GetWavFormat().dataChunk.chunkSize, a_Channel->GetSound().GetWavFormat().fmtChunk.byteRate) - (static_cast<float>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS)) / static_cast<float>(a_Channel->GetSound().GetWavFormat().fmtChunk.byteRate))))
-                .c_str());
+                                         uaudio::WaveFile::FormatDuration(uaudio::WaveFile::GetDuration(a_Channel->GetSound().GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID), fmt_chunk.byteRate) - (static_cast<float>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS)) / static_cast<float>(fmt_chunk.byteRate))))
+                                         .c_str());
             ShowValue("Progress (position): ", std::string(
-                std::to_string(static_cast<int>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS))) +
-                "/" +
-                std::to_string(a_Channel->GetSound().GetWavFormat().dataChunk.chunkSize))
-                .c_str());
+                                                   std::to_string(static_cast<int>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS))) +
+                                                   "/" +
+                                                   std::to_string(a_Channel->GetSound().GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID)))
+                                                   .c_str());
             ImGui::Unindent(IMGUI_INDENT);
         }
     }

@@ -17,4 +17,5 @@ private:
 
 	uaudio::AudioSystem &m_AudioSystem;
 	uaudio::SoundSystem &m_SoundSystem;
+	uaudio::xaudio2::XAudio2Channel m_Channel;
 };

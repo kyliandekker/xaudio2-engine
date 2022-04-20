@@ -1,15 +1,17 @@
 ﻿#include <SoundSystem.h>
 
+#include <utility>
+
 #include "utils/Logger.h"
 
 namespace uaudio
 {
-	UAUDIO_DEFAULT_HASH SoundSystem::LoadSound(const char *a_Path, const char *a_Name, WAVE_CONFIG a_Config)
+	UAUDIO_DEFAULT_HASH SoundSystem::LoadSound(const char *a_Path, const char *a_Name, std::vector<const char*> a_Chunks)
 	{
 		UAUDIO_DEFAULT_HASH hash = UAUDIO_DEFAULT_HASH_FUNCTION(a_Name);
 
 		if (!DoesSoundExist(hash))
-			m_Sounds.insert(std::make_pair(hash, WaveFile(a_Path, a_Config)));
+			m_Sounds.insert(std::make_pair(hash, WaveFile(a_Path, std::move(a_Chunks))));
 
 		return hash;
 	}

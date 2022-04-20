@@ -34,7 +34,9 @@ namespace uaudio
 			void Update();
 			void SetPos(uint32_t a_StartPos);
 			float GetPos(TIMEUNIT a_TimeUnit) const;
+			uint32_t GetBufferSize() const;
 			void PlayRanged(uint32_t a_StartPos, uint32_t a_Size);
+			void PlayBuffer(unsigned char* a_Buffer, uint32_t a_Size);
 			void ResetPos();
 			void RemoveSound();
 

@@ -1,9 +1,32 @@
 #pragma once
 
 #include "Hash.h"
+#include <cstdlib>
 
 namespace uaudio
 {
+	inline int compare(unsigned char* a, unsigned char* b, int size)
+	{
+		while (size-- > 0)
+		{
+			if (*a != *b)
+				return (*a < *b) ? -1 : 1;
+			a++; b++;
+		}
+		return 0;
+	}
+
+	inline int compare(unsigned char* a, const char* b, int size)
+	{
+		while (size-- > 0)
+		{
+			if (*a != *b)
+				return (*a < *b) ? -1 : 1;
+			a++; b++;
+		}
+		return 0;
+	}
+
 	enum class BUFFERSIZE
 	{
 		BUFFERSIZE_256 = 256,
@@ -33,4 +56,7 @@ constexpr uaudio::BUFFERSIZE UAUDIO_DEFAULT_BUFFERSIZE = uaudio::BUFFERSIZE::BUF
 
 #define UAUDIO_DEFAULT_HASH uaudio::Hash
 #define UAUDIO_DEFAULT_HASH_FUNCTION uaudio::GetHash
+
 }
+
+#include "UserInclude.h"

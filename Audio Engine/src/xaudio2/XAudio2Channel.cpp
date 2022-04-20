@@ -7,6 +7,9 @@
 #include <utils/Logger.h>
 #include <algorithm>
 
+#include "wave/Chunks.h"
+#include "wave/WaveConverter.h"
+
 namespace uaudio::xaudio2
 {
 	XAudio2Channel::XAudio2Channel(AudioSystem &a_AudioSystem) : m_AudioSystem(&a_AudioSystem)
@@ -59,19 +62,22 @@ namespace uaudio::xaudio2
 		m_CurrentSound = &a_Sound;
 		if (m_CurrentSound->IsLooping())
 			m_Looping = m_CurrentSound->IsLooping();
+
+		m_CurrentPos = a_Sound.GetStartPosition();
 		HRESULT hr;
 		if (m_SourceVoice == nullptr)
 		{
 			WAVEFORMATEX wave;
 
+			FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
 			// Set WAV format default. (what we expect the user to provide).
-			wave.wFormatTag = a_Sound.GetWavFormat().fmtChunk.audioFormat;
-			wave.nChannels = a_Sound.GetWavFormat().fmtChunk.numChannels;
-			wave.nSamplesPerSec = a_Sound.GetWavFormat().fmtChunk.sampleRate; // 44100 hz (should be standard).
+			wave.wFormatTag = fmt_chunk.audioFormat;
+			wave.nChannels = fmt_chunk.numChannels;
+			wave.nSamplesPerSec = fmt_chunk.sampleRate; // 44100 hz (should be standard).
 			wave.cbSize = 0;
-			wave.wBitsPerSample = a_Sound.GetWavFormat().fmtChunk.bitsPerSample;
-			wave.nBlockAlign = a_Sound.GetWavFormat().fmtChunk.blockAlign;
-			wave.nAvgBytesPerSec = a_Sound.GetWavFormat().fmtChunk.byteRate;
+			wave.wBitsPerSample = fmt_chunk.bitsPerSample;
+			wave.nBlockAlign = fmt_chunk.blockAlign;
+			wave.nAvgBytesPerSec = fmt_chunk.byteRate;
 			if (FAILED(hr = m_AudioSystem->GetEngine().CreateSourceVoice(&m_SourceVoice, &wave, 0, 1.0f, &m_VoiceCallback)))
 			{
 				logger::ASSERT(false, "<XAudio2> Creating XAudio2 Source Voice failed.");
@@ -135,7 +141,7 @@ namespace uaudio::xaudio2
 		m_SourceVoice->DestroyVoice();
 		m_SourceVoice = nullptr;
 
-		m_CurrentPos = 0;
+		m_CurrentPos = m_CurrentSound->GetStartPosition();
 	}
 
 	/// <summary>
@@ -162,29 +168,33 @@ namespace uaudio::xaudio2
 
 	float XAudio2Channel::GetPos(TIMEUNIT a_TimeUnit) const
 	{
+		FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
 		switch (a_TimeUnit)
 		{
-		case TIMEUNIT::TIMEUNIT_MS:
-		{
-			const float seconds = static_cast<float>(m_CurrentPos) / static_cast<float>(m_CurrentSound->GetWavFormat().fmtChunk.byteRate);
-			const float milliseconds = seconds * 1000;
-			return milliseconds;
-			break;
-		}
-		case TIMEUNIT::TIMEUNIT_S:
-		{
-			const float seconds = static_cast<float>(m_CurrentPos) / static_cast<float>(m_CurrentSound->GetWavFormat().fmtChunk.byteRate);
-			return seconds;
-			break;
-		}
-		case TIMEUNIT::TIMEUNIT_POS:
-		{
-			return static_cast<float>(m_CurrentPos);
-			break;
-		}
+			case TIMEUNIT::TIMEUNIT_MS:
+			{
+				return conversion::PosToMilliseconds(m_CurrentPos, fmt_chunk.byteRate);
+				break;
+			}
+			case TIMEUNIT::TIMEUNIT_S:
+			{
+				return conversion::PosToSeconds(m_CurrentPos, fmt_chunk.byteRate);
+				break;
+			}
+			case TIMEUNIT::TIMEUNIT_POS:
+			{
+				return static_cast<float>(m_CurrentPos);
+				break;
+			}
 		}
 
 		return 0.0f;
+	}
+
+	uint32_t XAudio2Channel::GetBufferSize() const
+	{
+		FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
+		return fmt_chunk.bitsPerSample / 8;
 	}
 
 	void XAudio2Channel::PlayRanged(uint32_t a_StartPos, uint32_t a_Size)
@@ -197,12 +207,13 @@ namespace uaudio::xaudio2
 
 		XAUDIO2_VOICE_STATE state;
 		m_SourceVoice->GetState(&state);
-		if (state.BuffersQueued < m_CurrentSound->GetWavFormat().GetBufferSize())
+		if (state.BuffersQueued < GetBufferSize())
 		{
 			// If the sound is done playing, check whether it needs to be repeated or whether it needs to be stopped entirely.
 			if (m_CurrentSound->IsEndOfFile(a_StartPos))
 			{
-				a_StartPos = 0;
+				m_CurrentPos = m_CurrentSound->GetStartPosition();
+				a_StartPos = m_CurrentSound->GetStartPosition();
 				// If the sound is not set to repeat, then stop the channel.
 				if (!m_CurrentSound->IsLooping() && !m_Looping)
 				{
@@ -228,20 +239,26 @@ namespace uaudio::xaudio2
 
 			if (!m_Active)
 			{
-				effects::ChangeVolume<int16_t>(data, a_Size, 0.0f, m_CurrentSound->GetWavFormat().fmtChunk.blockAlign, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
+				FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
+				effects::ChangeVolume<int16_t>(data, a_Size, 0.0f, fmt_chunk.blockAlign, fmt_chunk.numChannels);
 			}
 
-			XAUDIO2_BUFFER x_buffer = { 0, 0, nullptr, 0, 0, 0, 0, 0, nullptr };
-			x_buffer.AudioBytes = a_Size; // Buffer containing audio data.
-			x_buffer.pAudioData = data;	  // Size of the audio buffer in bytes.
+			PlayBuffer(data, a_Size);
+		}
+	}
 
-			HRESULT hr;
-			if (FAILED(hr = m_SourceVoice->SubmitSourceBuffer(&x_buffer)))
-			{
-				_com_error err(hr);
-				LPCTSTR errMsg = err.ErrorMessage();
-				logger::log_warning("<XAudio2> Submitting data to XAudio2 Source Voice failed: 0x%08x: %s.", hr, errMsg);
-			}
+	void XAudio2Channel::PlayBuffer(unsigned char* a_Buffer, uint32_t a_Size)
+	{
+		XAUDIO2_BUFFER x_buffer = { 0, 0, nullptr, 0, 0, 0, 0, 0, nullptr };
+		x_buffer.AudioBytes = a_Size; // Buffer containing audio data.
+		x_buffer.pAudioData = a_Buffer;	  // Size of the audio buffer in bytes.
+
+		HRESULT hr;
+		if (FAILED(hr = m_SourceVoice->SubmitSourceBuffer(&x_buffer)))
+		{
+			_com_error err(hr);
+			LPCTSTR errMsg = err.ErrorMessage();
+			logger::log_warning("<XAudio2> Submitting data to XAudio2 Source Voice failed: 0x%08x: %s.", hr, errMsg);
 		}
 	}
 
@@ -361,20 +378,22 @@ namespace uaudio::xaudio2
 	/// <returns></returns>
 	void XAudio2Channel::ApplyEffects(unsigned char *&a_Data, uint32_t a_Size) const
 	{
+		FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
+
 		// Master volume.
-		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_AudioSystem->GetMasterVolume(), m_CurrentSound->GetWavFormat().fmtChunk.blockAlign, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
+		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_AudioSystem->GetMasterVolume(), fmt_chunk.blockAlign, fmt_chunk.numChannels);
 
 		// Channel volume.
-		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_Volume, m_CurrentSound->GetWavFormat().fmtChunk.blockAlign, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
+		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_Volume, fmt_chunk.blockAlign, fmt_chunk.numChannels);
 
 		// Sound volume (not sure why you would want this but I want it in here damn it)
-		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_CurrentSound->GetVolume(), m_CurrentSound->GetWavFormat().fmtChunk.blockAlign, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
+		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_CurrentSound->GetVolume(), fmt_chunk.blockAlign, fmt_chunk.numChannels);
 
 		// Master panning.
-		effects::ChangePanning<int16_t>(a_Data, a_Size, m_AudioSystem->GetMasterPanning(), m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
+		effects::ChangePanning<int16_t>(a_Data, a_Size, m_AudioSystem->GetMasterPanning(), fmt_chunk.numChannels);
 
 		//// Channel panning.
-		effects::ChangePanning<int16_t>(a_Data, a_Size, m_Panning, m_CurrentSound->GetWavFormat().fmtChunk.numChannels);
+		effects::ChangePanning<int16_t>(a_Data, a_Size, m_Panning, fmt_chunk.numChannels);
 	}
 
 	/// <summary>

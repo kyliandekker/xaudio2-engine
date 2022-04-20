@@ -9,15 +9,21 @@
 - [ ] invalid sizes in unit test for mono to stereo and reverse.
 - [ ] byte volume unit test.
 - [ ] conversion unit test.
-- [ ] Set looping point and starting point (with custom slider). https://github.com/ocornut/imgui/issues/76
+- [X] Set looping point and starting point (with custom slider). https://github.com/ocornut/imgui/issues/76
 - [X] Wave settings (load specific chunks only).
 - [ ] Fix 32-bit conversion.
 - [ ] Fix 24-bit conversion.
 - [X] Close when loop crash.
 - [X] Play multiple channels crash.
-- [ ] Volume and panning templated (so that 32bit and 24bit also works).
+- [X] Volume and panning templated (so that 32bit and 24bit also works).
+- [X] Volume and panning independent from types.
 - [ ] 8-bit support.
 - [X] Replace all Hash to DEFAULT_HASH.
-- [ ] Save wave file (needs recalc).
+- [X] Save wave file (needs recalc).
 - [ ] Stream mode.
-- [ ] Recalc all sizes of chunks when they are loaded.
+- [ ] Unit test the random stereo/mono stuff properly.
+- [X] Loading optimalisation (no OOP).
+- [X] Fix unload crash.
+- [X] Default Sounds.
+- [X] Time (ms, pos, s) conversion unit test.
+- [ ] RangeIntSlider.

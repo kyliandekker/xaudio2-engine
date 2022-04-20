@@ -24,6 +24,8 @@
     <ClInclude Include="include\Hash.h" />
     <ClInclude Include="include\Includes.h" />
     <ClInclude Include="include\SoundSystem.h" />
+    <ClInclude Include="include\UserInclude.h" />
+    <ClInclude Include="include\wave\Chunks.h" />
     <ClInclude Include="include\wave\WaveEffects.h" />
     <ClInclude Include="include\utils\Logger.h" />
     <ClInclude Include="include\utils\uint24_t.h" />
@@ -32,7 +34,6 @@
     <ClInclude Include="include\wave\WaveReader.h" />
     <ClInclude Include="include\wave\WaveFormat.h" />
     <ClInclude Include="include\allocator\UAudioAllocator.h" />
-    <ClInclude Include="include\wave\Wave_Config.h" />
     <ClInclude Include="include\xaudio2\XAudio2Callback.h" />
     <ClInclude Include="include\xaudio2\XAudio2Channel.h" />
   </ItemGroup>
