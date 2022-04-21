@@ -1,32 +1,50 @@
 #pragma once
 
+// Necessary to override all the default settings.
+#include "UserInclude.h"
+
+#if !defined(UAUDIO_DEFAULT_HASH)
 #include "Hash.h"
+
+#define UAUDIO_DEFAULT_HASH uaudio::Hash
+#define UAUDIO_DEFAULT_HASH_FUNCTION uaudio::GetHash
+#endif
+
+#if !defined(UAUDIO_DEFAULT_ALLOCATOR)
+
 #include <cstdlib>
+
+#define UAUDIO_DEFAULT_ALLOCATOR std::allocator
+
+#endif
+
+#if !defined(UAUDIO_DEFAULT_ALLOC)
+
+#include <cstdlib>
+
+#define UAUDIO_DEFAULT_ALLOC malloc
+
+#endif
+
+#if !defined(UAUDIO_DEFAULT_FREE)
+
+#include <cstdlib>
+
+#define UAUDIO_DEFAULT_FREE free
+
+#endif
+
+#if !defined(UAUDIO_DEFAULT_MEMCOPY)
+
+#include <cstdio>
+#include <string.h>
+
+#define UAUDIO_DEFAULT_MEMCOPY memcpy
+
+#endif
 
 namespace uaudio
 {
-	inline int compare(unsigned char* a, unsigned char* b, int size)
-	{
-		while (size-- > 0)
-		{
-			if (*a != *b)
-				return (*a < *b) ? -1 : 1;
-			a++; b++;
-		}
-		return 0;
-	}
-
-	inline int compare(unsigned char* a, const char* b, int size)
-	{
-		while (size-- > 0)
-		{
-			if (*a != *b)
-				return (*a < *b) ? -1 : 1;
-			a++; b++;
-		}
-		return 0;
-	}
-
 	enum class BUFFERSIZE
 	{
 		BUFFERSIZE_256 = 256,
@@ -45,18 +63,28 @@ namespace uaudio
 		TIMEUNIT_POS
 	};
 
-#define UAUDIO_DEFAULT_ALLOCATOR std::allocator
-
-#define UAUDIO_DEFAULT_ALLOC malloc
-#define UAUDIO_DEFAULT_FREE free
-
-constexpr float UAUDIO_DEFAULT_VOLUME = 1.0f;
-constexpr float UAUDIO_DEFAULT_PANNING = 0.0f;
-constexpr uaudio::BUFFERSIZE UAUDIO_DEFAULT_BUFFERSIZE = uaudio::BUFFERSIZE::BUFFERSIZE_8192;
-
-#define UAUDIO_DEFAULT_HASH uaudio::Hash
-#define UAUDIO_DEFAULT_HASH_FUNCTION uaudio::GetHash
-
 }
 
-#include "UserInclude.h"
+#if !defined(UAUDIO_DEFAULT_BUFFERSIZE)
+
+#define UAUDIO_DEFAULT_BUFFERSIZE uaudio::BUFFERSIZE::BUFFERSIZE_8192
+
+#endif
+
+#define UAUDIO_MAX_PANNING 1.0f
+#define UAUDIO_MIN_PANNING (-1.0f)
+
+#define UAUDIO_MAX_VOLUME 1.0f
+#define UAUDIO_MIN_VOLUME (-1.0f)
+
+#if !defined(UAUDIO_DEFAULT_VOLUME)
+
+#define UAUDIO_DEFAULT_VOLUME UAUDIO_MAX_VOLUME
+
+#endif
+
+#if !defined(UAUDIO_DEFAULT_PANNING)
+
+#define UAUDIO_DEFAULT_PANNING 0.0f
+
+#endif

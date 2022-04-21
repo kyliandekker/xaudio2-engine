@@ -10,7 +10,7 @@ public:
 	SoundsTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &a_SoundSystem);
 	void Render() override;
 
-	void SaveFile(uaudio::WaveFile* a_WaveFile);
+	static void SaveFile(const uaudio::WaveFile* a_WaveFile);
 
 private:
 	void RenderSound(UAUDIO_DEFAULT_HASH a_SoundHash);

@@ -39,7 +39,7 @@ public:
 	BaseTool(ImGuiWindowFlags a_Flags, std::string a_Name, std::string a_Category, bool a_FullScreen = false);
 	~BaseTool();
 
-	float GetRGBColor(int color);
+	static float GetRGBColor(int color);
 	void ShowValue(const char* a_Text, const char* a_Value);
 	virtual void WindowBegin();
 	virtual void WindowEnd();

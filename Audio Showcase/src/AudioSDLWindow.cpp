@@ -112,49 +112,49 @@ void AudioSDLWindow::RenderWindow()
 
 			switch (event.type)
 			{
-			case SDL_QUIT:
-			{
-				m_Running = false;
-				break;
-			}
-			case SDL_WINDOWEVENT:
-			{
-				switch (event.window.event)
-				{
-				case SDL_WINDOWEVENT_RESIZED:
-				{
-					windowWidth = event.window.data1;
-					windowHeight = event.window.data2;
-					glViewport(0, 0, windowWidth, windowHeight);
-					break;
-				}
-				default:
-				{
-					break;
-				}
-				}
-				break;
-			}
-			case SDL_KEYDOWN:
-			{
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_ESCAPE:
+				case SDL_QUIT:
 				{
 					m_Running = false;
 					break;
 				}
+				case SDL_WINDOWEVENT:
+				{
+					switch (event.window.event)
+					{
+						case SDL_WINDOWEVENT_RESIZED:
+						{
+							windowWidth = event.window.data1;
+							windowHeight = event.window.data2;
+							glViewport(0, 0, windowWidth, windowHeight);
+							break;
+						}
+						default:
+						{
+							break;
+						}
+					}
+					break;
+				}
+				case SDL_KEYDOWN:
+				{
+					switch (event.key.keysym.sym)
+					{
+						case SDLK_ESCAPE:
+						{
+							m_Running = false;
+							break;
+						}
+						default:
+						{
+							break;
+						}
+					}
+					break;
+				}
 				default:
 				{
 					break;
 				}
-				}
-				break;
-			}
-			default:
-			{
-				break;
-			}
 			}
 		}
 
@@ -169,7 +169,7 @@ void AudioSDLWindow::RenderWindow()
 	uaudio::logger::log_info("Main loop ended.");
 }
 
-AudioImGuiWindow &AudioSDLWindow::GetImGuiWindow()
+AudioImGuiWindow &AudioSDLWindow::GetImGuiWindow() const
 {
 	return *m_AudioWindow;
 }

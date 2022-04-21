@@ -7,7 +7,7 @@
 #include <utils/Logger.h>
 #include <algorithm>
 
-#include "wave/Chunks.h"
+#include "wave/WaveChunks.h"
 #include "wave/WaveConverter.h"
 
 namespace uaudio::xaudio2
@@ -69,7 +69,7 @@ namespace uaudio::xaudio2
 		{
 			WAVEFORMATEX wave;
 
-			FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
+			const FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
 			// Set WAV format default. (what we expect the user to provide).
 			wave.wFormatTag = fmt_chunk.audioFormat;
 			wave.nChannels = fmt_chunk.numChannels;
@@ -78,7 +78,7 @@ namespace uaudio::xaudio2
 			wave.wBitsPerSample = fmt_chunk.bitsPerSample;
 			wave.nBlockAlign = fmt_chunk.blockAlign;
 			wave.nAvgBytesPerSec = fmt_chunk.byteRate;
-			if (FAILED(hr = m_AudioSystem->GetEngine().CreateSourceVoice(&m_SourceVoice, &wave, 0, 1.0f, &m_VoiceCallback)))
+			if (FAILED(hr = m_AudioSystem->GetEngine().CreateSourceVoice(&m_SourceVoice, &wave, 0, 2.0f, &m_VoiceCallback)))
 			{
 				logger::ASSERT(false, "<XAudio2> Creating XAudio2 Source Voice failed.");
 				m_IsPlaying = false;
@@ -168,24 +168,24 @@ namespace uaudio::xaudio2
 
 	float XAudio2Channel::GetPos(TIMEUNIT a_TimeUnit) const
 	{
-		FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
+		const FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
 		switch (a_TimeUnit)
 		{
-			case TIMEUNIT::TIMEUNIT_MS:
-			{
-				return conversion::PosToMilliseconds(m_CurrentPos, fmt_chunk.byteRate);
-				break;
-			}
-			case TIMEUNIT::TIMEUNIT_S:
-			{
-				return conversion::PosToSeconds(m_CurrentPos, fmt_chunk.byteRate);
-				break;
-			}
-			case TIMEUNIT::TIMEUNIT_POS:
-			{
-				return static_cast<float>(m_CurrentPos);
-				break;
-			}
+		case TIMEUNIT::TIMEUNIT_MS:
+		{
+			return utils::PosToMilliseconds(m_CurrentPos, fmt_chunk.byteRate);
+			break;
+		}
+		case TIMEUNIT::TIMEUNIT_S:
+		{
+			return utils::PosToSeconds(m_CurrentPos, fmt_chunk.byteRate);
+			break;
+		}
+		case TIMEUNIT::TIMEUNIT_POS:
+		{
+			return static_cast<float>(m_CurrentPos);
+			break;
+		}
 		}
 
 		return 0.0f;
@@ -193,7 +193,7 @@ namespace uaudio::xaudio2
 
 	uint32_t XAudio2Channel::GetBufferSize() const
 	{
-		FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
+		const FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
 		return fmt_chunk.bitsPerSample / 8;
 	}
 
@@ -239,25 +239,24 @@ namespace uaudio::xaudio2
 
 			if (!m_Active)
 			{
-				FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
-				effects::ChangeVolume<int16_t>(data, a_Size, 0.0f, fmt_chunk.blockAlign, fmt_chunk.numChannels);
+				const FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
+				effects::ChangeVolume<int16_t>(data, a_Size, UAUDIO_MIN_VOLUME, fmt_chunk.blockAlign, fmt_chunk.numChannels);
 			}
 
 			PlayBuffer(data, a_Size);
 		}
 	}
 
-	void XAudio2Channel::PlayBuffer(unsigned char* a_Buffer, uint32_t a_Size)
+	void XAudio2Channel::PlayBuffer(const unsigned char *a_Buffer, uint32_t a_Size) const
 	{
-		XAUDIO2_BUFFER x_buffer = { 0, 0, nullptr, 0, 0, 0, 0, 0, nullptr };
-		x_buffer.AudioBytes = a_Size; // Buffer containing audio data.
-		x_buffer.pAudioData = a_Buffer;	  // Size of the audio buffer in bytes.
+		XAUDIO2_BUFFER x_buffer = {0, 0, nullptr, 0, 0, 0, 0, 0, nullptr};
+		x_buffer.AudioBytes = a_Size;	// Buffer containing audio data.
+		x_buffer.pAudioData = a_Buffer; // Size of the audio buffer in bytes.
 
-		HRESULT hr;
-		if (FAILED(hr = m_SourceVoice->SubmitSourceBuffer(&x_buffer)))
+		if (HRESULT hr; FAILED(hr = m_SourceVoice->SubmitSourceBuffer(&x_buffer)))
 		{
-			_com_error err(hr);
-			LPCTSTR errMsg = err.ErrorMessage();
+			const _com_error err(hr);
+			const LPCTSTR errMsg = err.ErrorMessage();
 			logger::log_warning("<XAudio2> Submitting data to XAudio2 Source Voice failed: 0x%08x: %s.", hr, errMsg);
 		}
 	}
@@ -302,7 +301,7 @@ namespace uaudio::xaudio2
 	/// <param name="a_Volume">The volume.</param>
 	void XAudio2Channel::SetVolume(float a_Volume)
 	{
-		a_Volume = std::clamp(a_Volume, 0.0f, 1.0f);
+		a_Volume = utils::clamp(a_Volume, UAUDIO_MIN_VOLUME, UAUDIO_MAX_VOLUME);
 		m_Volume = a_Volume;
 	}
 
@@ -321,7 +320,7 @@ namespace uaudio::xaudio2
 	/// <param name="a_Panning">The panning of the channel.</param>
 	void XAudio2Channel::SetPanning(float a_Panning)
 	{
-		a_Panning = std::clamp(a_Panning, -1.0f, 1.0f);
+		a_Panning = utils::clamp(a_Panning, UAUDIO_MIN_PANNING, UAUDIO_MAX_PANNING);
 		m_Panning = a_Panning;
 	}
 
@@ -378,7 +377,7 @@ namespace uaudio::xaudio2
 	/// <returns></returns>
 	void XAudio2Channel::ApplyEffects(unsigned char *&a_Data, uint32_t a_Size) const
 	{
-		FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
+		const FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
 
 		// Master volume.
 		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_AudioSystem->GetMasterVolume(), fmt_chunk.blockAlign, fmt_chunk.numChannels);

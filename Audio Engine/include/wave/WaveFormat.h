@@ -1,13 +1,8 @@
 ﻿#pragma once
 
-#include <cassert>
 #include <cstdint>
 #include <string>
 #include <vector>
-
-#include "Hash.h"
-
-#include "Includes.h"
 
 namespace uaudio
 {

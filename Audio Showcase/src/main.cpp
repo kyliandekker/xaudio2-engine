@@ -3,13 +3,11 @@
 #include "AudioSDLWindow.h"
 
 #include "tools/ChannelsTool.h"
-#include "tools/MainWindow.h"
 #include "tools/MasterTool.h"
 #include "tools/SoundsTool.h"
 #include "utils/Logger.h"
-#include "wave/Chunks.h"
 
-int main(int, char* [])
+int main(int, char *[])
 {
 	uaudio::AudioSystem aSys;
 	aSys.Start();

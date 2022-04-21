@@ -6,22 +6,23 @@
 
 namespace uaudio
 {
-	UAUDIO_DEFAULT_HASH SoundSystem::LoadSound(const char *a_Path, const char *a_Name, std::vector<const char*> a_Chunks)
+	UAUDIO_DEFAULT_HASH SoundSystem::LoadSound(const char *a_Path, const char *a_Name, Wave_Config& a_WaveConfig)
 	{
 		UAUDIO_DEFAULT_HASH hash = UAUDIO_DEFAULT_HASH_FUNCTION(a_Name);
 
+		WaveFile wave_file = WaveFile(a_Path, a_WaveConfig);
 		if (!DoesSoundExist(hash))
-			m_Sounds.insert(std::make_pair(hash, WaveFile(a_Path, std::move(a_Chunks))));
+			m_Sounds.insert(std::make_pair(hash, wave_file));
 
 		return hash;
 	}
 
-	void SoundSystem::UnloadSound(UAUDIO_DEFAULT_HASH hash)
+	void SoundSystem::UnloadSound(const UAUDIO_DEFAULT_HASH a_Hash)
 	{
-		m_Sounds.erase(hash);
+		m_Sounds.erase(a_Hash);
 	}
 
-	WaveFile *SoundSystem::FindSound(UAUDIO_DEFAULT_HASH a_Hash)
+	WaveFile *SoundSystem::FindSound(const UAUDIO_DEFAULT_HASH a_Hash)
 	{
 		if (DoesSoundExist(a_Hash))
 			return &m_Sounds[a_Hash];
@@ -32,7 +33,7 @@ namespace uaudio
 		return nullptr;
 	}
 
-	bool SoundSystem::DoesSoundExist(UAUDIO_DEFAULT_HASH a_Hash) const
+	bool SoundSystem::DoesSoundExist(const UAUDIO_DEFAULT_HASH a_Hash) const
 	{
 		return m_Sounds.find(a_Hash) != m_Sounds.end();
 	}
@@ -45,8 +46,8 @@ namespace uaudio
 	std::vector<WaveFile *, UAUDIO_DEFAULT_ALLOCATOR<WaveFile *>> SoundSystem::GetSounds()
 	{
 		std::vector<WaveFile *, UAUDIO_DEFAULT_ALLOCATOR<WaveFile *>> sounds;
-		for (auto &sound_file : m_Sounds)
-			sounds.push_back(&sound_file.second);
+		for (auto & [hash, sound] : m_Sounds)
+			sounds.push_back(&sound);
 
 		return sounds;
 	}
@@ -54,8 +55,8 @@ namespace uaudio
 	std::vector<UAUDIO_DEFAULT_HASH, UAUDIO_DEFAULT_ALLOCATOR<UAUDIO_DEFAULT_HASH>> SoundSystem::GetSoundHashes()
 	{
 		std::vector<UAUDIO_DEFAULT_HASH, UAUDIO_DEFAULT_ALLOCATOR<UAUDIO_DEFAULT_HASH>> sounds;
-		for (auto &sound_file : m_Sounds)
-			sounds.push_back(sound_file.first);
+		for (auto & [hash, sound] : m_Sounds)
+			sounds.push_back(hash);
 
 		return sounds;
 	}

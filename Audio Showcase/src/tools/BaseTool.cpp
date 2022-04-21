@@ -15,7 +15,7 @@ float BaseTool::GetRGBColor(int color)
 
 void BaseTool::ShowValue(const char* a_Text, const char* a_Value)
 {
-    ImVec4 color = ImGui::GetStyleColorVec4(ImGuiCol_Button);
+	const ImVec4 color = ImGui::GetStyleColorVec4(ImGuiCol_Button);
     ImGui::Text("%s\n", a_Text);
     ImGui::SameLine();
     ImGui::TextColored(color, "%s\n", a_Value);

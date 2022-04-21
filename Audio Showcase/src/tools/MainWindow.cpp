@@ -7,7 +7,7 @@
 MainWindow::MainWindow(std::vector<BaseTool*>&a_Tools) : BaseTool(ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDocking, "DockSpace", "", true), m_Tools(a_Tools)
 { }
 
-std::map<std::string, std::vector<BaseTool*>> MainWindow::SortByCategory()
+std::map<std::string, std::vector<BaseTool*>> MainWindow::SortByCategory() const
 {
     std::map<std::string, std::vector<BaseTool*>> sorted_tools;
     for (auto* tool : m_Tools)
@@ -27,13 +27,12 @@ void MainWindow::Render()
     {
         if (ImGui::BeginMenu("Hide/Show"))
         {
-            auto map = SortByCategory();
-            for (auto& category : map)
-            {
-                for (const auto& tool : category.second)
+	        const auto map = SortByCategory();
+            for (const auto& [fst, snd] : map)
+                for (const auto& tool : snd)
                 {
                     ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
-                    std::string name = category.first.empty() ? "Uncategorized" : category.first.c_str();
+                    std::string name = fst.empty() ? "Not categorized" : fst.c_str();
                     if (ImGui::BeginMenu(name.c_str()))
                     {
                         if (ImGui::MenuItem(tool->GetName().c_str(), "", tool->IsEnabled()))
@@ -42,7 +41,6 @@ void MainWindow::Render()
                     }
                     ImGui::PopItemFlag();
                 }
-            }
             ImGui::EndMenu();
         }
         ImGui::EndMenu();

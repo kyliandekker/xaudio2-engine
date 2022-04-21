@@ -6,16 +6,23 @@
 #include <imgui/imgui_stdlib.h>
 #include <imgui/imgui_helpers.h>
 
-MasterTool::MasterTool(uaudio::AudioSystem& a_AudioSystem, uaudio::SoundSystem& a_SoundSystem) : BaseTool(0, "Actions", "Master Actions"), m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
+#include "utils/Utils.h"
+
+MasterTool::MasterTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &a_SoundSystem) : BaseTool(0, "Actions", "Master Actions"), m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
 {
-    uaudio::BUFFERSIZE buffer_size = m_AudioSystem.GetBufferSize();
+	const uaudio::BUFFERSIZE buffer_size = m_AudioSystem.GetBufferSize();
     for (int i = 0; i < m_BufferSizeOptions.size(); i++)
         if (m_BufferSizeOptions[i] == buffer_size)
             m_BufferSizeSelection = i;
 
-    m_ChunkIds.push_back({ uaudio::ACID_CHUNK_ID, false, false });
-    m_ChunkIds.push_back({ uaudio::BEXT_CHUNK_ID, false, false });
-    m_ChunkIds.push_back({ uaudio::FACT_CHUNK_ID, false, false });
+    const uint32_t bits_per_sample = uaudio::UAUDIO_DEFAULT_BITS_PER_SAMPLE;
+    for (int i = 0; i < m_BitsPerSampleOptions.size(); i++)
+        if (m_BitsPerSampleOptions[i] == bits_per_sample)
+            m_BitsPerSampleSelection = i;
+
+    m_ChunkIds.push_back({uaudio::ACID_CHUNK_ID, false, false});
+    m_ChunkIds.push_back({uaudio::BEXT_CHUNK_ID, false, false});
+    m_ChunkIds.push_back({uaudio::FACT_CHUNK_ID, false, false});
 }
 
 void MasterTool::Render()
@@ -39,23 +46,23 @@ void MasterTool::Render()
     }
 
     float panning = m_AudioSystem.GetMasterPanning();
-    std::string master_panning = std::string(PANNING) + " Master Panning (affects all channels)";
+    const std::string master_panning = std::string(PANNING) + " Master Panning (affects all channels)";
     if (ImGui::Knob("Panning##Master_Panning", &panning, -1.0f, 1.0f, ImVec2(50, 50), master_panning.c_str(), 0.0f))
         m_AudioSystem.SetMasterPanning(panning);
 
     ImGui::SameLine();
     float volume = m_AudioSystem.GetMasterVolume();
-    std::string master_volume = std::string(VOLUME_UP) + " Master Volume (affects all channels)";
+    const std::string master_volume = std::string(VOLUME_UP) + " Master Volume (affects all channels)";
     if (ImGui::Knob("Volume##Master_Volume", &volume, 0, 1, ImVec2(50, 50), master_volume.c_str(), 1.0f))
         m_AudioSystem.SetMasterVolume(volume);
 
-    std::string buffer_size_text = "Buffer Size";
+    const std::string buffer_size_text = "Buffer Size";
     ImGui::Text("%s", buffer_size_text.c_str());
-    if (ImGui::BeginCombo("##Buffer_Size", std::string(m_BufferSizeSelection == -1 ? "CHOOSE BUFFERSIZE" : m_BufferSizeTextOptions[m_BufferSizeSelection]).c_str(), ImGuiComboFlags_PopupAlignLeft))
+    if (ImGui::BeginCombo("##Buffer_Size", std::string(m_BufferSizeSelection == -1 ? "CHOOSE BUFFER SIZE" : m_BufferSizeTextOptions[m_BufferSizeSelection]).c_str(), ImGuiComboFlags_PopupAlignLeft))
     {
         for (uint32_t n = 0; n < static_cast<uint32_t>(m_BufferSizeTextOptions.size()); n++)
         {
-            bool is_selected = n == m_BufferSizeSelection;
+	        const bool is_selected = n == m_BufferSizeSelection;
             if (ImGui::Selectable(m_BufferSizeTextOptions[n], is_selected))
             {
                 m_BufferSizeSelection = n;
@@ -65,13 +72,34 @@ void MasterTool::Render()
         ImGui::EndCombo();
     }
 
-    std::string add_sound = std::string(ADD) + " Load Sound";
+    const std::string add_sound = std::string(ADD) + " Load Sound";
     if (ImGui::Button(add_sound.c_str()))
         OpenFile();
 
     if (ImGui::CollapsingHeader("Extra Options"))
     {
         ImGui::Indent(IMGUI_INDENT);
+        int channels = m_Channels;
+        ImGui::InputInt("Channels (mono or stereo)", &channels, 1, 1);
+        m_Channels = static_cast<uint16_t>(channels);
+        m_Channels = uaudio::utils::clamp<uint16_t>(m_Channels, 1, 2);
+
+        const std::string bits_per_sample_text = "Bits per sample";
+        ImGui::Text("%s", bits_per_sample_text.c_str());
+        if (ImGui::BeginCombo("##Bits_Per_Sample", std::string(std::to_string(m_BitsPerSampleOptions[m_BitsPerSampleSelection])).c_str(), ImGuiComboFlags_PopupAlignLeft))
+        {
+            for (uint32_t n = 0; n < static_cast<uint32_t>(m_BitsPerSampleOptions.size()); n++)
+            {
+	            const bool is_selected = n == m_BitsPerSampleSelection;
+                if (ImGui::Selectable(std::to_string(m_BitsPerSampleOptions[n]).c_str(), is_selected))
+                {
+                    m_BitsPerSampleSelection = n;
+                    m_BitsPerSample = m_BitsPerSampleOptions[m_BitsPerSampleSelection];
+                }
+            }
+            ImGui::EndCombo();
+        }
+
         for (uint32_t i = 0; i < m_ChunkIds.size(); i++)
         {
             ImGui::CheckboxButton(m_ChunkIds[i].chunk_id.c_str(), &m_ChunkIds[i].selected);
@@ -82,21 +110,23 @@ void MasterTool::Render()
                 if (ImGui::Button(test.c_str()))
                     m_ChunkIds.erase(m_ChunkIds.begin() + i);
             }
+            ImGui::SameLine();
         }
-        static chunk_select select = { "", false, true };
-        if (ImGui::InputText("##Add_Chunk", &select.chunk_id))
-            if (select.chunk_id.size() > uaudio::CHUNK_ID_SIZE)
-                select.chunk_id = std::string(select.chunk_id.substr(0, uaudio::CHUNK_ID_SIZE));
+        ImGui::NewLine();
+        if (ImGui::InputText("##Add_Chunk", &m_SelectedChunk.chunk_id))
+            if (m_SelectedChunk.chunk_id.size() > uaudio::CHUNK_ID_SIZE)
+                m_SelectedChunk.chunk_id = std::string(m_SelectedChunk.chunk_id.substr(0, uaudio::CHUNK_ID_SIZE));
+        ImGui::SameLine();
         if (ImGui::Button("Add"))
         {
             bool canAdd = true;
-            if (select.chunk_id.size() > uaudio::CHUNK_ID_SIZE)
-                select.chunk_id = std::string(select.chunk_id.substr(0, uaudio::CHUNK_ID_SIZE));
-            for (auto& m_ChunkId : m_ChunkIds)
-	            if (m_ChunkId.chunk_id == select.chunk_id)
+            if (m_SelectedChunk.chunk_id.size() > uaudio::CHUNK_ID_SIZE)
+                m_SelectedChunk.chunk_id = std::string(m_SelectedChunk.chunk_id.substr(0, uaudio::CHUNK_ID_SIZE));
+            for (auto &m_ChunkId : m_ChunkIds)
+                if (m_ChunkId.chunk_id == m_SelectedChunk.chunk_id)
                     canAdd = false;
             if (canAdd)
-                m_ChunkIds.push_back(select);
+                m_ChunkIds.push_back(m_SelectedChunk);
         }
         ImGui::Unindent(IMGUI_INDENT);
     }
@@ -108,7 +138,7 @@ void MasterTool::Render()
 void MasterTool::OpenFile()
 {
     OPENFILENAME ofn;
-    TCHAR sz_file[260] = { 0 };
+    TCHAR sz_file[260] = {0};
 
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = sizeof(ofn);
@@ -123,15 +153,16 @@ void MasterTool::OpenFile()
 
     if (GetOpenFileName(&ofn))
     {
-        char* path = new char[wcslen(ofn.lpstrFile) + 1];
+	    const auto path = new char[wcslen(ofn.lpstrFile) + 1];
         wsprintfA(path, "%S", ofn.lpstrFile);
 
-        std::vector<const char*> chunks;
-        for (auto& chunk : m_ChunkIds)
+        std::vector<const char *> chunks;
+        for (auto &chunk : m_ChunkIds)
             if (chunk.selected)
                 chunks.push_back(chunk.chunk_id.c_str());
 
-        UAUDIO_DEFAULT_HASH hash = m_SoundSystem.LoadSound(path, path, chunks);
+        uaudio::Wave_Config wave_config = uaudio::Wave_Config(chunks, m_Channels, m_BitsPerSample);
+        UAUDIO_DEFAULT_HASH hash = m_SoundSystem.LoadSound(path, path, wave_config);
         delete[] path;
     }
 }

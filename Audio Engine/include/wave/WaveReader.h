@@ -2,10 +2,8 @@
 
 #include <complex>
 
-#include "Chunks.h"
+#include "WaveConfig.h"
 #include "WaveFormat.h"
-
-#define DEFAULT_CHUNKS DATA_CHUNK_ID, FMT_CHUNK_ID
 
 namespace uaudio
 {
@@ -25,7 +23,7 @@ namespace uaudio
     class WaveReader
     {
     public:
-        static WAVE_LOADING_STATUS LoadSound(const char* a_FilePath, WaveFormat& a_WavFormat, FILE*& a_File, std::vector<const char*> a_Chunks = { DEFAULT_CHUNKS });
+        static WAVE_LOADING_STATUS LoadSound(const char* a_FilePath, WaveFormat& a_WavFormat, FILE*& a_File, Wave_Config a_WaveConfig = Wave_Config());
         static WAVE_SAVING_STATUS SaveSound(const char* a_FilePath, const WaveFormat& a_WaveFormat);
     };
 }

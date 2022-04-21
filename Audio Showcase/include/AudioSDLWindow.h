@@ -13,7 +13,7 @@ public:
 
 	void RenderWindow();
 
-	AudioImGuiWindow& GetImGuiWindow();
+	AudioImGuiWindow& GetImGuiWindow() const;
 
 	ImVec2 GetWindowSize() const;
 private:

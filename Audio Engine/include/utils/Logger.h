@@ -3,9 +3,20 @@
 #include <cassert>
 #include <stdio.h>
 
+// Necessary for UAUDIO_NO_COLOR_LOGGING & MAX_BUFFER_LOGGER.
 #include "UserInclude.h"
 
-constexpr uint32_t MAX_BUFFER_LOGGER = 256;
+#if !defined(UAUDIO_COLOR_LOGGING)
+
+#define MAX_BUFFER_LOGGER 256
+
+#endif
+
+#if !defined(UAUDIO_COLOR_LOGGING)
+
+#define UAUDIO_COLOR_LOGGING true
+
+#endif
 
 namespace uaudio::logger
 {
@@ -25,15 +36,7 @@ namespace uaudio::logger
 		printf("%s: %s\n", a_Flag, buffer);
 	}
 
-#ifdef UAUDIO_NO_COLOR_LOGGING
-	constexpr auto COLOR_YELLOW = "";
-	constexpr auto COLOR_WHITE = "";
-	constexpr auto COLOR_GREEN = "";
-	constexpr auto COLOR_RED = "";
-	constexpr auto COLOR_CYAN = "";
-	constexpr auto COLOR_PURPLE = "";
-	constexpr auto COLOR_BLUE = "";
-#else
+#if UAUDIO_COLOR_LOGGING == true
 	constexpr auto COLOR_YELLOW = "\033[0;33m";
 	constexpr auto COLOR_WHITE = "\033[0;37m";
 	constexpr auto COLOR_GREEN = "\033[0;32m";
@@ -41,33 +44,59 @@ namespace uaudio::logger
 	constexpr auto COLOR_CYAN = "\033[0;36m";
 	constexpr auto COLOR_PURPLE = "\033[0;35m";
 	constexpr auto COLOR_BLUE = "\033[0;34m";
+#else
+	constexpr auto COLOR_YELLOW = "";
+	constexpr auto COLOR_WHITE = "";
+	constexpr auto COLOR_GREEN = "";
+	constexpr auto COLOR_RED = "";
+	constexpr auto COLOR_CYAN = "";
+	constexpr auto COLOR_PURPLE = "";
+	constexpr auto COLOR_BLUE = "";
 #endif
 
+	/// <summary>
+	/// Makes the text after this yellow.
+	/// </summary>
 	inline void print_yellow()
 	{
 		printf("%s", COLOR_YELLOW);
 	}
 
+	/// <summary>
+	/// Makes the text after this white.
+	/// </summary>
 	inline void print_white()
 	{
 		printf("%s", COLOR_WHITE);
 	}
 
+	/// <summary>
+	/// Makes the text after this green.
+	/// </summary>
 	inline void print_green()
 	{
 		printf("%s", COLOR_GREEN);
 	}
 
+	/// <summary>
+	/// Makes the text after this red.
+	/// </summary>
 	inline void print_red()
 	{
 		printf("%s", COLOR_RED);
 	}
 
+	/// <summary>
+	/// Makes the text after this cyan.
+	/// </summary>
 	inline void print_cyan()
 	{
 		printf("%s", COLOR_CYAN);
 	}
 
+	/// <summary>
+	/// Makes the text after this purple.
+	/// </summary>
 	inline void print_purple()
 	{
 		printf("%s", COLOR_PURPLE);
@@ -136,7 +165,7 @@ namespace uaudio::logger
 	/// <param name="a_Message">The message that will be printed.</param>
 	/// <param name="a_Args">The arguments for the message.</param>
 	template <typename... Args>
-	inline void ASSERT(bool a_Check, const char* a_Message, Args... a_Args)
+	inline void ASSERT(bool a_Check, const char *a_Message, Args... a_Args)
 	{
 		if (!a_Check)
 		{

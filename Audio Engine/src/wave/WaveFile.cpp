@@ -1,28 +1,26 @@
-#include <algorithm>
-#include <utility>
-
 #include <wave/WaveFile.h>
 #include <utils/Logger.h>
 
-#include "wave/WaveConverter.h"
+#include "utils/Utils.h"
+#include "wave/WaveReader.h"
 
 namespace uaudio
 {
     WaveFile::WaveFile() = default;
 
-    WaveFile::WaveFile(const char *a_FilePath, std::vector<const char *> a_Chunks)
+    WaveFile::WaveFile(const char *a_FilePath, const Wave_Config &a_WaveConfig)
     {
-        m_WaveFile = {};
-        WaveReader::LoadSound(a_FilePath, m_WaveFile, m_File, std::move(a_Chunks));
+        m_WaveFormat = {};
+        WaveReader::LoadSound(a_FilePath, m_WaveFormat, m_File, a_WaveConfig);
 
-        SetEndPosition(m_WaveFile.GetChunkSize(DATA_CHUNK_ID));
+        SetEndPosition(m_WaveFormat.GetChunkSize(DATA_CHUNK_ID));
     }
 
     WaveFile::WaveFile(const WaveFile &rhs)
     {
         m_Looping = rhs.m_Looping;
         m_Volume = rhs.m_Volume;
-        m_WaveFile = rhs.m_WaveFile;
+        m_WaveFormat = rhs.m_WaveFormat;
         m_StartPosition = rhs.m_StartPosition;
         m_EndPosition = rhs.m_EndPosition;
     }
@@ -33,15 +31,11 @@ namespace uaudio
         {
             m_Looping = rhs.m_Looping;
             m_Volume = rhs.m_Volume;
-            m_WaveFile = rhs.m_WaveFile;
+            m_WaveFormat = rhs.m_WaveFormat;
             m_StartPosition = rhs.m_StartPosition;
             m_EndPosition = rhs.m_EndPosition;
         }
         return *this;
-    }
-
-    WaveFile::~WaveFile()
-    {
     }
 
     /// <summary>
@@ -53,12 +47,12 @@ namespace uaudio
     void WaveFile::Read(uint32_t a_StartingPoint, uint32_t &a_ElementCount, unsigned char *&a_Buffer) const
     {
         // NOTE: This part will reduce the size of the buffer array. It is necessary when reaching the end of the file if we want to loop it.
-        if (a_StartingPoint + a_ElementCount >= m_WaveFile.GetChunkSize(DATA_CHUNK_ID))
+        if (a_StartingPoint + a_ElementCount >= m_WaveFormat.GetChunkSize(DATA_CHUNK_ID))
         {
-            const uint32_t new_size = a_ElementCount - ((a_StartingPoint + a_ElementCount) - m_WaveFile.GetChunkSize(DATA_CHUNK_ID));
+            const uint32_t new_size = a_ElementCount - ((a_StartingPoint + a_ElementCount) - m_WaveFormat.GetChunkSize(DATA_CHUNK_ID));
             a_ElementCount = new_size;
         }
-        a_Buffer = m_WaveFile.GetChunkFromData<DATA_Chunk>(DATA_CHUNK_ID).data + a_StartingPoint;
+        a_Buffer = m_WaveFormat.GetChunkFromData<DATA_Chunk>(DATA_CHUNK_ID).data + a_StartingPoint;
     }
 
     /// <summary>
@@ -74,11 +68,12 @@ namespace uaudio
     /// Returns the duration in minute:seconds.
     /// </summary>
     /// <param name="a_Duration">Duration in seconds.</param>
+    /// <param name="a_Milliseconds">Whether or not milliseconds should be shown.</param>
     /// <returns></returns>
-    std::string WaveFile::FormatDuration(float a_Duration, bool a_Miliseconds)
+    std::string WaveFile::FormatDuration(float a_Duration, bool a_Milliseconds)
     {
-        const uint32_t hours = conversion::SecondsToHours(a_Duration);
-        const uint32_t minutes = conversion::SecondsToMinutes(a_Duration);
+        const uint32_t hours = utils::SecondsToHours(a_Duration);
+        const uint32_t minutes = utils::SecondsToMinutes(a_Duration);
         const uint32_t seconds = static_cast<uint32_t>(a_Duration) % 60;
         const uint32_t total = (hours * 3600) + (minutes * 60) + seconds;
         const float milliseconds_float = a_Duration - static_cast<float>(total);
@@ -93,7 +88,7 @@ namespace uaudio
                ":" +
                std::string(minutes_string) +
                ":" +
-               std::string(seconds_string) + (a_Miliseconds ? ":" + std::string(milliseconds_string) : "");
+               std::string(seconds_string) + (a_Milliseconds ? ":" + std::string(milliseconds_string) : "");
     }
 
     /// <summary>
@@ -142,21 +137,39 @@ namespace uaudio
         return m_Volume;
     }
 
+    /// <summary>
+    /// Sets the end position of the wave file.
+    /// </summary>
+    /// <param name="a_EndPosition">The end position.</param>
     void WaveFile::SetEndPosition(uint32_t a_EndPosition)
     {
+        a_EndPosition = utils::clamp<uint32_t>(a_EndPosition, 0, m_WaveFormat.GetChunkSize(DATA_CHUNK_ID));
         m_EndPosition = a_EndPosition;
     }
 
+    /// <summary>
+    /// Returns the end position of the wave file.
+    /// </summary>
+    /// <returns>The end position.</returns>
     uint32_t WaveFile::GetEndPosition() const
     {
         return m_EndPosition;
     }
 
+    /// <summary>
+    /// Sets the start position of the wave file.
+    /// </summary>
+    /// <param name="a_StartPosition">The start position.</param>
     void WaveFile::SetStartPosition(uint32_t a_StartPosition)
     {
+        a_StartPosition = utils::clamp<uint32_t>(a_StartPosition, 0, m_WaveFormat.GetChunkSize(DATA_CHUNK_ID));
         m_StartPosition = a_StartPosition;
     }
 
+    /// <summary>
+    /// Returns the start position of the wave file.
+    /// </summary>
+    /// <returns>The start position.</returns>
     uint32_t WaveFile::GetStartPosition() const
     {
         return m_StartPosition;
@@ -168,7 +181,7 @@ namespace uaudio
     /// <returns></returns>
     const WaveFormat &WaveFile::GetWaveFormat() const
     {
-        return m_WaveFile;
+        return m_WaveFormat;
     }
 
     /// <summary>
@@ -177,6 +190,6 @@ namespace uaudio
     /// <returns></returns>
     const char *WaveFile::GetSoundTitle() const
     {
-        return m_WaveFile.m_FilePath.c_str();
+        return m_WaveFormat.m_FilePath.c_str();
     }
 }

@@ -45,8 +45,6 @@ ImFont* m_EditorFont = nullptr;
 /// <summary>
 /// Creates a context and sets everything up for ImGui.
 /// </summary>
-/// <param name="a_Context">The SDL context that will be passed to ImGui.</param>
-/// <param name="a_Glslversion">The version of GLSL.</param>
 void AudioImGuiWindow::CreateImGui() const
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -62,9 +60,9 @@ void AudioImGuiWindow::CreateImGui() const
 
     m_DefaultFont = io.Fonts->AddFontFromFileTTF("./resources/font_default.ttf", 14.0f);
 
-#define ICON_MIN_FA 0xf000
-#define ICON_MAX_FA 0xf2e0
-    static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+	constexpr auto ICON_MIN_FA = 0xf000;
+	constexpr auto ICON_MAX_FA = 0xf2e0;
+	constexpr ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
     ImFontConfig icons_config;
     icons_config.MergeMode = true;
     icons_config.PixelSnapH = true;
@@ -181,7 +179,7 @@ void AudioImGuiWindow::Render()
 /// <summary>
 /// Deletes the SDL window.
 /// </summary>
-void AudioImGuiWindow::DeleteWindow()
+void AudioImGuiWindow::DeleteWindow() const
 {
     ImGui::DestroyContext();
 }

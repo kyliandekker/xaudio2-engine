@@ -5,10 +5,10 @@
 
 void* Alloc(uint64_t sizeInBytes)
 {
-	return malloc(sizeInBytes);
+	return UAUDIO_DEFAULT_ALLOC(sizeInBytes);
 }
 
 void Free(void* ptr)
 {
-	free(ptr);
+	UAUDIO_DEFAULT_FREE(ptr);
 }

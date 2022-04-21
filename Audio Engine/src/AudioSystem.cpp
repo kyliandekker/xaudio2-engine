@@ -3,9 +3,9 @@
 #include <utils/Logger.h>
 
 #include <xaudio2.h>
-#include <algorithm>
 
 #include "SoundSystem.h"
+#include "wave/WaveEffects.h"
 
 namespace uaudio
 {
@@ -120,7 +120,7 @@ namespace uaudio
 	/// <param name="a_Volume">The volume.</param>
 	void AudioSystem::SetMasterVolume(float a_Volume)
 	{
-		a_Volume = std::clamp(a_Volume, 0.0f, 1.0f);
+		a_Volume = utils::clamp(a_Volume, UAUDIO_MIN_VOLUME, UAUDIO_MAX_VOLUME);
 		m_Volume = a_Volume;
 	}
 
@@ -139,7 +139,7 @@ namespace uaudio
 	/// <param name="a_Panning">The panning.</param>
 	void AudioSystem::SetMasterPanning(float a_Panning)
 	{
-		a_Panning = std::clamp(a_Panning, -1.0f, 1.0f);
+		a_Panning = utils::clamp(a_Panning, UAUDIO_MIN_PANNING, UAUDIO_MAX_PANNING);
 		m_Panning = a_Panning;
 	}
 
@@ -175,7 +175,7 @@ namespace uaudio
 	/// </summary>
 	/// <param name="a_WaveFile">The sound that needs to be played.</param>
 	/// <returns>Channel handle.</returns>
-	ChannelHandle AudioSystem::Play(WaveFile &a_WaveFile)
+	ChannelHandle AudioSystem::Play(const WaveFile &a_WaveFile)
 	{
 		// First look for inactive channels.
 		for (uint32_t i = 0; i < ChannelSize(); i++)
@@ -188,7 +188,7 @@ namespace uaudio
 			}
 		}
 
-		if (ChannelSize() < NUM_CHANNELS)
+		if (ChannelSize() < UAUDIO_DEFAULT_NUM_CHANNELS)
 		{
 			const int32_t size = static_cast<int32_t>(ChannelSize());
 			xaudio2::XAudio2Channel channel = xaudio2::XAudio2Channel(*this);

@@ -5,8 +5,8 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_helpers.h>
 
-#include "wave/Chunks.h"
-#include "wave/WaveConverter.h"
+#include "utils/Utils.h"
+#include "wave/WaveChunks.h"
 
 ChannelsTool::ChannelsTool(uaudio::AudioSystem &a_AudioSystem) : BaseTool(0, "Channels", "Channels"), m_AudioSystem(a_AudioSystem)
 {
@@ -45,7 +45,7 @@ void ChannelsTool::RenderChannel(uint32_t a_Index, uaudio::xaudio2::XAudio2Chann
         a_Channel->SetVolume(volume);
 
     int32_t pos = static_cast<int32_t>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS));
-    float final_pos = uaudio::conversion::PosToSeconds(a_Channel->GetSound().GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID), fmt_chunk.byteRate);
+    float final_pos = uaudio::utils::PosToSeconds(a_Channel->GetSound().GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID), fmt_chunk.byteRate);
     ImGui::Text("%s", std::string(
                           uaudio::WaveFile::FormatDuration(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_S), false) +
                           "/" +
@@ -54,11 +54,11 @@ void ChannelsTool::RenderChannel(uint32_t a_Index, uaudio::xaudio2::XAudio2Chann
     uint32_t final_pos_slider = a_Channel->IsInUse() ? a_Channel->GetSound().GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID) : 5000;
     if (ImGui::SliderInt(std::string("###Player_" + std::to_string(a_Index)).c_str(), &pos, 0, static_cast<int>(final_pos_slider), ""))
     {
-        uint32_t newtest = pos % static_cast<int>(m_AudioSystem.GetBufferSize());
-        uint32_t finaltest = pos - newtest;
-        a_Channel->SetPos(finaltest);
+        uint32_t new_pos = pos % static_cast<int>(m_AudioSystem.GetBufferSize());
+        uint32_t final_pos = pos - new_pos;
+        a_Channel->SetPos(final_pos);
         if (!a_Channel->IsPlaying())
-            a_Channel->PlayRanged(finaltest, static_cast<int>(m_AudioSystem.GetBufferSize()));
+            a_Channel->PlayRanged(final_pos, static_cast<int>(m_AudioSystem.GetBufferSize()));
     }
 
     if (a_Channel->IsPlaying())

@@ -5,7 +5,6 @@
 - [ ] Make malloc and stuff use the allocator.
 - [ ] Check waveconverter for possible memory leaks.
 - [ ] Add a shit ton of ASSERTs.
-- [ ] Fix panning and volume.
 - [ ] invalid sizes in unit test for mono to stereo and reverse.
 - [ ] byte volume unit test.
 - [ ] conversion unit test.
@@ -27,3 +26,6 @@
 - [X] Default Sounds.
 - [X] Time (ms, pos, s) conversion unit test.
 - [ ] RangeIntSlider.
+- [ ] Mono/Stereo config enforcement.
+- [ ] Fix panning and volume in buffer (make temp buffers).
+- [ ] Remove chunks in waveformat in destructor.

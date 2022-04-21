@@ -7,10 +7,16 @@
 #include "Handle.h"
 #include "Includes.h"
 
+#include "UserInclude.h"
+
+#if !defined(UAUDIO_DEFAULT_NUM_CHANNELS)
+
+#define UAUDIO_DEFAULT_NUM_CHANNELS 20
+
+#endif
+
 namespace uaudio
 {
-	constexpr uint32_t NUM_CHANNELS = 20;
-
 	class AudioSystem
 	{
 	public:
@@ -38,7 +44,7 @@ namespace uaudio
 		void SetBufferSize(BUFFERSIZE a_BufferSize);
 
 		// Channel-related methods.
-		ChannelHandle Play(WaveFile& a_WaveFile);
+		ChannelHandle Play(const WaveFile& a_WaveFile);
 
 		uint32_t ChannelSize() const;
 		xaudio2::XAudio2Channel* GetChannel(ChannelHandle a_ChannelHandle);

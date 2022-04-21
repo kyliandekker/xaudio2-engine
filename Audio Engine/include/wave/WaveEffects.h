@@ -2,20 +2,12 @@
 
 #include <cstdint>
 
+#include "utils/Utils.h"
+
 namespace uaudio
 {
 	namespace effects
 	{
-		template <class T>
-		T clamp(T value, T min, T max)
-		{
-			if (value < min)
-				value = min;
-			if (value > max)
-				value = max;
-			return value;
-		}
-
 		/// <summary>
 		/// Changes the value of a byte.
 		/// </summary>
@@ -42,7 +34,7 @@ namespace uaudio
 		inline void ChangeVolume(unsigned char *&a_Data, uint32_t a_Size, float a_Volume, uint16_t, uint16_t)
 		{
 			// Clamp the volume to 0.0 min and 1.0 max.
-			a_Volume = clamp(a_Volume, 0.0f, 1.0f);
+			a_Volume = utils::clamp(a_Volume, UAUDIO_MIN_VOLUME, UAUDIO_MAX_VOLUME);
 
 			T *array_16 = reinterpret_cast<T *>(a_Data);
 			for (uint32_t i = 0; i < (a_Size / sizeof(T)); i++)
@@ -57,6 +49,7 @@ namespace uaudio
 		/// <param name="a_Data">The actual data.</param>
 		/// <param name="a_Size">The data size.</param>
 		/// <param name="a_Amount">The panning amount (-1 is fully left, 1 is fully right, 0 is middle).</param>
+		/// <param name="a_NumChannels">The number of channels (mono or stereo).</param>
 		/// <returns></returns>
 		template <class T>
 		inline void ChangePanning(unsigned char *&a_Data, uint32_t a_Size, float a_Amount, uint16_t a_NumChannels)
@@ -65,24 +58,24 @@ namespace uaudio
 				return;
 
 			// Amount is a value from -1 to 1.
-			a_Amount = clamp(a_Amount, -1.0f, 1.0f);
+			a_Amount = utils::clamp(a_Amount, UAUDIO_MIN_PANNING, UAUDIO_MAX_PANNING);
 
 			// Set the values to 1.0 as default.
-			float left = 1.0f, right = 1.0f;
+			float left = UAUDIO_MAX_VOLUME, right = UAUDIO_MAX_VOLUME;
 
 			// If the slider is more to the left.
 			if (a_Amount < 0)
 			{
 				right += a_Amount;
 				// Clamp the volume to 0.0 min and 1.0 max.
-				right = clamp(right, 0.0f, 1.0f);
+				right = utils::clamp(right, UAUDIO_MIN_VOLUME, UAUDIO_MAX_VOLUME);
 			}
 			// If the slider is more to the right.
 			else if (a_Amount > 0)
 			{
 				left -= a_Amount;
 				// Clamp the volume to 0.0 min and 1.0 max.
-				left = clamp(left, 0.0f, 1.0f);
+				left = utils::clamp(left, UAUDIO_MIN_VOLUME, UAUDIO_MAX_VOLUME);
 			}
 
 			T *array_16 = reinterpret_cast<T *>(a_Data);

@@ -3,6 +3,7 @@
 #include <map>
 
 #include "Includes.h"
+#include "wave/WaveConfig.h"
 #include "wave/WaveFile.h"
 
 namespace uaudio
@@ -10,10 +11,10 @@ namespace uaudio
 	class SoundSystem
 	{
 	public:
-		UAUDIO_DEFAULT_HASH LoadSound(const char *a_Path, const char *a_Name, std::vector<const char*> a_Chunks = { DEFAULT_CHUNKS });
-		void UnloadSound(UAUDIO_DEFAULT_HASH hash);
-		WaveFile *FindSound(UAUDIO_DEFAULT_HASH a_Hash);
-		bool DoesSoundExist(UAUDIO_DEFAULT_HASH a_Hash) const;
+		UAUDIO_DEFAULT_HASH LoadSound(const char *a_Path, const char *a_Name, Wave_Config& a_WaveConfig);
+		void UnloadSound(const UAUDIO_DEFAULT_HASH hash);
+		WaveFile *FindSound(const UAUDIO_DEFAULT_HASH a_Hash);
+		bool DoesSoundExist(const UAUDIO_DEFAULT_HASH a_Hash) const;
 
 		uint32_t SoundSize() const;
 		std::vector<WaveFile *, UAUDIO_DEFAULT_ALLOCATOR<WaveFile *>> GetSounds();

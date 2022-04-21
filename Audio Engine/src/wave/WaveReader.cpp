@@ -10,13 +10,13 @@ namespace uaudio
 	/// <param name="a_FilePath">The path to the file.</param>
 	/// <param name="a_WavFormat">The wave format.</param>
 	/// <param name="a_File">The pointer to the file.</param>
-	/// <param name="a_Chunks">The chunks the user wants to load.</param>
+	/// <param name="a_WaveConfig">The config containing specific loading instructions.</param>
 	/// <returns>WAVE loading status.</returns>
-	WAVE_LOADING_STATUS WaveReader::LoadSound(const char* a_FilePath, WaveFormat& a_WavFormat, FILE*& a_File, std::vector<const char*> a_Chunks)
+	WAVE_LOADING_STATUS WaveReader::LoadSound(const char* a_FilePath, WaveFormat& a_WavFormat, FILE*& a_File, Wave_Config a_WaveConfig)
 	{
 		// Ensure these chunks are always there.
-		a_Chunks.push_back(DATA_CHUNK_ID);
-		a_Chunks.push_back(FMT_CHUNK_ID);
+		a_WaveConfig.chunksToLoad.push_back(DATA_CHUNK_ID);
+		a_WaveConfig.chunksToLoad.push_back(FMT_CHUNK_ID);
 
 		a_WavFormat.m_FilePath = a_FilePath;
 
@@ -74,7 +74,7 @@ namespace uaudio
 			}
 
 			bool get_chunk = false;
-			for (auto& chunk_name : a_Chunks)
+			for (const auto& chunk_name : a_WaveConfig.chunksToLoad)
 				if (strncmp(&chunk_id[0], chunk_name, CHUNK_ID_SIZE) == 0)
 					get_chunk = true;
 

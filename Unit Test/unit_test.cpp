@@ -4,12 +4,12 @@
 
 #include "doctest.h"
 #include "utils/Logger.h"
-#include "wave/Chunks.h"
+#include "wave/WaveChunks.h"
 #include "wave/WaveEffects.h"
 #include "wave/WaveFile.h"
 #include "wave/WaveReader.h"
 
-void PRINT_ARRAY(const char* text, std::vector<unsigned char> dat)
+void PRINT_ARRAY(const char *text, std::vector<unsigned char> dat)
 {
 	printf("%s\n", text);
 	uaudio::logger::print_white();
@@ -225,7 +225,7 @@ TEST_CASE("Testing Hash Function")
 
 		for (size_t i = 0; i < tests.size(); i++)
 		{
-			const char* color = i % 2 == 0 ? uaudio::logger::COLOR_YELLOW : uaudio::logger::COLOR_BLUE;
+			const char *color = i % 2 == 0 ? uaudio::logger::COLOR_YELLOW : uaudio::logger::COLOR_BLUE;
 			uaudio::logger::log_info("%s[COLLISION TEST IN HASH FUNCTION]%s Testing %s%s%s", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE, color, tests[i], uaudio::logger::COLOR_WHITE);
 			for (size_t j = 0; j < tests.size(); j++)
 				if (i != j)
@@ -522,12 +522,12 @@ TEST_CASE("Miscellaneous")
 		uaudio::logger::log_info("%s[CLAMP]%s", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 
 		float value = 5.0f;
-		value = uaudio::effects::clamp(value, 0.0f, 4.0f);
+		value = uaudio::utils::clamp(value, 0.0f, 4.0f);
 
 		CHECK(value == 4.0f);
 
 		value = -1.0f;
-		value = uaudio::effects::clamp(value, 0.0f, 4.0f);
+		value = uaudio::utils::clamp(value, 0.0f, 4.0f);
 
 		CHECK(value == 0.0f);
 
@@ -538,28 +538,28 @@ TEST_CASE("Miscellaneous")
 		uaudio::logger::log_info("%s[SECONDS TO MILLISECONDS]%s", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 
 		float value = 1.0f;
-		value = uaudio::conversion::SecondsToMilliseconds(value);
+		value = uaudio::utils::SecondsToMilliseconds(value);
 
 		CHECK(value == 1000.0f);
 
 		value = 2.0f;
-		value = uaudio::conversion::SecondsToMilliseconds(value);
+		value = uaudio::utils::SecondsToMilliseconds(value);
 
 		CHECK(value == 2000.0f);
 
 		value = 2.5f;
-		value = uaudio::conversion::SecondsToMilliseconds(value);
+		value = uaudio::utils::SecondsToMilliseconds(value);
 
 		CHECK(value == 2500.0f);
 
 		value = 5.523f;
-		value = uaudio::conversion::SecondsToMilliseconds(value);
+		value = uaudio::utils::SecondsToMilliseconds(value);
 
 		CHECK(value == 5523.0f);
 
 		float random = fmodf(rand(), 5.0f);
 		value = random;
-		value = uaudio::conversion::SecondsToMilliseconds(value);
+		value = uaudio::utils::SecondsToMilliseconds(value);
 
 		CHECK(value == random * 1000);
 
@@ -570,28 +570,28 @@ TEST_CASE("Miscellaneous")
 		uaudio::logger::log_info("%s[MILLISECONDS TO SECONDS]%s", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 
 		float value = 1000.0f;
-		value = uaudio::conversion::MillisecondsToSeconds(value);
+		value = uaudio::utils::MillisecondsToSeconds(value);
 
 		CHECK(value == 1.0f);
 
 		value = 2000.0f;
-		value = uaudio::conversion::MillisecondsToSeconds(value);
+		value = uaudio::utils::MillisecondsToSeconds(value);
 
 		CHECK(value == 2.0f);
 
 		value = 2500.0f;
-		value = uaudio::conversion::MillisecondsToSeconds(value);
+		value = uaudio::utils::MillisecondsToSeconds(value);
 
 		CHECK(value == 2.5f);
 
 		value = 5523.0f;
-		value = uaudio::conversion::MillisecondsToSeconds(value);
+		value = uaudio::utils::MillisecondsToSeconds(value);
 
 		CHECK(value == 5.523f);
 
 		float random = fmodf(rand(), 5.0f) * 1000;
 		value = random;
-		value = uaudio::conversion::MillisecondsToSeconds(value);
+		value = uaudio::utils::MillisecondsToSeconds(value);
 
 		CHECK(value == random / 1000);
 
@@ -602,17 +602,17 @@ TEST_CASE("Miscellaneous")
 		uaudio::logger::log_info("%s[SECONDS TO HOURS]%s", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 
 		float value = 3600.0f;
-		uint32_t hours = uaudio::conversion::SecondsToHours(value);
+		uint32_t hours = uaudio::utils::SecondsToHours(value);
 
 		CHECK(hours == 1);
 
 		value = 1800.0f;
-		hours = uaudio::conversion::SecondsToHours(value);
+		hours = uaudio::utils::SecondsToHours(value);
 
 		CHECK(hours == 0);
 
 		value = 2700.0f;
-		hours = uaudio::conversion::SecondsToHours(value);
+		hours = uaudio::utils::SecondsToHours(value);
 
 		CHECK(hours == 0);
 
@@ -623,12 +623,12 @@ TEST_CASE("Miscellaneous")
 		uaudio::logger::log_info("%s[SECONDS TO MINUTES]%s", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 
 		float value = 60.0f;
-		uint32_t minutes = uaudio::conversion::SecondsToMinutes(value);
+		uint32_t minutes = uaudio::utils::SecondsToMinutes(value);
 
 		CHECK(minutes == 1);
 
 		value = 120.0f;
-		minutes = uaudio::conversion::SecondsToMinutes(value);
+		minutes = uaudio::utils::SecondsToMinutes(value);
 
 		CHECK(minutes == 2);
 
@@ -658,7 +658,7 @@ TEST_CASE("Audio Loading")
 		CHECK(fmt_chunk.sampleRate == uaudio::WAVE_SAMPLE_RATE_44100);
 		CHECK(fmt_chunk.byteRate == 176400);
 		CHECK(fmt_chunk.blockAlign == uaudio::BLOCK_ALIGN_16_BIT_STEREO);
-		CHECK(fmt_chunk.bitsPerSample == uaudio::WAVE_BPS_16);
+		CHECK(fmt_chunk.bitsPerSample == uaudio::WAVE_BITS_PER_SAMPLE_16);
 
 		CHECK(format.HasChunk(uaudio::DATA_CHUNK_ID));
 

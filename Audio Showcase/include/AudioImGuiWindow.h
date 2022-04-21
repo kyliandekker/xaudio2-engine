@@ -21,7 +21,7 @@ public:
 
 	void CreateImGui() const;
 	void Render();
-	void DeleteWindow();
+	void DeleteWindow() const;
 	void AddTool(BaseTool* a_Tool);
 private:
 	AudioSDLWindow* m_Window = nullptr;

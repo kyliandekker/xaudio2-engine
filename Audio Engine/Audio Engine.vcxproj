@@ -25,7 +25,9 @@
     <ClInclude Include="include\Includes.h" />
     <ClInclude Include="include\SoundSystem.h" />
     <ClInclude Include="include\UserInclude.h" />
-    <ClInclude Include="include\wave\Chunks.h" />
+    <ClInclude Include="include\utils\Utils.h" />
+    <ClInclude Include="include\wave\WaveChunks.h" />
+    <ClInclude Include="include\wave\WaveConfig.h" />
     <ClInclude Include="include\wave\WaveEffects.h" />
     <ClInclude Include="include\utils\Logger.h" />
     <ClInclude Include="include\utils\uint24_t.h" />
@@ -41,6 +43,8 @@
     <ClCompile Include="src\AudioSystem.cpp" />
     <ClCompile Include="src\SoundSystem.cpp" />
     <ClCompile Include="src\allocator\UAudioAllocator.cpp" />
+    <ClCompile Include="src\utils\Utils.cpp" />
+    <ClCompile Include="src\wave\WaveConfig.cpp" />
     <ClCompile Include="src\wave\WaveConverter.cpp" />
     <ClCompile Include="src\wave\WaveFile.cpp" />
     <ClCompile Include="src\wave\WaveReader.cpp" />

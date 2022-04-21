@@ -2,48 +2,49 @@
 
 #include <cstdint>
 
-#include "WaveFormat.h"
+#include "Includes.h"
 
 namespace uaudio
 {
 	// BLOCK ALIGN SETTINGS
-	constexpr auto BLOCK_ALIGN_16_BIT_MONO = 2;
-	constexpr auto BLOCK_ALIGN_24_BIT_MONO = 3;
-	constexpr auto BLOCK_ALIGN_32_BIT_MONO = 4;
-	constexpr auto BLOCK_ALIGN_16_BIT_STEREO = BLOCK_ALIGN_16_BIT_MONO * 2;
-	constexpr auto BLOCK_ALIGN_24_BIT_STEREO = BLOCK_ALIGN_24_BIT_MONO * 2;
-	constexpr auto BLOCK_ALIGN_32_BIT_STEREO = BLOCK_ALIGN_32_BIT_MONO * 2;
+	constexpr uint16_t BLOCK_ALIGN_16_BIT_MONO = 2;
+	constexpr uint16_t BLOCK_ALIGN_24_BIT_MONO = 3;
+	constexpr uint16_t BLOCK_ALIGN_32_BIT_MONO = 4;
+	constexpr uint16_t BLOCK_ALIGN_16_BIT_STEREO = BLOCK_ALIGN_16_BIT_MONO * 2;
+	constexpr uint16_t BLOCK_ALIGN_24_BIT_STEREO = BLOCK_ALIGN_24_BIT_MONO * 2;
+	constexpr uint16_t BLOCK_ALIGN_32_BIT_STEREO = BLOCK_ALIGN_32_BIT_MONO * 2;
 
-	// BPS SETTINGS
-	constexpr auto WAVE_BPS_8 = 8;
-	constexpr auto WAVE_BPS_16 = 16;
-	constexpr auto WAVE_BPS_24 = 24;
-	constexpr auto WAVE_BPS_32 = 32;
+	// BITS_PER_SAMPLE SETTINGS
+	constexpr uint16_t WAVE_BITS_PER_SAMPLE_8 = 8;
+	constexpr uint16_t WAVE_BITS_PER_SAMPLE_16 = 16;
+	constexpr uint16_t WAVE_BITS_PER_SAMPLE_24 = 24;
+	constexpr uint16_t WAVE_BITS_PER_SAMPLE_32 = 32;
 
 	// SAMPLE RATE SETTINGS
-	constexpr auto WAVE_SAMPLE_RATE_44100 = 44100;
-	constexpr auto WAVE_SAMPLE_RATE_48000 = 48000;
-	constexpr auto WAVE_SAMPLE_RATE_88200 = 88200;
-	constexpr auto WAVE_SAMPLE_RATE_192000 = 192000;
+	constexpr uint32_t WAVE_SAMPLE_RATE_44100 = 44100;
+	constexpr uint32_t WAVE_SAMPLE_RATE_48000 = 48000;
+	constexpr uint32_t WAVE_SAMPLE_RATE_88200 = 88200;
+	constexpr uint32_t WAVE_SAMPLE_RATE_192000 = 192000;
 
 	// MONO/STEREO.
-	constexpr auto WAVE_CHANNELS_MONO = 1;
-	constexpr auto WAVE_CHANNELS_STEREO = 2;
+	constexpr uint16_t WAVE_CHANNELS_MONO = 1;
+	constexpr uint16_t WAVE_CHANNELS_STEREO = 2;
 
 	// WAV FORMATS.
-	constexpr auto WAV_FORMAT_UNKNOWN = 1;
-	constexpr auto WAV_FORMAT_PCM = 1;
-	constexpr auto WAV_FORMAT_UNCOMPRESSED = 1;
-	constexpr auto WAV_FORMAT_MICROSOFT_ADPCM = 2;
-	constexpr auto WAV_FORMAT_ITU_G711_ALAW = 6;
-	constexpr auto WAV_FORMAT_ITU_G711_ÂΜLAW = 7;
-	constexpr auto WAV_FORMAT_IMA_ADPCM = 17;
-	constexpr auto WAV_FORMAT_ITU_G723_ADPCM = 20;
-	constexpr auto WAV_FORMAT_ITU_G723_ADPCM_YAMAHA = 20;
-	constexpr auto WAV_FORMAT_YAMAHA = 20;
-	constexpr auto WAV_FORMAT_GSM_610 = 49;
-	constexpr auto WAV_FORMAT_ITU_G721_ADPCM = 64;
-	constexpr auto WAV_FORMAT_MPEG = 80;;
+	constexpr uint16_t WAV_FORMAT_UNKNOWN = 1;
+	constexpr uint16_t WAV_FORMAT_PCM = 1;
+	constexpr uint16_t WAV_FORMAT_UNCOMPRESSED = 1;
+	constexpr uint16_t WAV_FORMAT_MICROSOFT_ADPCM = 2;
+	constexpr uint16_t WAV_FORMAT_ITU_G711_ALAW = 6;
+	constexpr uint16_t WAV_FORMAT_ITU_G711_ÂΜLAW = 7;
+	constexpr uint16_t WAV_FORMAT_IMA_ADPCM = 17;
+	constexpr uint16_t WAV_FORMAT_ITU_G723_ADPCM = 20;
+	constexpr uint16_t WAV_FORMAT_ITU_G723_ADPCM_YAMAHA = 20;
+	constexpr uint16_t WAV_FORMAT_YAMAHA = 20;
+	constexpr uint16_t WAV_FORMAT_GSM_610 = 49;
+	constexpr uint16_t WAV_FORMAT_ITU_G721_ADPCM = 64;
+	constexpr uint16_t WAV_FORMAT_MPEG = 80;
+	;
 
 	constexpr auto RIFF_CHUNK_ID = "RIFF";
 	/*
@@ -126,7 +127,7 @@ namespace uaudio
 	constexpr auto FMT_CHUNK_FORMAT = "WAVE";
 	struct FMT_Chunk
 	{
-		FMT_Chunk(FMT_Chunk* a_Data)
+		FMT_Chunk(FMT_Chunk *a_Data)
 		{
 			if (a_Data != nullptr)
 			{
@@ -170,14 +171,14 @@ namespace uaudio
 	constexpr auto DATA_CHUNK_ID = "data";
 	struct DATA_Chunk
 	{
-		DATA_Chunk(DATA_Chunk* a_Data)
+		DATA_Chunk(DATA_Chunk *a_Data)
 		{
 			if (a_Data != nullptr)
 			{
-				data = reinterpret_cast<unsigned char*>(a_Data);
+				data = reinterpret_cast<unsigned char *>(a_Data);
 			}
 		}
-		unsigned char* data = nullptr;
+		unsigned char *data = nullptr;
 	};
 
 	/*
@@ -224,7 +225,7 @@ namespace uaudio
 	constexpr auto ACID_CHUNK_ID = "acid";
 	struct ACID_Chunk
 	{
-		ACID_Chunk(ACID_Chunk* a_Data)
+		ACID_Chunk(ACID_Chunk *a_Data)
 		{
 			if (a_Data != nullptr)
 			{
@@ -338,25 +339,25 @@ namespace uaudio
 	constexpr auto BEXT_CHUNK_ID = "bext";
 	struct BEXT_Chunk
 	{
-		BEXT_Chunk(BEXT_Chunk* a_Data)
+		BEXT_Chunk(BEXT_Chunk *a_Data)
 		{
 			if (a_Data != nullptr)
 			{
-				memcpy(description, a_Data->description, sizeof(description));
-				memcpy(originator, a_Data->originator, sizeof(originator));
-				memcpy(originator_reference, a_Data->originator_reference, sizeof(originator_reference));
-				memcpy(origination_date, a_Data->origination_date, sizeof(origination_date));
-				memcpy(origination_time, a_Data->origination_time, sizeof(origination_time));
+				UAUDIO_DEFAULT_MEMCOPY(description, a_Data->description, sizeof(description));
+				UAUDIO_DEFAULT_MEMCOPY(originator, a_Data->originator, sizeof(originator));
+				UAUDIO_DEFAULT_MEMCOPY(originator_reference, a_Data->originator_reference, sizeof(originator_reference));
+				UAUDIO_DEFAULT_MEMCOPY(origination_date, a_Data->origination_date, sizeof(origination_date));
+				UAUDIO_DEFAULT_MEMCOPY(origination_time, a_Data->origination_time, sizeof(origination_time));
 				time_reference_low = a_Data->time_reference_low;
 				time_reference_high = a_Data->time_reference_high;
 				version = a_Data->version;
-				memcpy(umid, a_Data->umid, sizeof(umid));
+				UAUDIO_DEFAULT_MEMCOPY(umid, a_Data->umid, sizeof(umid));
 				loudness_value = a_Data->loudness_value;
 				loudness_range = a_Data->loudness_range;
 				max_true_peak_level = a_Data->max_true_peak_level;
 				max_momentary_loudness = a_Data->max_momentary_loudness;
 				max_short_term_loudness = a_Data->max_short_term_loudness;
-				memcpy(reserved, a_Data->reserved, sizeof(reserved));
+				UAUDIO_DEFAULT_MEMCOPY(reserved, a_Data->reserved, sizeof(reserved));
 			}
 		}
 		char description[256] = {};
@@ -395,7 +396,7 @@ namespace uaudio
 	constexpr auto FACT_CHUNK_ID = "fact";
 	struct FACT_Chunk
 	{
-		FACT_Chunk(FACT_Chunk* a_Data)
+		FACT_Chunk(FACT_Chunk *a_Data)
 		{
 			if (a_Data != nullptr)
 			{

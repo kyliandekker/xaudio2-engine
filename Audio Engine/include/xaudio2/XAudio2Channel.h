@@ -36,7 +36,7 @@ namespace uaudio
 			float GetPos(TIMEUNIT a_TimeUnit) const;
 			uint32_t GetBufferSize() const;
 			void PlayRanged(uint32_t a_StartPos, uint32_t a_Size);
-			void PlayBuffer(unsigned char* a_Buffer, uint32_t a_Size);
+			void PlayBuffer(const unsigned char* a_Buffer, uint32_t a_Size) const;
 			void ResetPos();
 			void RemoveSound();
 
@@ -61,9 +61,8 @@ namespace uaudio
 		private:
 			bool m_Looping = false;
 
-			std::queue<unsigned char*> m_Buffers;
 			float m_Volume = 1;
-			float m_Panning = 0.0f;
+			float m_Panning = UAUDIO_DEFAULT_PANNING;
 
 			const WaveFile* m_CurrentSound = nullptr;
 
