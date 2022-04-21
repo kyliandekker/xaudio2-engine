@@ -45,58 +45,62 @@ void ChannelsTool::RenderChannel(uint32_t a_Index, uaudio::xaudio2::XAudio2Chann
         a_Channel->SetVolume(volume);
 
     int32_t pos = static_cast<int32_t>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS));
-    float final_pos = uaudio::utils::PosToSeconds(a_Channel->GetSound().GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID), fmt_chunk.byteRate);
+    float final_pos = uaudio::utils::PosToSeconds(a_Channel->GetSound().GetEndPosition(), fmt_chunk.byteRate);
     ImGui::Text("%s", std::string(
                           uaudio::WaveFile::FormatDuration(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_S), false) +
                           "/" +
                           uaudio::WaveFile::FormatDuration(final_pos, false))
                           .c_str());
-    uint32_t final_pos_slider = a_Channel->IsInUse() ? a_Channel->GetSound().GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID) : 5000;
-    if (ImGui::SliderInt(std::string("###Player_" + std::to_string(a_Index)).c_str(), &pos, 0, static_cast<int>(final_pos_slider), ""))
+    uint32_t final_pos_slider = a_Channel->IsInUse() ? a_Channel->GetSound().GetEndPosition() : 5000;
+    std::string player_text = std::string("###Player_" + std::to_string(a_Index));
+    if (ImGui::SliderInt(player_text.c_str(), &pos, 0, static_cast<int>(final_pos_slider), ""))
     {
         uint32_t new_pos = pos % static_cast<int>(m_AudioSystem.GetBufferSize());
-        uint32_t final_pos = pos - new_pos;
-        a_Channel->SetPos(final_pos);
+        uint32_t final_new_pos = pos - new_pos;
+        final_new_pos = uaudio::utils::clamp<uint32_t>(final_new_pos, 0, a_Channel->GetSound().GetEndPosition());
+        a_Channel->SetPos(final_new_pos);
         if (!a_Channel->IsPlaying())
-            a_Channel->PlayRanged(final_pos, static_cast<int>(m_AudioSystem.GetBufferSize()));
+            a_Channel->PlayRanged(final_new_pos, static_cast<int>(m_AudioSystem.GetBufferSize()));
     }
 
     if (a_Channel->IsPlaying())
     {
-        std::string pause_button = std::string(PAUSE) + "##Pause_Sound_" + std::to_string(a_Index);
-        if (ImGui::Button(pause_button.c_str(), ImVec2(25, 25)))
+        std::string pause_button_text = std::string(PAUSE) + "##Pause_Sound_" + std::to_string(a_Index);
+        if (ImGui::Button(pause_button_text.c_str(), ImVec2(25, 25)))
             a_Channel->Pause();
     }
     else
     {
-        std::string play_button = std::string(PLAY) + "##Play_Sound_" + std::to_string(a_Index);
-        if (ImGui::Button(play_button.c_str(), ImVec2(25, 25)))
+        std::string play_button_text = std::string(PLAY) + "##Play_Sound_" + std::to_string(a_Index);
+        if (ImGui::Button(play_button_text.c_str(), ImVec2(25, 25)))
             a_Channel->Play();
     }
 
     ImGui::SameLine();
-    std::string left_button = std::string(LEFT) + "##Left_Sound_" + std::to_string(a_Index);
-    if (ImGui::Button(left_button.c_str(), ImVec2(25, 25)))
+    std::string left_button_text = std::string(LEFT) + "##Left_Sound_" + std::to_string(a_Index);
+    if (ImGui::Button(left_button_text.c_str(), ImVec2(25, 25)))
     {
-        uint32_t prev_pos = pos + static_cast<int>(m_AudioSystem.GetBufferSize());
+        int32_t prev_pos = pos - static_cast<int>(m_AudioSystem.GetBufferSize());
+        prev_pos = uaudio::utils::clamp<int32_t>(prev_pos, 0, a_Channel->GetSound().GetEndPosition());
         a_Channel->SetPos(prev_pos);
         a_Channel->Pause();
         a_Channel->PlayRanged(prev_pos, static_cast<int>(m_AudioSystem.GetBufferSize()));
     }
 
     ImGui::SameLine();
-    std::string stop_button = std::string(STOP) + "##Stop_Sound_" + std::to_string(a_Index);
-    if (ImGui::Button(stop_button.c_str(), ImVec2(25, 25)))
+    std::string stop_button_text = std::string(STOP) + "##Stop_Sound_" + std::to_string(a_Index);
+    if (ImGui::Button(stop_button_text.c_str(), ImVec2(25, 25)))
     {
         a_Channel->SetPos(0);
         a_Channel->Pause();
     }
 
     ImGui::SameLine();
-    std::string right_button = std::string(RIGHT) + "##Right_Sound_" + std::to_string(a_Index);
-    if (ImGui::Button(right_button.c_str(), ImVec2(25, 25)))
+    std::string right_button_text = std::string(RIGHT) + "##Right_Sound_" + std::to_string(a_Index);
+    if (ImGui::Button(right_button_text.c_str(), ImVec2(25, 25)))
     {
         uint32_t next_pos = pos + static_cast<int>(m_AudioSystem.GetBufferSize());
+        next_pos = uaudio::utils::clamp<uint32_t>(next_pos, 0, a_Channel->GetSound().GetEndPosition());
         a_Channel->SetPos(next_pos);
         a_Channel->Pause();
         a_Channel->PlayRanged(next_pos, static_cast<int>(m_AudioSystem.GetBufferSize()));
@@ -104,8 +108,8 @@ void ChannelsTool::RenderChannel(uint32_t a_Index, uaudio::xaudio2::XAudio2Chann
 
     ImGui::SameLine();
     bool isLooping = a_Channel->IsLooping();
-    std::string loop_button = std::string(RETRY) + "##Loop_Channel_" + std::to_string(a_Index);
-    if (ImGui::CheckboxButton(loop_button.c_str(), &isLooping, ImVec2(25, 25)))
+    std::string loop_button_text = std::string(RETRY) + "##Loop_Channel_" + std::to_string(a_Index);
+    if (ImGui::CheckboxButton(loop_button_text.c_str(), &isLooping, ImVec2(25, 25)))
         a_Channel->SetLooping(isLooping);
 
     if (a_Channel->IsInUse())
@@ -118,15 +122,15 @@ void ChannelsTool::RenderChannel(uint32_t a_Index, uaudio::xaudio2::XAudio2Chann
             ShowValue("Progress: ", std::string(
                                         uaudio::WaveFile::FormatDuration(static_cast<float>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS)) / static_cast<float>(fmt_chunk.byteRate)) +
                                         "/" +
-                                        uaudio::WaveFile::FormatDuration(uaudio::WaveFile::GetDuration(a_Channel->GetSound().GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID), fmt_chunk.byteRate)))
+                                        uaudio::WaveFile::FormatDuration(uaudio::WaveFile::GetDuration(a_Channel->GetSound().GetEndPosition(), fmt_chunk.byteRate)))
                                         .c_str());
             ShowValue("Time Left: ", std::string(
-                                         uaudio::WaveFile::FormatDuration(uaudio::WaveFile::GetDuration(a_Channel->GetSound().GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID), fmt_chunk.byteRate) - (static_cast<float>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS)) / static_cast<float>(fmt_chunk.byteRate))))
+                                         uaudio::WaveFile::FormatDuration(uaudio::WaveFile::GetDuration(a_Channel->GetSound().GetEndPosition(), fmt_chunk.byteRate) - (static_cast<float>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS)) / static_cast<float>(fmt_chunk.byteRate))))
                                          .c_str());
             ShowValue("Progress (position): ", std::string(
                                                    std::to_string(static_cast<int>(a_Channel->GetPos(uaudio::TIMEUNIT::TIMEUNIT_POS))) +
                                                    "/" +
-                                                   std::to_string(a_Channel->GetSound().GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID)))
+                                                   std::to_string(a_Channel->GetSound().GetEndPosition()))
                                                    .c_str());
             ImGui::Unindent(IMGUI_INDENT);
         }

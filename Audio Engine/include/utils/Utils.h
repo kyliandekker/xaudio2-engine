@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring>
 
 namespace uaudio::utils
 {
@@ -12,6 +13,11 @@ namespace uaudio::utils
 		if (value > max)
 			value = max;
 		return value;
+	}
+
+	inline void* add(void* ptr, size_t size)
+	{
+		return reinterpret_cast<unsigned char *>(ptr) + size;
 	}
 
 	float PosToMilliseconds(uint32_t m_Pos, uint32_t a_ByteRate);

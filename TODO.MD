@@ -26,6 +26,7 @@
 - [X] Default Sounds.
 - [X] Time (ms, pos, s) conversion unit test.
 - [ ] RangeIntSlider.
-- [ ] Mono/Stereo config enforcement.
-- [ ] Fix panning and volume in buffer (make temp buffers).
-- [ ] Remove chunks in waveformat in destructor.
+- [X] Mono/Stereo config enforcement.
+- [X] Fix panning and volume in buffer (make temp buffers).
+- [X] Remove chunks in waveformat in destructor.
+- [X] Add the ADD function to utils.

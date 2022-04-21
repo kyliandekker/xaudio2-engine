@@ -27,7 +27,7 @@ namespace uaudio
 
         static float GetDuration(uint32_t a_ChunkSize, uint32_t a_ByteRate);
         static std::string FormatDuration(float a_Duration, bool a_Milliseconds = true);
-        bool IsEndOfFile(uint32_t a_StartingPoint) const;
+        bool IsEndOfBuffer(uint32_t a_StartingPoint) const;
 
         bool IsLooping() const;
         void SetLooping(bool a_Looping);

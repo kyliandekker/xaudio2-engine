@@ -47,16 +47,29 @@ private:
 		uaudio::BUFFERSIZE::BUFFERSIZE_8192,
 	};
 
-	std::array<uint16_t, 3> m_BitsPerSampleOptions = {
+	std::array<const char*, 4> m_BitsPerSampleTextOptions = {
+		"I don't really care",
+		"16-bit",
+		"24-bit",
+		"32-bit",
+	};
+
+	std::array<uint16_t, 4> m_BitsPerSampleOptions = {
+		0,
 		uaudio::WAVE_BITS_PER_SAMPLE_16,
 		uaudio::WAVE_BITS_PER_SAMPLE_24,
 		uaudio::WAVE_BITS_PER_SAMPLE_32,
 	};
 
+	std::array<const char*, 3> m_ChannelsTextOptions = {
+		"I don't really care",
+		"mono",
+		"stereo"
+	};
+
 	std::vector<chunk_select> m_ChunkIds;
 	chunk_select m_SelectedChunk = { "", false, true };
-	uint16_t m_BitsPerSample = uaudio::UAUDIO_DEFAULT_BITS_PER_SAMPLE;
-	uint16_t m_Channels = uaudio::UAUDIO_DEFAULT_CHANNELS;
 
 	uint32_t m_BitsPerSampleSelection = 0;
+	uint16_t m_ChannelsSelection = uaudio::UAUDIO_DEFAULT_CHANNELS;
 };

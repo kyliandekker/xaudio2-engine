@@ -61,6 +61,8 @@ namespace uaudio
 		private:
 			bool m_Looping = false;
 
+			std::queue<unsigned char*> m_DataBuffers;
+
 			float m_Volume = 1;
 			float m_Panning = UAUDIO_DEFAULT_PANNING;
 

@@ -96,7 +96,7 @@ namespace uaudio
     /// </summary>
     /// <param name="a_StartingPoint"></param>
     /// <returns></returns>
-    bool WaveFile::IsEndOfFile(uint32_t a_StartingPoint) const
+    bool WaveFile::IsEndOfBuffer(uint32_t a_StartingPoint) const
     {
         return a_StartingPoint >= m_EndPosition;
     }

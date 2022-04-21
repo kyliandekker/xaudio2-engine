@@ -23,7 +23,7 @@ namespace uaudio
     class WaveReader
     {
     public:
-        static WAVE_LOADING_STATUS LoadSound(const char* a_FilePath, WaveFormat& a_WavFormat, FILE*& a_File, Wave_Config a_WaveConfig = Wave_Config());
+        static WAVE_LOADING_STATUS LoadSound(const char* a_FilePath, WaveFormat& a_WaveFormat, FILE*& a_File, Wave_Config a_WaveConfig = Wave_Config());
         static WAVE_SAVING_STATUS SaveSound(const char* a_FilePath, const WaveFormat& a_WaveFormat);
     };
 }

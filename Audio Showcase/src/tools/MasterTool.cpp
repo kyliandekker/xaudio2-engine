@@ -10,7 +10,7 @@
 
 MasterTool::MasterTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &a_SoundSystem) : BaseTool(0, "Actions", "Master Actions"), m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
 {
-	const uaudio::BUFFERSIZE buffer_size = m_AudioSystem.GetBufferSize();
+    const uaudio::BUFFERSIZE buffer_size = m_AudioSystem.GetBufferSize();
     for (int i = 0; i < m_BufferSizeOptions.size(); i++)
         if (m_BufferSizeOptions[i] == buffer_size)
             m_BufferSizeSelection = i;
@@ -46,14 +46,14 @@ void MasterTool::Render()
     }
 
     float panning = m_AudioSystem.GetMasterPanning();
-    const std::string master_panning = std::string(PANNING) + " Master Panning (affects all channels)";
-    if (ImGui::Knob("Panning##Master_Panning", &panning, -1.0f, 1.0f, ImVec2(50, 50), master_panning.c_str(), 0.0f))
+    const std::string master_panning_text = std::string(PANNING) + " Master Panning (affects all channels)";
+    if (ImGui::Knob("Panning##Master_Panning", &panning, -1.0f, 1.0f, ImVec2(50, 50), master_panning_text.c_str(), 0.0f))
         m_AudioSystem.SetMasterPanning(panning);
 
     ImGui::SameLine();
     float volume = m_AudioSystem.GetMasterVolume();
-    const std::string master_volume = std::string(VOLUME_UP) + " Master Volume (affects all channels)";
-    if (ImGui::Knob("Volume##Master_Volume", &volume, 0, 1, ImVec2(50, 50), master_volume.c_str(), 1.0f))
+    const std::string master_volume_text = std::string(VOLUME_UP) + " Master Volume (affects all channels)";
+    if (ImGui::Knob("Volume##Master_Volume", &volume, 0, 1, ImVec2(50, 50), master_volume_text.c_str(), 1.0f))
         m_AudioSystem.SetMasterVolume(volume);
 
     const std::string buffer_size_text = "Buffer Size";
@@ -62,7 +62,7 @@ void MasterTool::Render()
     {
         for (uint32_t n = 0; n < static_cast<uint32_t>(m_BufferSizeTextOptions.size()); n++)
         {
-	        const bool is_selected = n == m_BufferSizeSelection;
+            const bool is_selected = n == m_BufferSizeSelection;
             if (ImGui::Selectable(m_BufferSizeTextOptions[n], is_selected))
             {
                 m_BufferSizeSelection = n;
@@ -72,43 +72,56 @@ void MasterTool::Render()
         ImGui::EndCombo();
     }
 
-    const std::string add_sound = std::string(ADD) + " Load Sound";
-    if (ImGui::Button(add_sound.c_str()))
+    const std::string add_sound_text = std::string(ADD) + " Load Sound";
+    if (ImGui::Button(add_sound_text.c_str()))
         OpenFile();
 
     if (ImGui::CollapsingHeader("Extra Options"))
     {
         ImGui::Indent(IMGUI_INDENT);
-        int channels = m_Channels;
-        ImGui::InputInt("Channels (mono or stereo)", &channels, 1, 1);
-        m_Channels = static_cast<uint16_t>(channels);
-        m_Channels = uaudio::utils::clamp<uint16_t>(m_Channels, 1, 2);
 
-        const std::string bits_per_sample_text = "Bits per sample";
-        ImGui::Text("%s", bits_per_sample_text.c_str());
-        if (ImGui::BeginCombo("##Bits_Per_Sample", std::string(std::to_string(m_BitsPerSampleOptions[m_BitsPerSampleSelection])).c_str(), ImGuiComboFlags_PopupAlignLeft))
+        const std::string channels_text = "Channels (stereo or mono)";
+        ImGui::Text("%s", channels_text.c_str());
+        if (ImGui::BeginCombo("##Stereo_Or_Mono", m_ChannelsTextOptions[m_ChannelsSelection], ImGuiComboFlags_PopupAlignLeft))
         {
-            for (uint32_t n = 0; n < static_cast<uint32_t>(m_BitsPerSampleOptions.size()); n++)
+            for (uint32_t n = 0; n < static_cast<uint32_t>(m_ChannelsTextOptions.size()); n++)
             {
-	            const bool is_selected = n == m_BitsPerSampleSelection;
-                if (ImGui::Selectable(std::to_string(m_BitsPerSampleOptions[n]).c_str(), is_selected))
-                {
-                    m_BitsPerSampleSelection = n;
-                    m_BitsPerSample = m_BitsPerSampleOptions[m_BitsPerSampleSelection];
-                }
+                const bool is_selected = n == m_ChannelsSelection;
+                if (ImGui::Selectable(m_ChannelsTextOptions[n], is_selected))
+                    m_ChannelsSelection = static_cast<uint16_t>(n);
             }
             ImGui::EndCombo();
         }
 
+        const std::string bits_per_sample_text = "Bits per sample";
+        ImGui::Text("%s", bits_per_sample_text.c_str());
+        if (ImGui::BeginCombo("##Bits_Per_Sample", m_BitsPerSampleTextOptions[m_BitsPerSampleSelection], ImGuiComboFlags_PopupAlignLeft))
+        {
+            for (uint16_t n = 0; n < static_cast<uint16_t>(m_BitsPerSampleOptions.size()); n++)
+            {
+                const bool is_selected = n == m_BitsPerSampleSelection;
+                if (ImGui::Selectable(m_BitsPerSampleTextOptions[n], is_selected))
+                    m_BitsPerSampleSelection = n;
+            }
+            ImGui::EndCombo();
+        }
+
+        ImGui::Text("%s", "Selected Chunks");
         for (uint32_t i = 0; i < m_ChunkIds.size(); i++)
         {
-            ImGui::CheckboxButton(m_ChunkIds[i].chunk_id.c_str(), &m_ChunkIds[i].selected);
             if (m_ChunkIds[i].removable)
             {
+                ImGui::NewLine();
+                ImGui::CheckboxButton(m_ChunkIds[i].chunk_id.c_str(), &m_ChunkIds[i].selected);
                 ImGui::SameLine();
-                std::string test = std::string(MINUS) + "##RemoveChunk" + std::to_string(i);
-                if (ImGui::Button(test.c_str()))
+                std::string remove_text = std::string(MINUS) + "##RemoveChunk" + std::to_string(i);
+                if (ImGui::Button(remove_text.c_str()))
                     m_ChunkIds.erase(m_ChunkIds.begin() + i);
+            }
+            else
+            {
+                ImGui::CheckboxButton(m_ChunkIds[i].chunk_id.c_str(), &m_ChunkIds[i].selected);
+                ImGui::SameLine();
             }
             ImGui::SameLine();
         }
@@ -153,7 +166,7 @@ void MasterTool::OpenFile()
 
     if (GetOpenFileName(&ofn))
     {
-	    const auto path = new char[wcslen(ofn.lpstrFile) + 1];
+        const auto path = new char[wcslen(ofn.lpstrFile) + 1];
         wsprintfA(path, "%S", ofn.lpstrFile);
 
         std::vector<const char *> chunks;
@@ -161,7 +174,7 @@ void MasterTool::OpenFile()
             if (chunk.selected)
                 chunks.push_back(chunk.chunk_id.c_str());
 
-        uaudio::Wave_Config wave_config = uaudio::Wave_Config(chunks, m_Channels, m_BitsPerSample);
+        uaudio::Wave_Config wave_config = uaudio::Wave_Config(chunks, m_ChannelsSelection, m_BitsPerSampleOptions[m_BitsPerSampleSelection]);
         UAUDIO_DEFAULT_HASH hash = m_SoundSystem.LoadSound(path, path, wave_config);
         delete[] path;
     }

@@ -4,14 +4,13 @@
 #include <string>
 #include <vector>
 
+#include "Includes.h"
+#include "utils/Utils.h"
+
 namespace uaudio
 {
 	constexpr auto CHUNK_ID_SIZE = 4;
 
-	inline void *Add(void *ptr, size_t size)
-	{
-		return reinterpret_cast<unsigned char *>(ptr) + size;
-	}
 #pragma pack(push, 1)
 	struct Chunk_Data
 	{
@@ -32,12 +31,22 @@ namespace uaudio
 
 		std::string m_FilePath;
 
-		std::vector<Chunk_Data*> m_Chunks;
+		std::vector<Chunk_Data *> m_Chunks;
+
+		void RemoveChunk(const char* a_ChunkID)
+		{
+			for (size_t i = 0; i < m_Chunks.size(); i++)
+				if (strncmp(&a_ChunkID[0], &reinterpret_cast<char*>(m_Chunks[i]->chunk_id)[0], CHUNK_ID_SIZE) == 0)
+				{
+					UAUDIO_DEFAULT_FREE(m_Chunks[i]);
+					m_Chunks.erase(m_Chunks.begin() + i);
+				}
+		}
 
 		uint32_t GetChunkSize(const char *a_ChunkID) const
 		{
 			for (auto *m_Chunk : m_Chunks)
-				if (strncmp(&a_ChunkID[0], &reinterpret_cast<char*>(m_Chunk->chunk_id)[0], CHUNK_ID_SIZE) == 0)
+				if (strncmp(&a_ChunkID[0], &reinterpret_cast<char *>(m_Chunk->chunk_id)[0], CHUNK_ID_SIZE) == 0)
 					return m_Chunk->chunkSize;
 
 			return 0;
@@ -46,17 +55,17 @@ namespace uaudio
 		template <class T>
 		T GetChunkFromData(const char *a_ChunkID) const
 		{
-			for (auto* m_Chunk : m_Chunks)
-				if (strncmp(&a_ChunkID[0], &reinterpret_cast<char*>(m_Chunk->chunk_id)[0], CHUNK_ID_SIZE) == 0)
-					return T(reinterpret_cast<T*>(Add(m_Chunk, sizeof(Chunk_Data))));
+			for (auto *m_Chunk : m_Chunks)
+				if (strncmp(&a_ChunkID[0], &reinterpret_cast<char *>(m_Chunk->chunk_id)[0], CHUNK_ID_SIZE) == 0)
+					return T(reinterpret_cast<T *>(utils::add(m_Chunk, sizeof(Chunk_Data))));
 
 			return T(nullptr);
 		}
 
 		bool HasChunk(const char *a_ChunkID) const
 		{
-			for (auto* m_Chunk : m_Chunks)
-				if (strncmp(&a_ChunkID[0], &reinterpret_cast<char*>(m_Chunk->chunk_id)[0], CHUNK_ID_SIZE) == 0)
+			for (auto *m_Chunk : m_Chunks)
+				if (strncmp(&a_ChunkID[0], &reinterpret_cast<char *>(m_Chunk->chunk_id)[0], CHUNK_ID_SIZE) == 0)
 					return true;
 
 			return false;

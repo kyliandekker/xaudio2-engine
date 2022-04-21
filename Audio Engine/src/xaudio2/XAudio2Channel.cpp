@@ -171,21 +171,21 @@ namespace uaudio::xaudio2
 		const FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
 		switch (a_TimeUnit)
 		{
-		case TIMEUNIT::TIMEUNIT_MS:
-		{
-			return utils::PosToMilliseconds(m_CurrentPos, fmt_chunk.byteRate);
-			break;
-		}
-		case TIMEUNIT::TIMEUNIT_S:
-		{
-			return utils::PosToSeconds(m_CurrentPos, fmt_chunk.byteRate);
-			break;
-		}
-		case TIMEUNIT::TIMEUNIT_POS:
-		{
-			return static_cast<float>(m_CurrentPos);
-			break;
-		}
+			case TIMEUNIT::TIMEUNIT_MS:
+			{
+				return utils::PosToMilliseconds(m_CurrentPos, fmt_chunk.byteRate);
+				break;
+			}
+			case TIMEUNIT::TIMEUNIT_S:
+			{
+				return utils::PosToSeconds(m_CurrentPos, fmt_chunk.byteRate);
+				break;
+			}
+			case TIMEUNIT::TIMEUNIT_POS:
+			{
+				return static_cast<float>(m_CurrentPos);
+				break;
+			}
 		}
 
 		return 0.0f;
@@ -209,8 +209,15 @@ namespace uaudio::xaudio2
 		m_SourceVoice->GetState(&state);
 		if (state.BuffersQueued < GetBufferSize())
 		{
+			if (m_DataBuffers.size() == 2)
+			{
+				unsigned char* buffer = m_DataBuffers.front();
+				UAUDIO_DEFAULT_FREE(buffer);
+				m_DataBuffers.pop();
+			}
+
 			// If the sound is done playing, check whether it needs to be repeated or whether it needs to be stopped entirely.
-			if (m_CurrentSound->IsEndOfFile(a_StartPos))
+			if (m_CurrentSound->IsEndOfBuffer(a_StartPos))
 			{
 				m_CurrentPos = m_CurrentSound->GetStartPosition();
 				a_StartPos = m_CurrentSound->GetStartPosition();
@@ -223,13 +230,16 @@ namespace uaudio::xaudio2
 				}
 			}
 
-			unsigned char *data = {};
+			unsigned char* data = {};
 
 			// Read the part of the wave file and store it back in the read buffer.
 			m_CurrentSound->Read(a_StartPos, a_Size, data);
 
+			unsigned char* new_data = reinterpret_cast<unsigned char*>(UAUDIO_DEFAULT_ALLOC(a_Size));
+			UAUDIO_DEFAULT_MEMCOPY(new_data, data, a_Size);
+
 			// Other effects.
-			ApplyEffects(data, a_Size);
+			ApplyEffects(new_data, a_Size);
 
 			// Make sure the new pos is the current pos.
 			m_CurrentPos = a_StartPos;
@@ -240,10 +250,11 @@ namespace uaudio::xaudio2
 			if (!m_Active)
 			{
 				const FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
-				effects::ChangeVolume<int16_t>(data, a_Size, UAUDIO_MIN_VOLUME, fmt_chunk.blockAlign, fmt_chunk.numChannels);
+				effects::ChangeVolume<int16_t>(new_data, a_Size, UAUDIO_MIN_VOLUME, fmt_chunk.blockAlign, fmt_chunk.numChannels);
 			}
 
-			PlayBuffer(data, a_Size);
+			PlayBuffer(new_data, a_Size);
+			m_DataBuffers.push(new_data);
 		}
 	}
 
