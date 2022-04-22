@@ -3,9 +3,9 @@
 #include <queue>
 #include <xaudio2.h>
 
-#include "XAudio2Callback.h"
+#include <uaudio/xaudio2/XAudio2Callback.h>
 
-#include "Includes.h"
+#include <uaudio/Includes.h>
 
 namespace uaudio
 {

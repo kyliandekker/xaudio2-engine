@@ -3,9 +3,9 @@
 #include <thread>
 #include <vector>
 
-#include "xaudio2/XAudio2Channel.h"
-#include "Handle.h"
-#include "Includes.h"
+#include <uaudio/xaudio2/XAudio2Channel.h>
+#include <uaudio/Handle.h>
+#include <uaudio/Includes.h>
 
 enum class AUDIO_MODE
 {
@@ -48,10 +48,10 @@ namespace uaudio
 		void SetBufferSize(BUFFERSIZE a_BufferSize);
 
 		// Channel-related methods.
-		ChannelHandle Play(const WaveFile& a_WaveFile);
+		ChannelHandle Play(const WaveFile &a_WaveFile);
 
 		uint32_t ChannelSize() const;
-		xaudio2::XAudio2Channel* GetChannel(ChannelHandle a_ChannelHandle);
+		xaudio2::XAudio2Channel *GetChannel(ChannelHandle a_ChannelHandle);
 
 	private:
 		AUDIO_MODE m_AudioMode = AUDIO_MODE::AUDIO_MODE_THREADED;

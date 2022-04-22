@@ -23,11 +23,11 @@
     <ClCompile Include="src\AudioSystem.cpp" />
     <ClCompile Include="src\SoundSystem.cpp" />
     <ClCompile Include="src\utils\Utils.cpp" />
-    <ClCompile Include="src\wave\high_level\WaveConverter.cpp" />
-    <ClCompile Include="src\wave\high_level\WaveFormat.cpp" />
-    <ClCompile Include="src\wave\high_level\WaveReader.cpp" />
-    <ClCompile Include="src\wave\low_level\WaveConfig.cpp" />
-    <ClCompile Include="src\wave\low_level\WaveFile.cpp" />
+    <ClCompile Include="src\wave\low_level\WaveConverter.cpp" />
+    <ClCompile Include="src\wave\low_level\WaveFormat.cpp" />
+    <ClCompile Include="src\wave\low_level\WaveReader.cpp" />
+    <ClCompile Include="src\wave\high_level\WaveConfig.cpp" />
+    <ClCompile Include="src\wave\high_level\WaveFile.cpp" />
     <ClCompile Include="src\xaudio2\XAudio2Channel.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -157,7 +157,6 @@ namespace uaudio
 			{
 				for (uint32_t j = 0; j < static_cast<uint32_t>(a_BlockAlign) / 2; j++)
 				{
-					// TODO: Fix this warning.
 					a_Data[newIndex] = a_Original_Data[i + j];
 					newIndex++;
 				}

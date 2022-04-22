@@ -23,10 +23,10 @@ namespace uaudio
 }
 
 // Necessary to override all the default settings.
-#include "UserInclude.h"
+#include <uaudio/UserInclude.h>
 
 #if !defined(UAUDIO_DEFAULT_HASH)
-#include "Hash.h"
+#include <uaudio/Hash.h>
 #endif
 
 #if !defined(UAUDIO_DEFAULT_ALLOCATOR)
