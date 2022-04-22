@@ -38,7 +38,7 @@
 - [ ] Abstract away. Make audiosystem not dependent on xaudio2. Make backend classes.
 - [X] Fix crash when unload while playing.
 - [X] Loop point in config.
-- [ ] Clean up the conversion code (maybe move it elsewhere).
-- [ ] Fix memory leak somewhere in conversion code.
+- [X] Clean up the conversion code (maybe move it elsewhere).
 - [ ] Fix loop points now not being set because of conversion.
 - [ ] Fix memory leak somewhere in removing.
+- [ ] Unit tests for size calculations in conversion.

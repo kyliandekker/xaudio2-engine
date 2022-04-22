@@ -162,6 +162,7 @@ void SoundsTool::RenderSound(UAUDIO_DEFAULT_HASH a_SoundHash)
         ImGui::PushItemWidth(100);
         std::string silence_detect_sensitivity_text = "Sensitivity##Silence_Detection_Sensitivity_" + std::to_string(a_SoundHash);
         ImGui::InputInt(silence_detect_sensitivity_text.c_str(), &sensitivity, 1);
+        ImGui::PopItemWidth();
     }
 
     const std::string chunk_specific_info_text = "Chunk Specific Info##Chunk_Specific_Info_" + std::to_string(a_SoundHash);

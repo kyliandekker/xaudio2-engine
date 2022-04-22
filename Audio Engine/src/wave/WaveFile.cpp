@@ -187,9 +187,9 @@ namespace uaudio
 
     void WaveFile::ConvertLoadedSound(const Wave_Config& a_WaveConfig)
     {
+        LoopPositionsConfig(a_WaveConfig);
         MonoStereoConfig(a_WaveConfig);
         BitsPerSampleConfig(a_WaveConfig);
-        LoopPositionsConfig(a_WaveConfig);
     }
 
     /// <summary>
@@ -200,26 +200,30 @@ namespace uaudio
     {
         FMT_Chunk fmt_chunk = m_WaveFormat.GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
 
+        // Check if the number of channels in the config is mono or stereo (anything other than 1 or 2 means unspecified)
         if (a_WaveConfig.numChannels == WAVE_CHANNELS_STEREO || a_WaveConfig.numChannels == WAVE_CHANNELS_MONO)
+            // Check if the number of channels in the config and the number of channels in the chunk is equal.
             if (fmt_chunk.numChannels != a_WaveConfig.numChannels)
             {
                 Chunk_Data* data_chunk_data = nullptr;
-
                 const DATA_Chunk data_chunk = m_WaveFormat.GetChunkFromData<DATA_Chunk>(DATA_CHUNK_ID);
-                uint32_t new_size = m_WaveFormat.GetChunkSize(DATA_CHUNK_ID);
+                uint32_t data_chunk_size = m_WaveFormat.GetChunkSize(DATA_CHUNK_ID);
 
-                unsigned char* data = nullptr;
                 if (a_WaveConfig.numChannels == WAVE_CHANNELS_STEREO)
-                    data = conversion::ConvertMonoToStereo(data_chunk.data, new_size, fmt_chunk.blockAlign);
+                {
+                    data_chunk_data = reinterpret_cast<Chunk_Data*>(UAUDIO_DEFAULT_ALLOC(conversion::CalculateMonoToStereoSize(data_chunk_size) + sizeof(Chunk_Data)));
+                    conversion::ConvertMonoToStereo(reinterpret_cast<unsigned char*>(utils::add(data_chunk_data, sizeof(Chunk_Data))), data_chunk.data, data_chunk_size, fmt_chunk.blockAlign);
+                }
                 else if (a_WaveConfig.numChannels == WAVE_CHANNELS_MONO)
-                    data = conversion::ConvertStereoToMono(data_chunk.data, new_size, fmt_chunk.blockAlign);
+                {
+                    data_chunk_data = reinterpret_cast<Chunk_Data*>(UAUDIO_DEFAULT_ALLOC(conversion::CalculateStereoToMonoSize(data_chunk_size) + sizeof(Chunk_Data)));
+                    conversion::ConvertStereoToMono(reinterpret_cast<unsigned char*>(utils::add(data_chunk_data, sizeof(Chunk_Data))), data_chunk.data, data_chunk_size, fmt_chunk.blockAlign);
+                }
 
-                data_chunk_data = reinterpret_cast<Chunk_Data*>(UAUDIO_DEFAULT_ALLOC(new_size + sizeof(Chunk_Data)));
                 if (data_chunk_data != nullptr)
                 {
                     UAUDIO_DEFAULT_MEMCPY(data_chunk_data->chunk_id, DATA_CHUNK_ID, CHUNK_ID_SIZE);
-                    data_chunk_data->chunkSize = new_size;
-                    UAUDIO_DEFAULT_MEMCPY(utils::add(data_chunk_data, sizeof(Chunk_Data)), data, new_size);
+                    data_chunk_data->chunkSize = data_chunk_size;
                 }
 
                 fmt_chunk.numChannels = a_WaveConfig.numChannels;
@@ -249,7 +253,7 @@ namespace uaudio
     /// Sets looping points if that has been stated in the config.
     /// </summary>
     /// <param name="a_WaveConfig">The wave config.</param>
-    void WaveFile::LoopPositionsConfig(const Wave_Config&)
+    void WaveFile::LoopPositionsConfig(const Wave_Config& a_WaveConfig)
     {
         SetStartPosition(0);
         SetEndPosition(m_WaveFormat.GetChunkSize(DATA_CHUNK_ID));
@@ -290,13 +294,13 @@ namespace uaudio
 		                {
                             data_chunk_data = reinterpret_cast<Chunk_Data*>(UAUDIO_DEFAULT_ALLOC(conversion::Calculate24To16Size(data_chunk_size) + sizeof(Chunk_Data)));
                             conversion::Convert24To16(reinterpret_cast<unsigned char*>(utils::add(data_chunk_data, sizeof(Chunk_Data))), data_chunk.data, data_chunk_size);
-                            break;
+							break;
 		                }
                         else if (fmt_chunk.bitsPerSample == WAVE_BITS_PER_SAMPLE_32)
                         {
                             data_chunk_data = reinterpret_cast<Chunk_Data*>(UAUDIO_DEFAULT_ALLOC(conversion::Calculate32To16Size(data_chunk_size) + sizeof(Chunk_Data)));
                             conversion::Convert32To16(reinterpret_cast<unsigned char*>(utils::add(data_chunk_data, sizeof(Chunk_Data))), data_chunk.data, data_chunk_size);
-                            break;
+							break;
                         }
                         break;
 	                }

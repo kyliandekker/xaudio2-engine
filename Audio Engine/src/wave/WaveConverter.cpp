@@ -32,11 +32,31 @@ namespace uaudio
 		}
 
 		/// <summary>
+		/// Recalculates the buffer size from mono to stereo.
+		/// </summary>
+		/// <param name="a_Size">The buffer size.</param>
+		/// <returns></returns>
+		uint32_t CalculateMonoToStereoSize(uint32_t a_Size)
+		{
+			return a_Size * 2;
+		}
+
+		/// <summary>
+		/// Recalculates the buffer size from stereo to mono.
+		/// </summary>
+		/// <param name="a_Size">The buffer size.</param>
+		/// <returns></returns>
+		uint32_t CalculateStereoToMonoSize(uint32_t a_Size)
+		{
+			return a_Size / 2;
+		}
+
+		/// <summary>
 		/// Converts 24 bit pcm data to 16 bit pcm data.
 		/// </summary>
-		/// <param name="a_Data">The actual data.</param>
+		/// <param name="a_Data">The new data buffer.</param>
+		/// <param name="a_Original_Data">The original data buffer.</param>
 		/// <param name="a_Size">The data size (will get changed)</param>
-		/// <returns></returns>
 		void Convert24To16(unsigned char* a_Data, unsigned char* a_Original_Data, uint32_t& a_Size)
 		{
 			// Determine the size of a 16bit data array.
@@ -58,9 +78,9 @@ namespace uaudio
 		/// <summary>
 		/// Converts 32 bit pcm data to 16 bit pcm data.
 		/// </summary>
-		/// <param name="a_Data">The actual data.</param>
+		/// <param name="a_Data">The new data buffer.</param>
+		/// <param name="a_Original_Data">The original data buffer.</param>
 		/// <param name="a_Size">The data size (will get changed)</param>
-		/// <returns></returns>
 		void Convert32To16(unsigned char* a_Data, unsigned char* a_Original_Data, uint32_t& a_Size)
 		{
 			// Determine the size of a 16bit data array.
@@ -89,19 +109,17 @@ namespace uaudio
 		/// <summary>
 		/// Converts mono data to stereo data.
 		/// </summary>
-		/// <param name="a_Data">The data that will be used.</param>
+		/// <param name="a_Data">The new data buffer.</param>
+		/// <param name="a_Original_Data">The original data buffer.</param>
 		/// <param name="a_Size">The data size (will get changed)</param>
 		/// <param name="a_BlockAlign">The alignment of 1 sample.</param>
-		/// <returns></returns>
-		unsigned char *ConvertMonoToStereo(unsigned char *a_Data, uint32_t &a_Size, uint16_t a_BlockAlign)
+		void ConvertMonoToStereo(unsigned char* a_Data, unsigned char* a_Original_Data, uint32_t& a_Size, uint16_t a_BlockAlign)
 		{
 			if (a_Size % a_BlockAlign != 0)
-				return a_Data;
+				return;
 
 			// Double the size.
 			a_Size = a_Size * 2;
-
-			unsigned char *array_stereo = new unsigned char[a_Size];
 
 			int newIndex = 0;
 			for (uint32_t i = 0; i <= a_Size / 2 - a_BlockAlign; i += a_BlockAlign)
@@ -111,32 +129,28 @@ namespace uaudio
 				{
 					for (uint32_t j = 0; j < a_BlockAlign; j++)
 					{
-						array_stereo[newIndex] = a_Data[i + j];
+						a_Data[newIndex] = a_Original_Data[i + j];
 						newIndex++;
 					}
 					echo++;
 				}
 			}
-
-			return array_stereo;
 		}
 
 		/// <summary>
 		/// Converts stereo data to mono data.
 		/// </summary>
-		/// <param name="a_Data">The data that will be used.</param>
+		/// <param name="a_Data">The new data buffer.</param>
+		/// <param name="a_Original_Data">The original data buffer.</param>
 		/// <param name="a_Size">The data size (will get changed)</param>
 		/// <param name="a_BlockAlign">The alignment of 1 sample.</param>
-		/// <returns></returns>
-		unsigned char *ConvertStereoToMono(unsigned char *a_Data, uint32_t &a_Size, uint16_t a_BlockAlign)
+		void ConvertStereoToMono(unsigned char* a_Data, unsigned char* a_Original_Data, uint32_t &a_Size, uint16_t a_BlockAlign)
 		{
 			if (a_Size % a_BlockAlign != 0)
-				return a_Data;
+				return;
 
 			// Double the size.
 			a_Size = a_Size / 2;
-
-			unsigned char *array_mono = new unsigned char[a_Size];
 
 			uint32_t newIndex = 0;
 			for (uint32_t i = 0; i <= a_Size * 2 - a_BlockAlign; i += a_BlockAlign)
@@ -144,12 +158,10 @@ namespace uaudio
 				for (uint32_t j = 0; j < static_cast<uint32_t>(a_BlockAlign) / 2; j++)
 				{
 					// TODO: Fix this warning.
-					array_mono[newIndex] = a_Data[i + j];
+					a_Data[newIndex] = a_Original_Data[i + j];
 					newIndex++;
 				}
 			}
-
-			return array_mono;
 		}
 	}
 }

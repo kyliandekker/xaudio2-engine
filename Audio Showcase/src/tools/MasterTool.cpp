@@ -144,6 +144,7 @@ void MasterTool::Render()
         if (ImGui::InputText("##Add_Chunk", &m_SelectedChunk.chunk_id))
             if (m_SelectedChunk.chunk_id.size() > uaudio::CHUNK_ID_SIZE)
                 m_SelectedChunk.chunk_id = std::string(m_SelectedChunk.chunk_id.substr(0, uaudio::CHUNK_ID_SIZE));
+        ImGui::PopItemWidth();
         ImGui::SameLine();
         if (ImGui::Button("Add"))
         {
