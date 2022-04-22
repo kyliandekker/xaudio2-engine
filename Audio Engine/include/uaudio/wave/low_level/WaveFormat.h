@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
-#include "Includes.h"
+#include <uaudio/Includes.h>
 
-#include "utils/Utils.h"
+#include <uaudio/utils/Utils.h>
 
 namespace uaudio
 {

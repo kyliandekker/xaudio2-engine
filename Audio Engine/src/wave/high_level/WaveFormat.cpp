@@ -1,6 +1,6 @@
-#include "wave/WaveFormat.h"
+#include <uaudio/wave/low_level/WaveFormat.h>
 
-#include "Includes.h"
+#include <uaudio/Includes.h>
 
 namespace uaudio
 {

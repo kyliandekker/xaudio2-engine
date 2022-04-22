@@ -5,7 +5,7 @@
 #include "tools/ChannelsTool.h"
 #include "tools/MasterTool.h"
 #include "tools/SoundsTool.h"
-#include "utils/Logger.h"
+#include <uaudio/utils/Logger.h>
 
 int main(int, char *[])
 {

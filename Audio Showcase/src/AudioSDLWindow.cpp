@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <utils/Logger.h>
+#include <uaudio/utils/Logger.h>
 #include <glad/glad.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 

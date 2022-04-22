@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AudioSystem.h"
+#include <uaudio/AudioSystem.h>
 #include "tools/BaseTool.h"
 
 class ChannelsTool : public BaseTool

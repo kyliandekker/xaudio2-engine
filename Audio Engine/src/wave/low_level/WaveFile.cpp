@@ -1,9 +1,9 @@
-#include <wave/WaveFile.h>
-#include <utils/Logger.h>
+#include <uaudio/wave/high_level/WaveFile.h>
+#include <uaudio/utils/Logger.h>
 
-#include "utils/Utils.h"
-#include "wave/WaveConverter.h"
-#include "wave/WaveReader.h"
+#include <uaudio/utils/Utils.h>
+#include <uaudio/wave/low_level/WaveConverter.h>
+#include <uaudio/wave/low_level/WaveReader.h>
 
 namespace uaudio
 {

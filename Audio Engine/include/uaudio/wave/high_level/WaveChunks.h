@@ -3,10 +3,10 @@
 #include <cstdint>
 
 // Necessary for memcpy, malloc, etc.
-#include "Includes.h"
+#include <uaudio/Includes.h>
 
-#include "WaveFormat.h"
-#include "utils/Utils.h"
+#include <uaudio/wave/low_level/WaveFormat.h>
+#include <uaudio/utils/Utils.h>
 
 // http://soundfile.sapp.org/doc/WaveFormat/
 // https://www.kvraudio.com/forum/viewtopic.php?t=172636

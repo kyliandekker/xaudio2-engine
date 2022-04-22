@@ -1,5 +1,5 @@
-#include "allocator/UAudioAllocator.h"
-#include "Includes.h"
+#include <uaudio/allocator/UAudioAllocator.h>
+#include <uaudio/Includes.h>
 
 #include <cstdlib>
 

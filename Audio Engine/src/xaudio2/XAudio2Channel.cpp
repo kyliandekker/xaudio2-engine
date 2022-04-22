@@ -1,14 +1,14 @@
-﻿#include <AudioSystem.h>
-#include <wave/WaveFile.h>
-#include <xaudio2/XAudio2Channel.h>
+﻿#include <uaudio/AudioSystem.h>
+#include <uaudio/wave/high_level/WaveFile.h>
+#include <uaudio/xaudio2/XAudio2Channel.h>
 #include <comdef.h>
 
-#include <wave/WaveEffects.h>
-#include <utils/Logger.h>
+#include <uaudio/wave/low_level/WaveEffects.h>
+#include <uaudio/utils/Logger.h>
 #include <algorithm>
 
-#include "wave/WaveChunks.h"
-#include "wave/WaveConverter.h"
+#include <uaudio/wave/high_level/WaveChunks.h>
+#include <uaudio/wave/low_level/WaveConverter.h>
 
 namespace uaudio::xaudio2
 {

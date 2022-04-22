@@ -1,6 +1,6 @@
 #include <utility>
 
-#include "wave/WaveConfig.h"
+#include <uaudio/wave/high_level/WaveConfig.h>
 
 namespace uaudio
 {

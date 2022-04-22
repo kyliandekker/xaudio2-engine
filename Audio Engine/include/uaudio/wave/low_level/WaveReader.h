@@ -2,8 +2,8 @@
 
 #include <complex>
 
-#include "WaveConfig.h"
-#include "WaveFormat.h"
+#include <uaudio/wave/high_level/WaveConfig.h>
+#include <uaudio/wave/low_level/WaveFormat.h>
 
 namespace uaudio
 {

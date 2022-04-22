@@ -1,8 +1,7 @@
-#include "wave/WaveReader.h"
+#include <uaudio/wave/low_level/WaveReader.h>
 
-#include "utils/Logger.h"
-#include "wave/WaveConverter.h"
-#include "utils/Utils.h"
+#include <uaudio/utils/Logger.h>
+#include <uaudio/utils/Utils.h>
 
 namespace uaudio
 {

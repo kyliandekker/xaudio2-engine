@@ -2,8 +2,8 @@
 
 #include <array>
 
-#include "AudioSystem.h"
-#include "SoundSystem.h"
+#include <uaudio/AudioSystem.h>
+#include <uaudio/SoundSystem.h>
 #include "tools/BaseTool.h"
 
 struct chunk_select

@@ -1,8 +1,8 @@
-﻿#include <SoundSystem.h>
+﻿#include <uaudio/SoundSystem.h>
 
 #include <utility>
 
-#include "utils/Logger.h"
+#include <uaudio/utils/Logger.h>
 
 namespace uaudio
 {

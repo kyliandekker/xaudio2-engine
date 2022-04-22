@@ -1,11 +1,11 @@
-﻿#include <AudioSystem.h>
+﻿#include <uaudio/AudioSystem.h>
 
-#include <utils/Logger.h>
+#include <uaudio/utils/Logger.h>
 
 #include <xaudio2.h>
 
-#include "SoundSystem.h"
-#include "wave/WaveEffects.h"
+#include <uaudio/SoundSystem.h>
+#include <uaudio/wave/low_level/WaveEffects.h>
 
 namespace uaudio
 {

@@ -1,12 +1,12 @@
 #include "tools/ChannelsTool.h"
 
-#include "wave/WaveFile.h"
+#include <uaudio/wave/high_level/WaveFile.h>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_helpers.h>
 
-#include "utils/Utils.h"
-#include "wave/WaveChunks.h"
+#include <uaudio/utils/Utils.h>
+#include <uaudio/wave/high_level/WaveChunks.h>
 
 ChannelsTool::ChannelsTool(uaudio::AudioSystem &a_AudioSystem) : BaseTool(0, "Channels", "Channels"), m_AudioSystem(a_AudioSystem)
 {

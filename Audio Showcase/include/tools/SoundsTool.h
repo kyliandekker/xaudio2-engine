@@ -1,7 +1,7 @@
 #pragma once
 
-#include "AudioSystem.h"
-#include "SoundSystem.h"
+#include <uaudio/AudioSystem.h>
+#include <uaudio/SoundSystem.h>
 #include "tools/BaseTool.h"
 
 class SoundsTool : public BaseTool

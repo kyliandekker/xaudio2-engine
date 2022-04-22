@@ -4,8 +4,8 @@
 
 #include "Includes.h"
 
-#include "wave/WaveConfig.h"
-#include "wave/WaveFile.h"
+#include "wave/high_level/WaveConfig.h"
+#include "wave/high_level/WaveFile.h"
 
 namespace uaudio
 {

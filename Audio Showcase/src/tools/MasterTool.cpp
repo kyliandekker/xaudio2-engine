@@ -1,12 +1,12 @@
 #include "tools/MasterTool.h"
 
-#include "wave/WaveFile.h"
+#include "uaudio/wave/high_level/WaveFile.h"
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_stdlib.h>
 #include <imgui/imgui_helpers.h>
 
-#include "utils/Utils.h"
+#include <uaudio/utils/Utils.h>
 
 MasterTool::MasterTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &a_SoundSystem) : BaseTool(0, "Actions", "Master Actions"), m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
 {

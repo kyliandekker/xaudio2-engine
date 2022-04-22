@@ -1,13 +1,13 @@
 #include "tools/SoundsTool.h"
 
-#include "wave/WaveFile.h"
+#include <uaudio/wave/high_level/WaveFile.h>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_helpers.h>
 
-#include "utils/Utils.h"
-#include "wave/WaveChunks.h"
-#include "wave/WaveReader.h"
+#include <uaudio/utils/Utils.h>
+#include <uaudio/wave/high_level/WaveChunks.h>
+#include <uaudio/wave/low_level/WaveReader.h>
 
 SoundsTool::SoundsTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &a_SoundSystem) : BaseTool(0, "Sounds", "Sounds"), m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
 {

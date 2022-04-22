@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Includes.h"
+#include <uaudio/Includes.h>
 
-#include "WaveChunks.h"
+#include <uaudio/wave/high_level/WaveChunks.h>
 
 #include <vector>
 

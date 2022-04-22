@@ -1,8 +1,8 @@
 ﻿#include <iostream>
 
-#include <wave/WaveConverter.h>
+#include <uaudio/wave/low_level/WaveConverter.h>
 
-#include <utils/uint24_t.h>
+#include <uaudio/utils/uint24_t.h>
 
 namespace uaudio
 {

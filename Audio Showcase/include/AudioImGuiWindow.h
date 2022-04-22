@@ -4,9 +4,9 @@
 #include <sdl/SDL_video.h>
 
 #include <ImguiWindowStruct.h>
-#include <AudioSystem.h>
+#include <uaudio/AudioSystem.h>
 
-#include "SoundSystem.h"
+#include <uaudio/SoundSystem.h>
 #include "tools/BaseTool.h"
 #include "tools/MainWindow.h"
 
