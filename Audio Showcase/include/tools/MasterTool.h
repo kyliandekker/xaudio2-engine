@@ -63,13 +63,21 @@ private:
 
 	std::array<const char*, 3> m_ChannelsTextOptions = {
 		"I don't really care",
-		"mono",
-		"stereo"
+		"Mono",
+		"Stereo"
 	};
+
+	std::array<const char*, 4> m_LoopPointTextOptions = {
+		"None",
+		"Load Start Point",
+		"Load End Point",
+		"Load Start & End Point"
+	};
+
+	uaudio::Wave_Config m_WaveConfig;
 
 	std::vector<chunk_select> m_ChunkIds;
 	chunk_select m_SelectedChunk = { "", false, true };
 
-	uint32_t m_BitsPerSampleSelection = 0;
-	uint16_t m_ChannelsSelection = uaudio::UAUDIO_DEFAULT_CHANNELS;
+	uint32_t m_SelectedBitsPerSample = 0;
 };

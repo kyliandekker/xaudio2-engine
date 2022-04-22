@@ -15,14 +15,15 @@ MasterTool::MasterTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &
         if (m_BufferSizeOptions[i] == buffer_size)
             m_BufferSizeSelection = i;
 
-    const uint32_t bits_per_sample = uaudio::UAUDIO_DEFAULT_BITS_PER_SAMPLE;
-    for (int i = 0; i < m_BitsPerSampleOptions.size(); i++)
-        if (m_BitsPerSampleOptions[i] == bits_per_sample)
-            m_BitsPerSampleSelection = i;
+    m_WaveConfig.bitsPerSample = 0;
+    m_WaveConfig.numChannels = 0;
 
     m_ChunkIds.push_back({uaudio::ACID_CHUNK_ID, false, false});
     m_ChunkIds.push_back({uaudio::BEXT_CHUNK_ID, false, false});
     m_ChunkIds.push_back({uaudio::FACT_CHUNK_ID, false, false});
+    m_ChunkIds.push_back({uaudio::CUE_CHUNK_ID, false, false});
+    m_ChunkIds.push_back({uaudio::SMPL_CHUNK_ID, false, false});
+    m_ChunkIds.push_back({uaudio::TLST_CHUNK_ID, false, false});
 }
 
 void MasterTool::Render()
@@ -82,26 +83,39 @@ void MasterTool::Render()
 
         const std::string channels_text = "Channels (stereo or mono)";
         ImGui::Text("%s", channels_text.c_str());
-        if (ImGui::BeginCombo("##Stereo_Or_Mono", m_ChannelsTextOptions[m_ChannelsSelection], ImGuiComboFlags_PopupAlignLeft))
+        if (ImGui::BeginCombo("##Stereo_Or_Mono", m_ChannelsTextOptions[m_WaveConfig.numChannels], ImGuiComboFlags_PopupAlignLeft))
         {
             for (uint32_t n = 0; n < static_cast<uint32_t>(m_ChannelsTextOptions.size()); n++)
             {
-                const bool is_selected = n == m_ChannelsSelection;
+                const bool is_selected = n == m_WaveConfig.numChannels;
                 if (ImGui::Selectable(m_ChannelsTextOptions[n], is_selected))
-                    m_ChannelsSelection = static_cast<uint16_t>(n);
+                    m_WaveConfig.numChannels = static_cast<uint16_t>(n);
             }
             ImGui::EndCombo();
         }
 
         const std::string bits_per_sample_text = "Bits per sample";
         ImGui::Text("%s", bits_per_sample_text.c_str());
-        if (ImGui::BeginCombo("##Bits_Per_Sample", m_BitsPerSampleTextOptions[m_BitsPerSampleSelection], ImGuiComboFlags_PopupAlignLeft))
+        if (ImGui::BeginCombo("##Bits_Per_Sample", m_BitsPerSampleTextOptions[m_SelectedBitsPerSample], ImGuiComboFlags_PopupAlignLeft))
         {
             for (uint16_t n = 0; n < static_cast<uint16_t>(m_BitsPerSampleOptions.size()); n++)
             {
-                const bool is_selected = n == m_BitsPerSampleSelection;
+                const bool is_selected = n == m_SelectedBitsPerSample;
                 if (ImGui::Selectable(m_BitsPerSampleTextOptions[n], is_selected))
-                    m_BitsPerSampleSelection = n;
+                    m_SelectedBitsPerSample = n;
+            }
+            ImGui::EndCombo();
+        }
+
+        const std::string loop_poins_text = "Loop Points";
+        ImGui::Text("%s", loop_poins_text.c_str());
+        if (ImGui::BeginCombo("##Loop_Points", m_LoopPointTextOptions[static_cast<int>(m_WaveConfig.setLoopPoints)], ImGuiComboFlags_PopupAlignLeft))
+        {
+            for (uint16_t n = 0; n < static_cast<uint16_t>(m_LoopPointTextOptions.size()); n++)
+            {
+                const bool is_selected = n == static_cast<int>(m_WaveConfig.setLoopPoints);
+                if (ImGui::Selectable(m_LoopPointTextOptions[n], is_selected))
+                    m_WaveConfig.setLoopPoints = static_cast<LOOP_POINT_SETTING>(n);
             }
             ImGui::EndCombo();
         }
@@ -126,6 +140,7 @@ void MasterTool::Render()
             ImGui::SameLine();
         }
         ImGui::NewLine();
+        ImGui::PushItemWidth(100);
         if (ImGui::InputText("##Add_Chunk", &m_SelectedChunk.chunk_id))
             if (m_SelectedChunk.chunk_id.size() > uaudio::CHUNK_ID_SIZE)
                 m_SelectedChunk.chunk_id = std::string(m_SelectedChunk.chunk_id.substr(0, uaudio::CHUNK_ID_SIZE));
@@ -174,8 +189,9 @@ void MasterTool::OpenFile()
             if (chunk.selected)
                 chunks.push_back(chunk.chunk_id.c_str());
 
-        uaudio::Wave_Config wave_config = uaudio::Wave_Config(chunks, m_ChannelsSelection, m_BitsPerSampleOptions[m_BitsPerSampleSelection]);
-        UAUDIO_DEFAULT_HASH hash = m_SoundSystem.LoadSound(path, path, wave_config);
+        m_WaveConfig.chunksToLoad = chunks;
+        m_WaveConfig.bitsPerSample = m_BitsPerSampleOptions[m_SelectedBitsPerSample];
+        UAUDIO_DEFAULT_HASH hash = m_SoundSystem.LoadSound(path, path, m_WaveConfig);
         delete[] path;
     }
 }

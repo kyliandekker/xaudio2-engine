@@ -104,62 +104,6 @@ namespace uaudio
 			}
 		}
 
-		FMT_Chunk fmt_chunk = a_WaveFormat.GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
-
-		if (a_WaveConfig.numChannels == WAVE_CHANNELS_STEREO || a_WaveConfig.numChannels == WAVE_CHANNELS_MONO)
-			if (fmt_chunk.numChannels != a_WaveConfig.numChannels)
-			{
-				Chunk_Data* data_chunk_data = nullptr;
-
-				const DATA_Chunk data_chunk = a_WaveFormat.GetChunkFromData<DATA_Chunk>(DATA_CHUNK_ID);
-				uint32_t new_size = a_WaveFormat.GetChunkSize(DATA_CHUNK_ID);
-				if (a_WaveConfig.numChannels == WAVE_CHANNELS_STEREO)
-				{
-					unsigned char *data = conversion::ConvertMonoToStereo(data_chunk.data, new_size, fmt_chunk.blockAlign);
-					data_chunk_data = reinterpret_cast<Chunk_Data*>(UAUDIO_DEFAULT_ALLOC(new_size + sizeof(Chunk_Data)));
-					if (data_chunk_data != nullptr)
-					{
-						UAUDIO_DEFAULT_MEMCOPY(data_chunk_data->chunk_id, DATA_CHUNK_ID, CHUNK_ID_SIZE);
-						data_chunk_data->chunkSize = new_size;
-						UAUDIO_DEFAULT_MEMCOPY(utils::add(data_chunk_data, sizeof(Chunk_Data)), data, new_size);
-					}
-					fmt_chunk.numChannels = a_WaveConfig.numChannels;
-					fmt_chunk.blockAlign = fmt_chunk.numChannels * fmt_chunk.bitsPerSample / 8;
-					fmt_chunk.byteRate = fmt_chunk.sampleRate * fmt_chunk.numChannels * fmt_chunk.bitsPerSample / 8;
-				}
-				else if (a_WaveConfig.numChannels == WAVE_CHANNELS_MONO)
-				{
-					unsigned char *data = conversion::ConvertStereoToMono(data_chunk.data, new_size, fmt_chunk.blockAlign);
-					data_chunk_data = reinterpret_cast<Chunk_Data*>(UAUDIO_DEFAULT_ALLOC(new_size + sizeof(Chunk_Data)));
-					if (data_chunk_data != nullptr)
-					{
-						UAUDIO_DEFAULT_MEMCOPY(data_chunk_data->chunk_id, DATA_CHUNK_ID, CHUNK_ID_SIZE);
-						data_chunk_data->chunkSize = new_size;
-						UAUDIO_DEFAULT_MEMCOPY(utils::add(data_chunk_data, sizeof(Chunk_Data)), data, new_size);
-					}
-					fmt_chunk.numChannels = a_WaveConfig.numChannels;
-					fmt_chunk.blockAlign = fmt_chunk.numChannels * fmt_chunk.bitsPerSample / 8;
-					fmt_chunk.byteRate = fmt_chunk.sampleRate * fmt_chunk.numChannels * fmt_chunk.bitsPerSample / 8;
-				}
-
-				Chunk_Data* fmt_chunk_data = reinterpret_cast<Chunk_Data*>(UAUDIO_DEFAULT_ALLOC(sizeof(FMT_Chunk) + sizeof(Chunk_Data)));
-				if (fmt_chunk_data != nullptr)
-				{
-					UAUDIO_DEFAULT_MEMCOPY(fmt_chunk_data->chunk_id, FMT_CHUNK_ID, CHUNK_ID_SIZE);
-					fmt_chunk_data->chunkSize = a_WaveFormat.GetChunkSize(FMT_CHUNK_ID);
-					UAUDIO_DEFAULT_MEMCOPY(utils::add(fmt_chunk_data, sizeof(Chunk_Data)), reinterpret_cast<const char*>(&fmt_chunk), sizeof(FMT_Chunk));
-				}
-
-				if (data_chunk_data != nullptr && fmt_chunk_data != nullptr)
-				{
-					a_WaveFormat.RemoveChunk(FMT_CHUNK_ID);
-					a_WaveFormat.m_Chunks.push_back(fmt_chunk_data);
-
-					a_WaveFormat.RemoveChunk(DATA_CHUNK_ID);
-					a_WaveFormat.m_Chunks.push_back(data_chunk_data);
-				}
-			}
-
 		fclose(a_File);
 		a_File = nullptr;
 

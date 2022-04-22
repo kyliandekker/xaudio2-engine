@@ -2,6 +2,14 @@
 
 #include "WaveChunks.h"
 
+enum class LOOP_POINT_SETTING
+{
+	LOOP_POINT_SETTING_NONE,
+	LOOP_POINT_SETTING_START,
+	LOOP_POINT_SETTING_END,
+	LOOP_POINT_SETTING_BOTH,
+};
+
 #include "UserInclude.h"
 
 #if !defined(UAUDIO_DEFAULT_CHUNKS)
@@ -22,6 +30,12 @@
 
 #endif
 
+#if !defined(UAUDIO_DEFAULT_SET_LOOP_POINTS)
+
+#define UAUDIO_DEFAULT_SET_LOOP_POINTS LOOP_POINT_SETTING::LOOP_POINT_SETTING_BOTH
+
+#endif
+
 #include <vector>
 
 namespace uaudio
@@ -29,7 +43,6 @@ namespace uaudio
 	struct Wave_Config
 	{
 		Wave_Config();
-		Wave_Config(std::vector<const char *> a_ChunksToLoad, uint16_t a_NumChannels, uint16_t a_BitsPerSample);
 		Wave_Config(const Wave_Config &rhs);
 
 		Wave_Config &operator=(const Wave_Config &rhs);
@@ -37,5 +50,6 @@ namespace uaudio
 		std::vector<const char *> chunksToLoad = {UAUDIO_DEFAULT_CHUNKS};
 		uint16_t numChannels = UAUDIO_DEFAULT_CHANNELS;
 		uint16_t bitsPerSample = UAUDIO_DEFAULT_BITS_PER_SAMPLE;
+		LOOP_POINT_SETTING setLoopPoints = UAUDIO_DEFAULT_SET_LOOP_POINTS;
 	};
 }

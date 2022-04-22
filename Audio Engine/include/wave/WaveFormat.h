@@ -5,6 +5,10 @@
 #include <vector>
 
 #include "Includes.h"
+
+// Necessary for UAUDIO_DEFAULT_FREE
+#include "UserInclude.h"
+
 #include "utils/Utils.h"
 
 namespace uaudio

@@ -4,7 +4,10 @@
 #include <xaudio2.h>
 
 #include "XAudio2Callback.h"
+
 #include "Includes.h"
+
+#include "UserInclude.h"
 
 namespace uaudio
 {

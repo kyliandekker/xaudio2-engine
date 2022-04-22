@@ -141,7 +141,7 @@ namespace uaudio::xaudio2
 		m_SourceVoice->DestroyVoice();
 		m_SourceVoice = nullptr;
 
-		m_CurrentPos = m_CurrentSound->GetStartPosition();
+		m_CurrentPos = IsInUse() ? m_CurrentSound->GetStartPosition() : 0;
 	}
 
 	/// <summary>
@@ -171,21 +171,21 @@ namespace uaudio::xaudio2
 		const FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
 		switch (a_TimeUnit)
 		{
-			case TIMEUNIT::TIMEUNIT_MS:
-			{
-				return utils::PosToMilliseconds(m_CurrentPos, fmt_chunk.byteRate);
-				break;
-			}
-			case TIMEUNIT::TIMEUNIT_S:
-			{
-				return utils::PosToSeconds(m_CurrentPos, fmt_chunk.byteRate);
-				break;
-			}
-			case TIMEUNIT::TIMEUNIT_POS:
-			{
-				return static_cast<float>(m_CurrentPos);
-				break;
-			}
+		case TIMEUNIT::TIMEUNIT_MS:
+		{
+			return utils::PosToMilliseconds(m_CurrentPos, fmt_chunk.byteRate);
+			break;
+		}
+		case TIMEUNIT::TIMEUNIT_S:
+		{
+			return utils::PosToSeconds(m_CurrentPos, fmt_chunk.byteRate);
+			break;
+		}
+		case TIMEUNIT::TIMEUNIT_POS:
+		{
+			return static_cast<float>(m_CurrentPos);
+			break;
+		}
 		}
 
 		return 0.0f;
@@ -211,7 +211,7 @@ namespace uaudio::xaudio2
 		{
 			if (m_DataBuffers.size() == 2)
 			{
-				unsigned char* buffer = m_DataBuffers.front();
+				unsigned char *buffer = m_DataBuffers.front();
 				UAUDIO_DEFAULT_FREE(buffer);
 				m_DataBuffers.pop();
 			}
@@ -230,13 +230,13 @@ namespace uaudio::xaudio2
 				}
 			}
 
-			unsigned char* data = {};
+			unsigned char *data = {};
 
 			// Read the part of the wave file and store it back in the read buffer.
 			m_CurrentSound->Read(a_StartPos, a_Size, data);
 
-			unsigned char* new_data = reinterpret_cast<unsigned char*>(UAUDIO_DEFAULT_ALLOC(a_Size));
-			UAUDIO_DEFAULT_MEMCOPY(new_data, data, a_Size);
+			unsigned char *new_data = reinterpret_cast<unsigned char *>(UAUDIO_DEFAULT_ALLOC(a_Size));
+			UAUDIO_DEFAULT_MEMCPY(new_data, data, a_Size);
 
 			// Other effects.
 			ApplyEffects(new_data, a_Size);
@@ -384,26 +384,26 @@ namespace uaudio::xaudio2
 	/// Applies all the effects.
 	/// </summary>
 	/// <param name="a_Data">The pcm data that needs to be processed.</param>
-	/// <param name="a_Size">The size of the pcm data block.</param>
+	/// <param name="a_BufferSize">The size of the pcm data block.</param>
 	/// <returns></returns>
-	void XAudio2Channel::ApplyEffects(unsigned char *&a_Data, uint32_t a_Size) const
+	void XAudio2Channel::ApplyEffects(unsigned char *&a_Data, uint32_t a_BufferSize) const
 	{
 		const FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
 
 		// Master volume.
-		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_AudioSystem->GetMasterVolume(), fmt_chunk.blockAlign, fmt_chunk.numChannels);
+		effects::ChangeVolume<int16_t>(a_Data, a_BufferSize, m_AudioSystem->GetMasterVolume(), fmt_chunk.blockAlign, fmt_chunk.numChannels);
 
 		// Channel volume.
-		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_Volume, fmt_chunk.blockAlign, fmt_chunk.numChannels);
+		effects::ChangeVolume<int16_t>(a_Data, a_BufferSize, m_Volume, fmt_chunk.blockAlign, fmt_chunk.numChannels);
 
 		// Sound volume (not sure why you would want this but I want it in here damn it)
-		effects::ChangeVolume<int16_t>(a_Data, a_Size, m_CurrentSound->GetVolume(), fmt_chunk.blockAlign, fmt_chunk.numChannels);
+		effects::ChangeVolume<int16_t>(a_Data, a_BufferSize, m_CurrentSound->GetVolume(), fmt_chunk.blockAlign, fmt_chunk.numChannels);
 
 		// Master panning.
-		effects::ChangePanning<int16_t>(a_Data, a_Size, m_AudioSystem->GetMasterPanning(), fmt_chunk.numChannels);
+		effects::ChangePanning<int16_t>(a_Data, a_BufferSize, m_AudioSystem->GetMasterPanning(), fmt_chunk.numChannels);
 
 		//// Channel panning.
-		effects::ChangePanning<int16_t>(a_Data, a_Size, m_Panning, fmt_chunk.numChannels);
+		effects::ChangePanning<int16_t>(a_Data, a_BufferSize, m_Panning, fmt_chunk.numChannels);
 	}
 
 	/// <summary>

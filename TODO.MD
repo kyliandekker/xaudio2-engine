@@ -10,8 +10,8 @@
 - [ ] conversion unit test.
 - [X] Set looping point and starting point (with custom slider). https://github.com/ocornut/imgui/issues/76
 - [X] Wave settings (load specific chunks only).
-- [ ] Fix 32-bit conversion.
-- [ ] Fix 24-bit conversion.
+- [X] Fix 32-bit conversion.
+- [X] Fix 24-bit conversion.
 - [X] Close when loop crash.
 - [X] Play multiple channels crash.
 - [X] Volume and panning templated (so that 32bit and 24bit also works).
@@ -30,3 +30,15 @@
 - [X] Fix panning and volume in buffer (make temp buffers).
 - [X] Remove chunks in waveformat in destructor.
 - [X] Add the ADD function to utils.
+- [X] SMPL and CUE support.
+- [ ] INFO support.
+- [ ] LIST support.
+- [X] TLST support.
+- [ ] STRC support.
+- [ ] Abstract away. Make audiosystem not dependent on xaudio2. Make backend classes.
+- [X] Fix crash when unload while playing.
+- [X] Loop point in config.
+- [ ] Clean up the conversion code (maybe move it elsewhere).
+- [ ] Fix memory leak somewhere in conversion code.
+- [ ] Fix loop points now not being set because of conversion.
+- [ ] Fix memory leak somewhere in removing.

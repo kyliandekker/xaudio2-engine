@@ -12,65 +12,87 @@ namespace uaudio
 	namespace conversion
 	{
 		/// <summary>
+		/// Recalculates the buffer size from 24-bit to 16-bit.
+		/// </summary>
+		/// <param name="a_Size">The buffer size.</param>
+		/// <returns></returns>
+		uint32_t Calculate24To16Size(uint32_t a_Size)
+		{
+			return a_Size / sizeof(uint24_t) * sizeof(uint16_t);
+		}
+
+		/// <summary>
+		/// Recalculates the buffer size from 32-bit to 16-bit.
+		/// </summary>
+		/// <param name="a_Size">The buffer size.</param>
+		/// <returns></returns>
+		uint32_t Calculate32To16Size(uint32_t a_Size)
+		{
+			return a_Size / sizeof(uint32_t) * sizeof(uint16_t);
+		}
+		/// <summary>
 		/// Converts 24 bit pcm data to 16 bit pcm data.
 		/// </summary>
 		/// <param name="a_Data">The actual data.</param>
-		/// <param name="a_Size">The data size.</param>
+		/// <param name="a_Size">The data size (will get changed)</param>
 		/// <returns></returns>
-		uint16_t *Convert24To16(unsigned char *a_Data, uint32_t &a_Size)
+		unsigned char *Convert24To16(unsigned char* a_Data, uint32_t& a_Size)
 		{
 			uint16_t* array_16 = new uint16_t[a_Size];
 
-			// TODO: Fix.
 			// Determine the size of a 16bit data array.
-			// Chunk size divided by the size of a 32bit int (4) multiplied by the size of a 16bit int (2).
-			a_Size = a_Size / sizeof(uint24_t) * sizeof(uint16_t);
+			// Chunk size divided by the size of a 24bit int (3) multiplied by the size of a 16bit int (2).
+			const uint32_t newSize = Calculate24To16Size(a_Size);
 
-			for (uint32_t a = 0; a < a_Size; a++)
+			int i = 0;
+			for (uint32_t a = 0; a < a_Size; a += sizeof(uint24_t))
 			{
-				// Add the size of a 24bit int (3) to move the data pointer.
-				uint32_t t = (a * 3);
-				uint24_t converted_value = *reinterpret_cast<uint24_t *>(a_Data + t);
-
-				array_16[a] = static_cast<uint16_t>(converted_value);
+				// Skip 1 bit every time since we go from 24bit to 16bit.
+				array_16[i] = *reinterpret_cast<uint16_t*>(a_Data + a + 1);
+				i++;
 			}
-			return array_16;
+			a_Size = newSize;
+			return reinterpret_cast<unsigned char*>(array_16);
 		}
 
 		/// <summary>
 		/// Converts 32 bit pcm data to 16 bit pcm data.
 		/// </summary>
 		/// <param name="a_Data">The actual data.</param>
-		/// <param name="a_Size">The data size.</param>
+		/// <param name="a_Size">The data size (will get changed)</param>
 		/// <returns></returns>
-		uint16_t *Convert32To16(unsigned char *a_Data, uint32_t &a_Size)
+		unsigned char* Convert32To16(unsigned char* a_Data, uint32_t& a_Size)
 		{
 			// TODO: Fix.
 			// Determine the size of a 16bit data array.
-			// Chunk size divided by the size of a 24bit int (3) multiplied by the size of a 16bit int (2).
-			a_Size = a_Size / sizeof(uint32_t) * sizeof(uint16_t);
+			// Chunk size divided by the size of a 32bit int (4) multiplied by the size of a 16bit int (2).
+			uint32_t new_size = Calculate32To16Size(a_Size);
 
-			uint16_t *array_16 = new uint16_t[a_Size];
+			uint16_t* array_16 = new uint16_t[new_size];
 
-			for (uint32_t a = 0; a < a_Size; a++)
+			int i = 0;
+			for (uint32_t a = 0; a < a_Size; a += sizeof(uint32_t))
 			{
 				// Add the size of a 32bit int (4) to move the data pointer.
-				float converted_value = *reinterpret_cast<float *>(a_Data + (a * sizeof(uint32_t)));
+				float converted_value = *reinterpret_cast<float*>(a_Data + a);
 
-				// calc 32 to 16 bit int.
+				// Calc 32 to 16 bit int.
 				converted_value /= SQRT_TWO;
 				converted_value *= INT16_MAX;
 
-				array_16[a] = static_cast<uint16_t>(converted_value);
+				array_16[i] = static_cast<uint16_t>(converted_value);
+
+				i++;
 			}
-			return array_16;
+			a_Size = new_size;
+			return reinterpret_cast<unsigned char*>(array_16);
 		}
 
 		/// <summary>
 		/// Converts mono data to stereo data.
 		/// </summary>
 		/// <param name="a_Data">The data that will be used.</param>
-		/// <param name="a_Size">The size (will get changed)</param>
+		/// <param name="a_Size">The data size (will get changed)</param>
 		/// <param name="a_BlockAlign">The alignment of 1 sample.</param>
 		/// <returns></returns>
 		unsigned char *ConvertMonoToStereo(unsigned char *a_Data, uint32_t &a_Size, uint16_t a_BlockAlign)
@@ -105,7 +127,7 @@ namespace uaudio
 		/// Converts stereo data to mono data.
 		/// </summary>
 		/// <param name="a_Data">The data that will be used.</param>
-		/// <param name="a_Size">The size (will get changed)</param>
+		/// <param name="a_Size">The data size (will get changed)</param>
 		/// <param name="a_BlockAlign">The alignment of 1 sample.</param>
 		/// <returns></returns>
 		unsigned char *ConvertStereoToMono(unsigned char *a_Data, uint32_t &a_Size, uint16_t a_BlockAlign)

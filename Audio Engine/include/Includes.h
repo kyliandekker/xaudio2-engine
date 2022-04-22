@@ -34,12 +34,12 @@
 
 #endif
 
-#if !defined(UAUDIO_DEFAULT_MEMCOPY)
+#if !defined(UAUDIO_DEFAULT_MEMCPY)
 
 #include <cstdio>
 #include <string.h>
 
-#define UAUDIO_DEFAULT_MEMCOPY memcpy
+#define UAUDIO_DEFAULT_MEMCPY memcpy
 
 #endif
 

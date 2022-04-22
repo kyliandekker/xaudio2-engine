@@ -7,6 +7,7 @@
 #include "Handle.h"
 #include "Includes.h"
 
+// Necessary for UAUDIO_DEFAULT_NUM_CHANNELS, UAUDIO_DEFAULT_BUFFERSIZE, UAUDIO_DEFAULT_ALLOCATOR, UAUDIO_DEFAULT_PANNING and UAUDIO_DEFAULT_VOLUME
 #include "UserInclude.h"
 
 #if !defined(UAUDIO_DEFAULT_NUM_CHANNELS)

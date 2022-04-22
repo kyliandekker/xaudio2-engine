@@ -3,6 +3,10 @@
 #include <map>
 
 #include "Includes.h"
+
+// Necessary for UAUDIO_DEFAULT_HASH, UAUDIO_DEFAULT_ALLOCATOR 
+#include "UserInclude.h"
+
 #include "wave/WaveConfig.h"
 #include "wave/WaveFile.h"
 

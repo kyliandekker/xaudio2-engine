@@ -42,6 +42,7 @@ namespace uaudio
 	// #define UAUDIO_DEFAULT_CHUNKS "fmt ", "data"
 	// #define UAUDIO_DEFAULT_CHANNELS 2
 	// #define UAUDIO_DEFAULT_BITS_PER_SAMPLE 16
+	// #define UAUDIO_DEFAULT_SET_LOOP_POINTS true
 
 	/*
 	 * The default number of channels for the audio system.
