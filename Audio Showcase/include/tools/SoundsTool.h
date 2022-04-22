@@ -13,7 +13,7 @@ public:
 	static void SaveFile(const uaudio::WaveFile* a_WaveFile);
 
 private:
-	void RenderSound(UAUDIO_DEFAULT_HASH a_SoundHash);
+	void RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash);
 
 	uaudio::AudioSystem &m_AudioSystem;
 	uaudio::SoundSystem &m_SoundSystem;

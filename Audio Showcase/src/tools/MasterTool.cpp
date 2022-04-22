@@ -15,8 +15,12 @@ MasterTool::MasterTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &
         if (m_BufferSizeOptions[i] == buffer_size)
             m_BufferSizeSelection = i;
 
-    m_WaveConfig.bitsPerSample = 0;
-    m_WaveConfig.numChannels = 0;
+    m_WaveConfig.bitsPerSample = uaudio::UAUDIO_DEFAULT_BITS_PER_SAMPLE;
+    for (uint32_t i = 0; i < m_BitsPerSampleOptions.size(); i++)
+        if (m_WaveConfig.bitsPerSample == m_BitsPerSampleOptions[i])
+            m_SelectedBitsPerSample = i;
+
+    m_WaveConfig.numChannels = uaudio::UAUDIO_DEFAULT_CHANNELS;
 
     m_ChunkIds.push_back({uaudio::ACID_CHUNK_ID, false, false});
     m_ChunkIds.push_back({uaudio::BEXT_CHUNK_ID, false, false});
@@ -115,7 +119,7 @@ void MasterTool::Render()
             {
                 const bool is_selected = n == static_cast<int>(m_WaveConfig.setLoopPoints);
                 if (ImGui::Selectable(m_LoopPointTextOptions[n], is_selected))
-                    m_WaveConfig.setLoopPoints = static_cast<LOOP_POINT_SETTING>(n);
+                    m_WaveConfig.setLoopPoints = static_cast<uaudio::LOOP_POINT_SETTING>(n);
             }
             ImGui::EndCombo();
         }
@@ -192,7 +196,7 @@ void MasterTool::OpenFile()
 
         m_WaveConfig.chunksToLoad = chunks;
         m_WaveConfig.bitsPerSample = m_BitsPerSampleOptions[m_SelectedBitsPerSample];
-        UAUDIO_DEFAULT_HASH hash = m_SoundSystem.LoadSound(path, path, m_WaveConfig);
+        uaudio::UAUDIO_DEFAULT_HASH hash = m_SoundSystem.LoadSound(path, path, m_WaveConfig);
         delete[] path;
     }
 }

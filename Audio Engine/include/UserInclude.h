@@ -17,12 +17,12 @@ namespace uaudio
 	/*
 	 * If for whatever reason you want the volume to be lower on start-up or the panning to be different, you can override these.
 	 */
-	// #define UAUDIO_DEFAULT_VOLUME 1.0f
-	// #define UAUDIO_DEFAULT_PANNING 0.0f
+	// constexpr float UAUDIO_DEFAULT_VOLUME = 1.0f;
+	// constexpr float UAUDIO_DEFAULT_PANNING = 0.0f;
 	/*
 	 * A higher or lower buffer size is also possible. You can change this here.
 	 */
-	// #define UAUDIO_DEFAULT_BUFFERSIZE uaudio::BUFFERSIZE::BUFFERSIZE_8192
+	// constexpr BUFFERSIZE UAUDIO_DEFAULT_BUFFERSIZE BUFFERSIZE::BUFFERSIZE_8192
 
 	/*
 	 * If you want to change the hash class and hashing method, you can override them here.
@@ -33,19 +33,19 @@ namespace uaudio
 	/*
 	 * You can disable the colors in the logger if you do not want them.
 	 */
-	// #define UAUDIO_COLOR_LOGGING true
-	// #define MAX_BUFFER_LOGGER 256
+	// constexpr bool UAUDIO_COLOR_LOGGING = true;
+	// constexpr uint16_t MAX_BUFFER_LOGGER = 256;
 
 	/*
 	 * You can change the default loading config here:
 	 */
 	// #define UAUDIO_DEFAULT_CHUNKS "fmt ", "data"
-	// #define UAUDIO_DEFAULT_CHANNELS 2
-	// #define UAUDIO_DEFAULT_BITS_PER_SAMPLE 16
-	// #define UAUDIO_DEFAULT_SET_LOOP_POINTS true
+	// constexpr uint16_t UAUDIO_DEFAULT_CHANNELS = 2;
+	// constexpr uint16_t UAUDIO_DEFAULT_BITS_PER_SAMPLE = 16;
+	// constexpr bool UAUDIO_DEFAULT_SET_LOOP_POINTS = LOOP_POINT_SETTING::LOOP_POINT_SETTING_BOTH;
 
 	/*
 	 * The default number of channels for the audio system.
 	 */
-	// #define UAUDIO_DEFAULT_NUM_CHANNELS 20
+	// constexpr uint32_t UAUDIO_DEFAULT_NUM_CHANNELS = 20;
 }

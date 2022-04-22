@@ -5,16 +5,15 @@
 // Necessary for memcpy, malloc, etc.
 #include "Includes.h"
 
-#include "UserInclude.h"
 #include "WaveFormat.h"
 #include "utils/Utils.h"
 
-	// http://soundfile.sapp.org/doc/WaveFormat/
-	// https://www.kvraudio.com/forum/viewtopic.php?t=172636
-	// https://tech.ebu.ch/docs/tech/tech3285.pdf
-	// http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
-	// https://www.recordingblogs.com/wiki/sample-chunk-of-a-wave-file
-	// https://sites.google.com/site/musicgapi/technical-documents/wav-file-format
+// http://soundfile.sapp.org/doc/WaveFormat/
+// https://www.kvraudio.com/forum/viewtopic.php?t=172636
+// https://tech.ebu.ch/docs/tech/tech3285.pdf
+// http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
+// https://www.recordingblogs.com/wiki/sample-chunk-of-a-wave-file
+// https://sites.google.com/site/musicgapi/technical-documents/wav-file-format
 
 namespace uaudio
 {
@@ -481,18 +480,18 @@ namespace uaudio
 	constexpr auto CUE_CHUNK_ID = "cue ";
 	struct CUE_Chunk
 	{
-		CUE_Chunk(CUE_Chunk* a_Data)
+		CUE_Chunk(CUE_Chunk *a_Data)
 		{
 			if (a_Data != nullptr)
 			{
 				num_cue_points = a_Data->num_cue_points;
-				cue_points = reinterpret_cast<CUE_Point*>(utils::add(a_Data, sizeof(CUE_Chunk) - sizeof(cue_points)));
+				cue_points = reinterpret_cast<CUE_Point *>(utils::add(a_Data, sizeof(CUE_Chunk) - sizeof(cue_points)));
 			}
 		}
 
 		uint32_t num_cue_points = 0;
 
-		CUE_Point* cue_points = nullptr;
+		CUE_Point *cue_points = nullptr;
 	};
 
 	/*
@@ -682,7 +681,7 @@ namespace uaudio
 	constexpr auto SMPL_CHUNK_ID = "smpl";
 	struct SMPL_Chunk
 	{
-		SMPL_Chunk(SMPL_Chunk* a_Data)
+		SMPL_Chunk(SMPL_Chunk *a_Data)
 		{
 			if (a_Data != nullptr)
 			{
@@ -695,7 +694,7 @@ namespace uaudio
 				smpte_offset = a_Data->smpte_offset;
 				num_sample_loops = a_Data->num_sample_loops;
 				sampler_data = a_Data->sampler_data;
-				samples = reinterpret_cast<SMPL_Sample_Loop*>(utils::add(a_Data, sizeof(SMPL_Chunk) - sizeof(samples)));
+				samples = reinterpret_cast<SMPL_Sample_Loop *>(utils::add(a_Data, sizeof(SMPL_Chunk) - sizeof(samples)));
 			}
 		}
 
@@ -709,13 +708,13 @@ namespace uaudio
 		uint32_t num_sample_loops = 0;
 		uint32_t sampler_data = 0;
 
-		SMPL_Sample_Loop* samples = nullptr;
+		SMPL_Sample_Loop *samples = nullptr;
 	};
 
 	constexpr auto TLST_CHUNK_ID = "tlst";
 	struct TLST_Chunk
 	{
-		TLST_Chunk(TLST_Chunk* a_Data)
+		TLST_Chunk(TLST_Chunk *a_Data)
 		{
 			if (a_Data != nullptr)
 			{

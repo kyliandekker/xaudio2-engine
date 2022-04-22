@@ -1,17 +1,13 @@
 #pragma once
 
+#include "Includes.h"
+
 #include "WaveChunks.h"
 
-enum class LOOP_POINT_SETTING
+#include <vector>
+
+namespace uaudio
 {
-	LOOP_POINT_SETTING_NONE,
-	LOOP_POINT_SETTING_START,
-	LOOP_POINT_SETTING_END,
-	LOOP_POINT_SETTING_BOTH,
-};
-
-#include "UserInclude.h"
-
 #if !defined(UAUDIO_DEFAULT_CHUNKS)
 
 #define UAUDIO_DEFAULT_CHUNKS DATA_CHUNK_ID, FMT_CHUNK_ID
@@ -20,26 +16,22 @@ enum class LOOP_POINT_SETTING
 
 #if !defined(UAUDIO_DEFAULT_CHANNELS)
 
-#define UAUDIO_DEFAULT_CHANNELS WAVE_CHANNELS_STEREO
+	constexpr uint16_t UAUDIO_DEFAULT_CHANNELS = 0;
 
 #endif
 
 #if !defined(UAUDIO_DEFAULT_BITS_PER_SAMPLE)
 
-#define UAUDIO_DEFAULT_BITS_PER_SAMPLE WAVE_BITS_PER_SAMPLE_16
+	constexpr uint16_t UAUDIO_DEFAULT_BITS_PER_SAMPLE = WAVE_BITS_PER_SAMPLE_16;
 
 #endif
 
 #if !defined(UAUDIO_DEFAULT_SET_LOOP_POINTS)
 
-#define UAUDIO_DEFAULT_SET_LOOP_POINTS LOOP_POINT_SETTING::LOOP_POINT_SETTING_BOTH
+	constexpr LOOP_POINT_SETTING UAUDIO_DEFAULT_SET_LOOP_POINTS = LOOP_POINT_SETTING::LOOP_POINT_SETTING_BOTH;
 
 #endif
 
-#include <vector>
-
-namespace uaudio
-{
 	struct Wave_Config
 	{
 		Wave_Config();

@@ -4,9 +4,6 @@
 
 #include "Includes.h"
 
-// Necessary for UAUDIO_DEFAULT_HASH, UAUDIO_DEFAULT_ALLOCATOR 
-#include "UserInclude.h"
-
 #include "wave/WaveConfig.h"
 #include "wave/WaveFile.h"
 
@@ -21,7 +18,7 @@ namespace uaudio
 		bool DoesSoundExist(const UAUDIO_DEFAULT_HASH a_Hash) const;
 
 		uint32_t SoundSize() const;
-		std::vector<WaveFile *, UAUDIO_DEFAULT_ALLOCATOR<WaveFile *>> GetSounds();
+		std::vector<WaveFile*, UAUDIO_DEFAULT_ALLOCATOR<WaveFile*>> GetSounds();
 		std::vector<UAUDIO_DEFAULT_HASH, UAUDIO_DEFAULT_ALLOCATOR<UAUDIO_DEFAULT_HASH>> GetSoundHashes();
 
 	private:

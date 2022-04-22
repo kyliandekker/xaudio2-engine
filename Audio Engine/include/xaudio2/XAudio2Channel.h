@@ -7,10 +7,15 @@
 
 #include "Includes.h"
 
-#include "UserInclude.h"
-
 namespace uaudio
 {
+	enum class TIMEUNIT
+	{
+		TIMEUNIT_MS,
+		TIMEUNIT_S,
+		TIMEUNIT_POS
+	};
+
 	class WaveFile;
 	class AudioSystem;
 
@@ -20,14 +25,14 @@ namespace uaudio
 		{
 		public:
 			XAudio2Channel() = default;
-			XAudio2Channel(AudioSystem& a_AudioSystem);
-			XAudio2Channel(const XAudio2Channel& rhs);
+			XAudio2Channel(AudioSystem &a_AudioSystem);
+			XAudio2Channel(const XAudio2Channel &rhs);
 
 			~XAudio2Channel();
 
-			XAudio2Channel& operator=(const XAudio2Channel& rhs);
+			XAudio2Channel &operator=(const XAudio2Channel &rhs);
 
-			void SetSound(const WaveFile& a_Sound);
+			void SetSound(const WaveFile &a_Sound);
 
 			void SetActive(bool a_Active);
 			bool GetActive() const;
@@ -38,12 +43,12 @@ namespace uaudio
 			float GetPos(TIMEUNIT a_TimeUnit) const;
 			uint32_t GetBufferSize() const;
 			void PlayRanged(uint32_t a_StartPos, uint32_t a_Size);
-			void PlayBuffer(const unsigned char* a_Buffer, uint32_t a_Size) const;
+			void PlayBuffer(const unsigned char *a_Buffer, uint32_t a_Size) const;
 			void ResetPos();
 			void RemoveSound();
 
-			IXAudio2SourceVoice& GetSourceVoice() const;
-			XAudio2Callback& GetVoiceCallback();
+			IXAudio2SourceVoice &GetSourceVoice() const;
+			XAudio2Callback &GetVoiceCallback();
 
 			void SetVolume(float a_Volume);
 			float GetVolume() const;
@@ -57,27 +62,28 @@ namespace uaudio
 			bool IsLooping() const;
 			void SetLooping(bool a_Looping);
 
-			void ApplyEffects(unsigned char*& a_Data, uint32_t a_BufferSize) const;
+			void ApplyEffects(unsigned char *&a_Data, uint32_t a_BufferSize) const;
 
-			const WaveFile& GetSound() const;
+			const WaveFile &GetSound() const;
+
 		private:
 			void Stop();
 			bool m_Looping = false;
 
-			std::queue<unsigned char*> m_DataBuffers;
+			std::queue<unsigned char *> m_DataBuffers;
 
 			float m_Volume = 1;
 			float m_Panning = UAUDIO_DEFAULT_PANNING;
 
-			const WaveFile* m_CurrentSound = nullptr;
+			const WaveFile *m_CurrentSound = nullptr;
 
 			bool m_IsPlaying = false, m_Active = true;
 
-			AudioSystem* m_AudioSystem = nullptr;
+			AudioSystem *m_AudioSystem = nullptr;
 
 			uint32_t m_CurrentPos = 0;
 
-			IXAudio2SourceVoice* m_SourceVoice = nullptr;
+			IXAudio2SourceVoice *m_SourceVoice = nullptr;
 			XAudio2Callback m_VoiceCallback;
 		};
 	}

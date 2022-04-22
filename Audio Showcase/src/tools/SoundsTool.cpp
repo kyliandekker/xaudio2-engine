@@ -20,7 +20,7 @@ void SoundsTool::Render()
         RenderSound(hash);
 }
 
-void SoundsTool::RenderSound(UAUDIO_DEFAULT_HASH a_SoundHash)
+void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
 {
     uaudio::WaveFile *a_WaveFile = m_SoundSystem.FindSound(a_SoundHash);
     ImGui::Text("%s", a_WaveFile->GetSoundTitle());
@@ -37,9 +37,7 @@ void SoundsTool::RenderSound(UAUDIO_DEFAULT_HASH a_SoundHash)
         {
             uaudio::xaudio2::XAudio2Channel *channel = m_AudioSystem.GetChannel(i);
             if (&channel->GetSound() == a_WaveFile)
-            {
                 channel->RemoveSound();
-            }
         }
         m_SoundSystem.UnloadSound(a_SoundHash);
         return;

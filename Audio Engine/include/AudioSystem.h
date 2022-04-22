@@ -7,15 +7,6 @@
 #include "Handle.h"
 #include "Includes.h"
 
-// Necessary for UAUDIO_DEFAULT_NUM_CHANNELS, UAUDIO_DEFAULT_BUFFERSIZE, UAUDIO_DEFAULT_ALLOCATOR, UAUDIO_DEFAULT_PANNING and UAUDIO_DEFAULT_VOLUME
-#include "UserInclude.h"
-
-#if !defined(UAUDIO_DEFAULT_NUM_CHANNELS)
-
-#define UAUDIO_DEFAULT_NUM_CHANNELS 20
-
-#endif
-
 enum class AUDIO_MODE
 {
 	AUDIO_MODE_NORMAL,
@@ -24,6 +15,12 @@ enum class AUDIO_MODE
 
 namespace uaudio
 {
+#if !defined(UAUDIO_DEFAULT_NUM_CHANNELS)
+
+	constexpr uint32_t UAUDIO_DEFAULT_NUM_CHANNELS = 20;
+
+#endif
+
 	class AudioSystem
 	{
 	public:

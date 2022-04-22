@@ -3,23 +3,20 @@
 #include <cassert>
 #include <stdio.h>
 
-// Necessary for UAUDIO_NO_COLOR_LOGGING & MAX_BUFFER_LOGGER.
-#include "UserInclude.h"
-
-#if !defined(UAUDIO_COLOR_LOGGING)
-
-#define MAX_BUFFER_LOGGER 256
-
-#endif
-
-#if !defined(UAUDIO_COLOR_LOGGING)
-
-#define UAUDIO_COLOR_LOGGING true
-
-#endif
-
 namespace uaudio::logger
 {
+#if !defined(UAUDIO_COLOR_LOGGING)
+
+	constexpr uint16_t MAX_BUFFER_LOGGER = 256;
+
+#endif
+
+#if !defined(UAUDIO_COLOR_LOGGING)
+
+	constexpr bool UAUDIO_COLOR_LOGGING = true;
+
+#endif
+
 	/// <summary>
 	/// Logs a message to console with a verbosity flag.
 	/// </summary>

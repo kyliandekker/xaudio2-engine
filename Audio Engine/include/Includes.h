@@ -1,48 +1,5 @@
 #pragma once
 
-// Necessary to override all the default settings.
-#include "UserInclude.h"
-
-#if !defined(UAUDIO_DEFAULT_HASH)
-#include "Hash.h"
-
-#define UAUDIO_DEFAULT_HASH uaudio::Hash
-#define UAUDIO_DEFAULT_HASH_FUNCTION uaudio::GetHash
-#endif
-
-#if !defined(UAUDIO_DEFAULT_ALLOCATOR)
-
-#include <cstdlib>
-
-#define UAUDIO_DEFAULT_ALLOCATOR std::allocator
-
-#endif
-
-#if !defined(UAUDIO_DEFAULT_ALLOC)
-
-#include <cstdlib>
-
-#define UAUDIO_DEFAULT_ALLOC malloc
-
-#endif
-
-#if !defined(UAUDIO_DEFAULT_FREE)
-
-#include <cstdlib>
-
-#define UAUDIO_DEFAULT_FREE free
-
-#endif
-
-#if !defined(UAUDIO_DEFAULT_MEMCPY)
-
-#include <cstdio>
-#include <string.h>
-
-#define UAUDIO_DEFAULT_MEMCPY memcpy
-
-#endif
-
 namespace uaudio
 {
 	enum class BUFFERSIZE
@@ -56,35 +13,83 @@ namespace uaudio
 		BUFFERSIZE_8192 = 8192,
 	};
 
-	enum class TIMEUNIT
+	enum class LOOP_POINT_SETTING
 	{
-		TIMEUNIT_MS,
-		TIMEUNIT_S,
-		TIMEUNIT_POS
+		LOOP_POINT_SETTING_NONE,
+		LOOP_POINT_SETTING_START,
+		LOOP_POINT_SETTING_END,
+		LOOP_POINT_SETTING_BOTH,
 	};
-
 }
+
+// Necessary to override all the default settings.
+#include "UserInclude.h"
+
+#if !defined(UAUDIO_DEFAULT_HASH)
+#include "Hash.h"
+#endif
+
+#if !defined(UAUDIO_DEFAULT_ALLOCATOR)
+#include <cstdlib>
+#endif
+
+#if !defined(UAUDIO_DEFAULT_ALLOC)
+#include <cstdlib>
+#endif
+
+#if !defined(UAUDIO_DEFAULT_FREE)
+#include <cstdlib>
+#endif
+
+#if !defined(UAUDIO_DEFAULT_MEMCPY)
+#include <cstdio>
+#include <string.h>
+#endif
+
+namespace uaudio
+{
+#if !defined(UAUDIO_DEFAULT_HASH)
+#define UAUDIO_DEFAULT_HASH Hash
+#define UAUDIO_DEFAULT_HASH_FUNCTION GetHash
+#endif
+
+#if !defined(UAUDIO_DEFAULT_ALLOCATOR)
+#define UAUDIO_DEFAULT_ALLOCATOR std::allocator
+#endif
+
+#if !defined(UAUDIO_DEFAULT_ALLOC)
+#define UAUDIO_DEFAULT_ALLOC malloc
+#endif
+
+#if !defined(UAUDIO_DEFAULT_FREE)
+#define UAUDIO_DEFAULT_FREE free
+#endif
+
+#if !defined(UAUDIO_DEFAULT_MEMCPY)
+#define UAUDIO_DEFAULT_MEMCPY memcpy
+#endif
 
 #if !defined(UAUDIO_DEFAULT_BUFFERSIZE)
 
-#define UAUDIO_DEFAULT_BUFFERSIZE uaudio::BUFFERSIZE::BUFFERSIZE_8192
+	constexpr BUFFERSIZE UAUDIO_DEFAULT_BUFFERSIZE = BUFFERSIZE::BUFFERSIZE_8192;
 
 #endif
 
-#define UAUDIO_MAX_PANNING 1.0f
-#define UAUDIO_MIN_PANNING (-1.0f)
+	constexpr float UAUDIO_MAX_PANNING = 1.0f;
+	constexpr float UAUDIO_MIN_PANNING = -1.0f;
 
-#define UAUDIO_MAX_VOLUME 1.0f
-#define UAUDIO_MIN_VOLUME (-1.0f)
+	constexpr float UAUDIO_MAX_VOLUME = 1.0f;
+	constexpr float UAUDIO_MIN_VOLUME = -1.0f;
 
 #if !defined(UAUDIO_DEFAULT_VOLUME)
 
-#define UAUDIO_DEFAULT_VOLUME UAUDIO_MAX_VOLUME
+	constexpr float UAUDIO_DEFAULT_VOLUME = UAUDIO_MAX_VOLUME;
 
 #endif
 
 #if !defined(UAUDIO_DEFAULT_PANNING)
 
-#define UAUDIO_DEFAULT_PANNING 0.0f
+	constexpr float UAUDIO_DEFAULT_PANNING = 0.0f;
 
 #endif
+}
