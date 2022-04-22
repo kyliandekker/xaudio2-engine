@@ -30,29 +30,29 @@ namespace uaudio
 		{
 			return a_Size / sizeof(uint32_t) * sizeof(uint16_t);
 		}
+
 		/// <summary>
 		/// Converts 24 bit pcm data to 16 bit pcm data.
 		/// </summary>
 		/// <param name="a_Data">The actual data.</param>
 		/// <param name="a_Size">The data size (will get changed)</param>
 		/// <returns></returns>
-		unsigned char *Convert24To16(unsigned char* a_Data, uint32_t& a_Size)
+		void Convert24To16(unsigned char* a_Data, unsigned char* a_Original_Data, uint32_t& a_Size)
 		{
-			uint16_t* array_16 = new uint16_t[a_Size];
-
 			// Determine the size of a 16bit data array.
 			// Chunk size divided by the size of a 24bit int (3) multiplied by the size of a 16bit int (2).
 			const uint32_t newSize = Calculate24To16Size(a_Size);
+
+			uint16_t* array_16 = reinterpret_cast<uint16_t*>(a_Data);
 
 			int i = 0;
 			for (uint32_t a = 0; a < a_Size; a += sizeof(uint24_t))
 			{
 				// Skip 1 bit every time since we go from 24bit to 16bit.
-				array_16[i] = *reinterpret_cast<uint16_t*>(a_Data + a + 1);
+				array_16[i] = *reinterpret_cast<uint16_t*>(a_Original_Data + a + 1);
 				i++;
 			}
 			a_Size = newSize;
-			return reinterpret_cast<unsigned char*>(array_16);
 		}
 
 		/// <summary>
@@ -61,20 +61,19 @@ namespace uaudio
 		/// <param name="a_Data">The actual data.</param>
 		/// <param name="a_Size">The data size (will get changed)</param>
 		/// <returns></returns>
-		unsigned char* Convert32To16(unsigned char* a_Data, uint32_t& a_Size)
+		void Convert32To16(unsigned char* a_Data, unsigned char* a_Original_Data, uint32_t& a_Size)
 		{
-			// TODO: Fix.
 			// Determine the size of a 16bit data array.
 			// Chunk size divided by the size of a 32bit int (4) multiplied by the size of a 16bit int (2).
 			uint32_t new_size = Calculate32To16Size(a_Size);
 
-			uint16_t* array_16 = new uint16_t[new_size];
+			uint16_t* array_16 = reinterpret_cast<uint16_t*>(a_Data);
 
 			int i = 0;
 			for (uint32_t a = 0; a < a_Size; a += sizeof(uint32_t))
 			{
 				// Add the size of a 32bit int (4) to move the data pointer.
-				float converted_value = *reinterpret_cast<float*>(a_Data + a);
+				float converted_value = *reinterpret_cast<float*>(a_Original_Data + a);
 
 				// Calc 32 to 16 bit int.
 				converted_value /= SQRT_TWO;
@@ -85,7 +84,6 @@ namespace uaudio
 				i++;
 			}
 			a_Size = new_size;
-			return reinterpret_cast<unsigned char*>(array_16);
 		}
 
 		/// <summary>

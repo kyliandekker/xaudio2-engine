@@ -280,21 +280,22 @@ namespace uaudio
 	            Chunk_Data* data_chunk_data = nullptr;
 
 	            const DATA_Chunk data_chunk = m_WaveFormat.GetChunkFromData<DATA_Chunk>(DATA_CHUNK_ID);
-	            uint32_t new_size = m_WaveFormat.GetChunkSize(DATA_CHUNK_ID);
+	            uint32_t data_chunk_size = m_WaveFormat.GetChunkSize(DATA_CHUNK_ID);
 
-                unsigned char* data = nullptr;
                 switch (a_WaveConfig.bitsPerSample)
                 {
 					case WAVE_BITS_PER_SAMPLE_16:
 	                {
 		                if (fmt_chunk.bitsPerSample == WAVE_BITS_PER_SAMPLE_24)
 		                {
-                            data = conversion::Convert24To16(data_chunk.data, new_size);
+                            data_chunk_data = reinterpret_cast<Chunk_Data*>(UAUDIO_DEFAULT_ALLOC(conversion::Calculate24To16Size(data_chunk_size) + sizeof(Chunk_Data)));
+                            conversion::Convert24To16(reinterpret_cast<unsigned char*>(utils::add(data_chunk_data, sizeof(Chunk_Data))), data_chunk.data, data_chunk_size);
                             break;
 		                }
                         else if (fmt_chunk.bitsPerSample == WAVE_BITS_PER_SAMPLE_32)
                         {
-                            data = conversion::Convert32To16(data_chunk.data, new_size);
+                            data_chunk_data = reinterpret_cast<Chunk_Data*>(UAUDIO_DEFAULT_ALLOC(conversion::Calculate32To16Size(data_chunk_size) + sizeof(Chunk_Data)));
+                            conversion::Convert32To16(reinterpret_cast<unsigned char*>(utils::add(data_chunk_data, sizeof(Chunk_Data))), data_chunk.data, data_chunk_size);
                             break;
                         }
                         break;
@@ -302,12 +303,10 @@ namespace uaudio
                     default: return;
                 }
 
-                data_chunk_data = reinterpret_cast<Chunk_Data*>(UAUDIO_DEFAULT_ALLOC(new_size + sizeof(Chunk_Data)));
-                if (data_chunk_data != nullptr && data != nullptr)
+                if (data_chunk_data != nullptr)
                 {
                     UAUDIO_DEFAULT_MEMCPY(data_chunk_data->chunk_id, DATA_CHUNK_ID, CHUNK_ID_SIZE);
-                    data_chunk_data->chunkSize = new_size;
-                    UAUDIO_DEFAULT_MEMCPY(utils::add(data_chunk_data, sizeof(Chunk_Data)), data, new_size);
+                    data_chunk_data->chunkSize = data_chunk_size;
                 }
                 fmt_chunk.audioFormat = WAV_FORMAT_PCM;
                 fmt_chunk.bitsPerSample = a_WaveConfig.bitsPerSample;
