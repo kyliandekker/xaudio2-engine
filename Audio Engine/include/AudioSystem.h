@@ -16,12 +16,18 @@
 
 #endif
 
+enum class AUDIO_MODE
+{
+	AUDIO_MODE_NORMAL,
+	AUDIO_MODE_THREADED,
+};
+
 namespace uaudio
 {
 	class AudioSystem
 	{
 	public:
-		AudioSystem();
+		AudioSystem(AUDIO_MODE a_AudioMode = AUDIO_MODE::AUDIO_MODE_THREADED);
 		virtual ~AudioSystem();
 
 		// Basic default methods for the system.
@@ -51,7 +57,12 @@ namespace uaudio
 		xaudio2::XAudio2Channel* GetChannel(ChannelHandle a_ChannelHandle);
 
 	private:
+		AUDIO_MODE m_AudioMode = AUDIO_MODE::AUDIO_MODE_THREADED;
+
 		void Update();
+		void UpdateChannels();
+
+		std::thread m_Thread;
 
 		IXAudio2 *m_Engine = nullptr;
 		IXAudio2MasteringVoice *m_MasterVoice = nullptr;

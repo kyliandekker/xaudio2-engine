@@ -65,6 +65,8 @@ namespace uaudio::xaudio2
 
 		m_CurrentPos = a_Sound.GetStartPosition();
 		HRESULT hr;
+		if (m_SourceVoice != nullptr)
+			Stop();
 		if (m_SourceVoice == nullptr)
 		{
 			WAVEFORMATEX wave;
@@ -131,15 +133,22 @@ namespace uaudio::xaudio2
 	/// </summary>
 	void XAudio2Channel::Stop()
 	{
+		while (!m_DataBuffers.empty())
+		{
+			unsigned char* buffer = m_DataBuffers.front();
+			UAUDIO_DEFAULT_FREE(buffer);
+			m_DataBuffers.pop();
+		}
 		// Stop the source voice.
-		m_SourceVoice->Stop();
+		if (m_SourceVoice != nullptr)
+		{
+			m_SourceVoice->Stop();
+			m_SourceVoice->FlushSourceBuffers();
+
+			m_SourceVoice->DestroyVoice();
+			m_SourceVoice = nullptr;
+		}
 		m_IsPlaying = false;
-
-		// Flush the buffers.
-		m_SourceVoice->FlushSourceBuffers();
-
-		m_SourceVoice->DestroyVoice();
-		m_SourceVoice = nullptr;
 
 		m_CurrentPos = IsInUse() ? m_CurrentSound->GetStartPosition() : 0;
 	}
@@ -171,21 +180,21 @@ namespace uaudio::xaudio2
 		const FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
 		switch (a_TimeUnit)
 		{
-		case TIMEUNIT::TIMEUNIT_MS:
-		{
-			return utils::PosToMilliseconds(m_CurrentPos, fmt_chunk.byteRate);
-			break;
-		}
-		case TIMEUNIT::TIMEUNIT_S:
-		{
-			return utils::PosToSeconds(m_CurrentPos, fmt_chunk.byteRate);
-			break;
-		}
-		case TIMEUNIT::TIMEUNIT_POS:
-		{
-			return static_cast<float>(m_CurrentPos);
-			break;
-		}
+			case TIMEUNIT::TIMEUNIT_MS:
+			{
+				return utils::PosToMilliseconds(m_CurrentPos, fmt_chunk.byteRate);
+				break;
+			}
+			case TIMEUNIT::TIMEUNIT_S:
+			{
+				return utils::PosToSeconds(m_CurrentPos, fmt_chunk.byteRate);
+				break;
+			}
+			case TIMEUNIT::TIMEUNIT_POS:
+			{
+				return static_cast<float>(m_CurrentPos);
+				break;
+			}
 		}
 
 		return 0.0f;
@@ -193,8 +202,12 @@ namespace uaudio::xaudio2
 
 	uint32_t XAudio2Channel::GetBufferSize() const
 	{
-		const FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
-		return fmt_chunk.bitsPerSample / 8;
+		if (m_CurrentSound != nullptr)
+		{
+			const FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
+			return fmt_chunk.bitsPerSample / 8;
+		}
+		else return 0;
 	}
 
 	void XAudio2Channel::PlayRanged(uint32_t a_StartPos, uint32_t a_Size)

@@ -33,7 +33,6 @@ namespace uaudio
 			bool GetActive() const;
 			void Play();
 			void Pause();
-			void Stop();
 			void Update();
 			void SetPos(uint32_t a_StartPos);
 			float GetPos(TIMEUNIT a_TimeUnit) const;
@@ -62,6 +61,7 @@ namespace uaudio
 
 			const WaveFile& GetSound() const;
 		private:
+			void Stop();
 			bool m_Looping = false;
 
 			std::queue<unsigned char*> m_DataBuffers;

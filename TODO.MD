@@ -1,12 +1,11 @@
 # TODO
 
 - [ ] SoundSheet in audio framework.
-- [ ] Make vectors and other std data structures use the allocator.
-- [ ] Make malloc and stuff use the allocator.
-- [ ] Check waveconverter for possible memory leaks.
+- [X] Make vectors and other std data structures use the allocator.
+- [X] Make malloc and stuff use the allocator.
 - [ ] Add a shit ton of ASSERTs.
-- [ ] invalid sizes in unit test for mono to stereo and reverse.
-- [ ] byte volume unit test.
+- [ ] Invalid sizes in unit test for mono to stereo and reverse.
+- [ ] Byte volume unit test.
 - [ ] conversion unit test.
 - [X] Set looping point and starting point (with custom slider). https://github.com/ocornut/imgui/issues/76
 - [X] Wave settings (load specific chunks only).

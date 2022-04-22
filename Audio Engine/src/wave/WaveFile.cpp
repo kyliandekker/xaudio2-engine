@@ -253,7 +253,7 @@ namespace uaudio
     /// Sets looping points if that has been stated in the config.
     /// </summary>
     /// <param name="a_WaveConfig">The wave config.</param>
-    void WaveFile::LoopPositionsConfig(const Wave_Config& a_WaveConfig)
+    void WaveFile::LoopPositionsConfig(const Wave_Config& )
     {
         SetStartPosition(0);
         SetEndPosition(m_WaveFormat.GetChunkSize(DATA_CHUNK_ID));

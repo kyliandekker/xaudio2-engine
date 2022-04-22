@@ -39,8 +39,6 @@ void SoundsTool::RenderSound(UAUDIO_DEFAULT_HASH a_SoundHash)
             if (&channel->GetSound() == a_WaveFile)
             {
                 channel->RemoveSound();
-                channel->ResetPos();
-                channel->Stop();
             }
         }
         m_SoundSystem.UnloadSound(a_SoundHash);

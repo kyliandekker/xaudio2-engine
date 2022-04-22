@@ -9,7 +9,7 @@
 
 int main(int, char *[])
 {
-	uaudio::AudioSystem aSys;
+	uaudio::AudioSystem aSys(AUDIO_MODE::AUDIO_MODE_THREADED);
 	aSys.Start();
 	uaudio::SoundSystem sSys;
 	AudioSDLWindow audioSDLWindow = AudioSDLWindow(aSys, sSys);

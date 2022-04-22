@@ -47,7 +47,7 @@ namespace uaudio
 
 		Wave_Config &operator=(const Wave_Config &rhs);
 
-		std::vector<const char *> chunksToLoad = {UAUDIO_DEFAULT_CHUNKS};
+		std::vector<const char *, UAUDIO_DEFAULT_ALLOCATOR<const char *>> chunksToLoad = {UAUDIO_DEFAULT_CHUNKS};
 		uint16_t numChannels = UAUDIO_DEFAULT_CHANNELS;
 		uint16_t bitsPerSample = UAUDIO_DEFAULT_BITS_PER_SAMPLE;
 		LOOP_POINT_SETTING setLoopPoints = UAUDIO_DEFAULT_SET_LOOP_POINTS;

@@ -9,7 +9,7 @@
 
 namespace uaudio
 {
-	AudioSystem::AudioSystem()
+	AudioSystem::AudioSystem(AUDIO_MODE a_AudioMode) : m_AudioMode(a_AudioMode)
 	{
 		HRESULT hr;
 		if (FAILED(hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
@@ -54,15 +54,13 @@ namespace uaudio
 	void AudioSystem::Update()
 	{
 		while (m_Active)
-			if (m_Playback)
-				for (int32_t i = static_cast<int32_t>(ChannelSize() - 1); i > -1; i--)
-					m_Channels[i].Update();
+			UpdateChannels();
 	}
 
 	/// <summary>
-	/// Updates the audio.
+	/// Updates the channels.
 	/// </summary>
-	void AudioSystem::UpdateNonExtraThread()
+	void AudioSystem::UpdateChannels()
 	{
 		for (int32_t i = static_cast<int32_t>(ChannelSize() - 1); i > -1; i--)
 			if (!m_Channels[i].IsInUse())
@@ -71,6 +69,16 @@ namespace uaudio
 		if (m_Playback)
 			for (int32_t i = static_cast<int32_t>(ChannelSize() - 1); i > -1; i--)
 				m_Channels[i].Update();
+	}
+
+	/// <summary>
+	/// Updates the audio.
+	/// </summary>
+	void AudioSystem::UpdateNonExtraThread()
+	{
+		if (m_AudioMode != AUDIO_MODE::AUDIO_MODE_NORMAL)
+			return;
+		UpdateChannels();
 	}
 
 	void AudioSystem::SetPlaybackStatus(bool a_Playback)
@@ -84,7 +92,8 @@ namespace uaudio
 	void AudioSystem::Stop()
 	{
 		m_Active = false;
-		// m_Thread.join();
+		if (m_AudioMode == AUDIO_MODE::AUDIO_MODE_THREADED)
+			m_Thread.join();
 	}
 
 	/// <summary>
@@ -93,7 +102,8 @@ namespace uaudio
 	void AudioSystem::Start()
 	{
 		m_Active = true;
-		// m_Thread = std::thread(&AudioSystem::Update, this);
+		if (m_AudioMode == AUDIO_MODE::AUDIO_MODE_THREADED)
+			m_Thread = std::thread(&AudioSystem::Update, this);
 	}
 
 	/// <summary>
