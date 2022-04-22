@@ -655,9 +655,7 @@ TEST_CASE("Audio Loading")
 {
 	SUBCASE("Existing file")
 	{
-		uaudio::logger::print_cyan();
-		printf("[OPENING EXISTING VALID FILE]\n");
-		uaudio::logger::print_white();
+		uaudio::logger::log_info("%s[OPENING EXISTING VALID FILE]%s", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 
 		uaudio::WaveFormat format;
 		FILE *file = nullptr;
@@ -679,36 +677,36 @@ TEST_CASE("Audio Loading")
 
 		CHECK(format.GetChunkSize(uaudio::DATA_CHUNK_ID) == 39962928);
 
-		uaudio::logger::print_green();
-		printf("SUCCESS!\n");
-		uaudio::logger::print_white();
+		uaudio::logger::log_success("%s[OPENING EXISTING VALID FILE]%s\n", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 	}
 	SUBCASE("Existing invalid file")
 	{
-		uaudio::logger::print_cyan();
-		printf("[OPENING EXISTING INVALID FILE]\n");
-		uaudio::logger::print_white();
+		uaudio::logger::log_info("%s[OPENING EXISTING INVALID FILE]%s", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 
 		uaudio::WaveFormat format;
 		FILE *file = nullptr;
 		uaudio::WaveReader::LoadSound("Broken.wav", format, file);
 
-		uaudio::logger::print_green();
-		printf("SUCCESS!\n");
-		uaudio::logger::print_white();
+		uaudio::logger::log_success("%s[OPENING EXISTING INVALID FILE]%s\n", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
+	}
+	SUBCASE("Existing invalid file 2")
+	{
+		uaudio::logger::log_info("%s[OPENING EXISTING INVALID FILE 2]%s", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
+
+		uaudio::WaveFormat format;
+		FILE *file = nullptr;
+		uaudio::WaveReader::LoadSound("Confused File.wav", format, file);
+
+		uaudio::logger::log_success("%s[OPENING EXISTING INVALID FILE 2]%s\n", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 	}
 	SUBCASE("Non-existing format")
 	{
-		uaudio::logger::print_cyan();
-		printf("[OPENING NON-EXISTENT format]\n");
-		uaudio::logger::print_white();
+		uaudio::logger::log_info("%s[OPENING NON-EXISTENT FILE]%s", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 
 		uaudio::WaveFormat format;
 		FILE *file = nullptr;
 		uaudio::WaveReader::LoadSound("test.wav", format, file);
 
-		uaudio::logger::print_green();
-		printf("SUCCESS!\n");
-		uaudio::logger::print_white();
+		uaudio::logger::log_success("%s[OPENING NON-EXISTENT FILE]%s\n", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 	}
 }

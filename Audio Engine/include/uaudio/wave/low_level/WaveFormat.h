@@ -4,14 +4,16 @@
 #include <string>
 #include <vector>
 
+#include <uaudio/wave/low_level/WaveReader.h>
+
 #include <uaudio/Includes.h>
 
 #include <uaudio/utils/Utils.h>
 
+#include <uaudio/Defines.h>
+
 namespace uaudio
 {
-	constexpr auto CHUNK_ID_SIZE = 4;
-
 #pragma pack(push, 1)
 	struct Chunk_Data
 	{
@@ -32,7 +34,11 @@ namespace uaudio
 
 		std::string m_FilePath;
 
+	private:
 		std::vector<Chunk_Data *, UAUDIO_DEFAULT_ALLOCATOR<Chunk_Data *>> m_Chunks;
+
+		friend class WaveReader;
+	public:
 
 		void RemoveChunk(const char *a_ChunkID)
 		{
@@ -42,6 +48,11 @@ namespace uaudio
 					UAUDIO_DEFAULT_FREE(m_Chunks[i]);
 					m_Chunks.erase(m_Chunks.begin() + i);
 				}
+		}
+
+		void AddChunk(Chunk_Data* a_ChunkData)
+		{
+			m_Chunks.push_back(a_ChunkData);
 		}
 
 		uint32_t GetChunkSize(const char *a_ChunkID) const

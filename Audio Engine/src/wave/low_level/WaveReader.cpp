@@ -2,6 +2,7 @@
 
 #include <uaudio/utils/Logger.h>
 #include <uaudio/utils/Utils.h>
+#include <uaudio/wave/low_level/WaveFormat.h>
 
 namespace uaudio
 {
@@ -75,6 +76,7 @@ namespace uaudio
 			}
 
 			bool get_chunk = false;
+			// Check if the chunk is in the config.
 			for (const auto &chunk_name : a_WaveConfig.chunksToLoad)
 				if (strncmp(&chunk_id[0], chunk_name, CHUNK_ID_SIZE) == 0)
 					get_chunk = true;
@@ -94,7 +96,7 @@ namespace uaudio
 				else
 					fseek(a_File, static_cast<long>(chunk_size), SEEK_CUR);
 
-				a_WaveFormat.m_Chunks.push_back(chunk_data);
+				a_WaveFormat.AddChunk(chunk_data);
 			}
 			else
 			{

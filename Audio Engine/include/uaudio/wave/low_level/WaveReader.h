@@ -3,10 +3,11 @@
 #include <complex>
 
 #include <uaudio/wave/high_level/WaveConfig.h>
-#include <uaudio/wave/low_level/WaveFormat.h>
 
 namespace uaudio
 {
+    class WaveFormat;
+
     enum class WAVE_LOADING_STATUS
     {
         STATUS_FAILED_OPENING_FILE,

@@ -5,6 +5,8 @@
 #include <uaudio/wave/low_level/WaveConverter.h>
 #include <uaudio/wave/low_level/WaveReader.h>
 
+#include "uaudio/wave/high_level/WaveChunks.h"
+
 namespace uaudio
 {
     WaveFile::WaveFile() = default;
@@ -209,10 +211,10 @@ namespace uaudio
                 if (data_chunk_data != nullptr && fmt_chunk_data != nullptr)
                 {
                     m_WaveFormat.RemoveChunk(FMT_CHUNK_ID);
-                    m_WaveFormat.m_Chunks.push_back(fmt_chunk_data);
+                    m_WaveFormat.AddChunk(fmt_chunk_data);
 
                     m_WaveFormat.RemoveChunk(DATA_CHUNK_ID);
-                    m_WaveFormat.m_Chunks.push_back(data_chunk_data);
+                    m_WaveFormat.AddChunk(data_chunk_data);
                 }
             }
     }
@@ -297,10 +299,10 @@ namespace uaudio
                 if (data_chunk_data != nullptr)
                 {
                     m_WaveFormat.RemoveChunk(FMT_CHUNK_ID);
-                    m_WaveFormat.m_Chunks.push_back(fmt_chunk_data);
+                    m_WaveFormat.AddChunk(fmt_chunk_data);
 
                     m_WaveFormat.RemoveChunk(DATA_CHUNK_ID);
-                    m_WaveFormat.m_Chunks.push_back(data_chunk_data);
+                    m_WaveFormat.AddChunk(data_chunk_data);
                 }
             }
     }

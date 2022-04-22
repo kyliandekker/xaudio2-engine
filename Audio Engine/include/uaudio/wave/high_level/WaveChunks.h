@@ -4,8 +4,8 @@
 
 // Necessary for memcpy, malloc, etc.
 #include <uaudio/Includes.h>
+#include <uaudio/Defines.h>
 
-#include <uaudio/wave/low_level/WaveFormat.h>
 #include <uaudio/utils/Utils.h>
 
 // http://soundfile.sapp.org/doc/WaveFormat/
@@ -17,47 +17,6 @@
 
 namespace uaudio
 {
-	// BLOCK ALIGN SETTINGS
-	constexpr uint16_t BLOCK_ALIGN_16_BIT_MONO = 2;
-	constexpr uint16_t BLOCK_ALIGN_24_BIT_MONO = 3;
-	constexpr uint16_t BLOCK_ALIGN_32_BIT_MONO = 4;
-	constexpr uint16_t BLOCK_ALIGN_16_BIT_STEREO = BLOCK_ALIGN_16_BIT_MONO * 2;
-	constexpr uint16_t BLOCK_ALIGN_24_BIT_STEREO = BLOCK_ALIGN_24_BIT_MONO * 2;
-	constexpr uint16_t BLOCK_ALIGN_32_BIT_STEREO = BLOCK_ALIGN_32_BIT_MONO * 2;
-
-	// BITS_PER_SAMPLE SETTINGS
-	constexpr uint16_t WAVE_BITS_PER_SAMPLE_8 = 8;
-	constexpr uint16_t WAVE_BITS_PER_SAMPLE_16 = 16;
-	constexpr uint16_t WAVE_BITS_PER_SAMPLE_24 = 24;
-	constexpr uint16_t WAVE_BITS_PER_SAMPLE_32 = 32;
-
-	// SAMPLE RATE SETTINGS
-	constexpr uint32_t WAVE_SAMPLE_RATE_44100 = 44100;
-	constexpr uint32_t WAVE_SAMPLE_RATE_48000 = 48000;
-	constexpr uint32_t WAVE_SAMPLE_RATE_88200 = 88200;
-	constexpr uint32_t WAVE_SAMPLE_RATE_192000 = 192000;
-
-	// MONO/STEREO.
-	constexpr uint16_t WAVE_CHANNELS_MONO = 1;
-	constexpr uint16_t WAVE_CHANNELS_STEREO = 2;
-
-	// WAV FORMATS.
-	constexpr uint16_t WAV_FORMAT_UNKNOWN = 1;
-	constexpr uint16_t WAV_FORMAT_PCM = 1;
-	constexpr uint16_t WAV_FORMAT_UNCOMPRESSED = 1;
-	constexpr uint16_t WAV_FORMAT_MICROSOFT_ADPCM = 2;
-	constexpr uint16_t WAV_FORMAT_ITU_G711_ALAW = 6;
-	constexpr uint16_t WAV_FORMAT_ITU_G711_ÂΜLAW = 7;
-	constexpr uint16_t WAV_FORMAT_IMA_ADPCM = 17;
-	constexpr uint16_t WAV_FORMAT_ITU_G723_ADPCM = 20;
-	constexpr uint16_t WAV_FORMAT_ITU_G723_ADPCM_YAMAHA = 20;
-	constexpr uint16_t WAV_FORMAT_YAMAHA = 20;
-	constexpr uint16_t WAV_FORMAT_GSM_610 = 49;
-	constexpr uint16_t WAV_FORMAT_ITU_G721_ADPCM = 64;
-	constexpr uint16_t WAV_FORMAT_MPEG = 80;
-	;
-
-	constexpr auto RIFF_CHUNK_ID = "RIFF";
 	/*
 	** The RIFF chunk goes a little something like this: TOTAL SIZE: 8 (chunkid and chunksize) + 4
 	** but the chunksize is actually everything from the riff chunk to the end of the file.
@@ -134,8 +93,6 @@ namespace uaudio
 	*/
 
 #pragma pack(push, 1)
-	constexpr auto FMT_CHUNK_ID = "fmt ";
-	constexpr auto FMT_CHUNK_FORMAT = "WAVE";
 	struct FMT_Chunk
 	{
 		FMT_Chunk(FMT_Chunk *a_DataBuffer)
@@ -179,7 +136,6 @@ namespace uaudio
 	**
 	*/
 
-	constexpr auto DATA_CHUNK_ID = "data";
 	struct DATA_Chunk
 	{
 		DATA_Chunk(DATA_Chunk *a_DataBuffer)
@@ -232,7 +188,6 @@ namespace uaudio
 	**
 	*/
 
-	constexpr auto ACID_CHUNK_ID = "acid";
 	struct ACID_Chunk
 	{
 		ACID_Chunk(ACID_Chunk *a_DataBuffer)
@@ -347,7 +302,6 @@ namespace uaudio
 	**
 	*/
 
-	constexpr auto BEXT_CHUNK_ID = "bext";
 	struct BEXT_Chunk
 	{
 		BEXT_Chunk(BEXT_Chunk *a_DataBuffer)
@@ -404,7 +358,6 @@ namespace uaudio
 	**
 	*/
 
-	constexpr auto FACT_CHUNK_ID = "fact";
 	struct FACT_Chunk
 	{
 		FACT_Chunk(FACT_Chunk *a_DataBuffer)
@@ -477,7 +430,6 @@ namespace uaudio
 	**
 	*/
 
-	constexpr auto CUE_CHUNK_ID = "cue ";
 	struct CUE_Chunk
 	{
 		CUE_Chunk(CUE_Chunk *a_DataBuffer)
@@ -678,7 +630,6 @@ namespace uaudio
 	**
 	*/
 
-	constexpr auto SMPL_CHUNK_ID = "smpl";
 	struct SMPL_Chunk
 	{
 		SMPL_Chunk(SMPL_Chunk *a_DataBuffer)
@@ -711,7 +662,6 @@ namespace uaudio
 		SMPL_Sample_Loop *samples = nullptr;
 	};
 
-	constexpr auto TLST_CHUNK_ID = "tlst";
 	struct TLST_Chunk
 	{
 		TLST_Chunk(TLST_Chunk *a_DataBuffer)

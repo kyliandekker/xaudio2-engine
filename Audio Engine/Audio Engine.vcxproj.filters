@@ -122,5 +122,8 @@
     <ClInclude Include="include\uaudio\allocator\UAudioAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\uaudio\Defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
