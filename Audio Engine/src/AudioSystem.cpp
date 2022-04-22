@@ -81,6 +81,10 @@ namespace uaudio
 		UpdateChannels();
 	}
 
+	/// <summary>
+	/// Sets the playback status.
+	/// </summary>
+	/// <param name="a_Playback">The playback status.</param>
 	void AudioSystem::SetPlaybackStatus(bool a_Playback)
 	{
 		m_Playback = a_Playback;

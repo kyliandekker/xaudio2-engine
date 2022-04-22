@@ -71,25 +71,25 @@ namespace uaudio
 
 #if !defined(UAUDIO_DEFAULT_BUFFERSIZE)
 
-	constexpr BUFFERSIZE UAUDIO_DEFAULT_BUFFERSIZE = BUFFERSIZE::BUFFERSIZE_8192;
+	#define UAUDIO_DEFAULT_BUFFERSIZE BUFFERSIZE::BUFFERSIZE_8192
 
 #endif
 
-	constexpr float UAUDIO_MAX_PANNING = 1.0f;
-	constexpr float UAUDIO_MIN_PANNING = -1.0f;
+	#define UAUDIO_MAX_PANNING 1.0f
+	#define UAUDIO_MIN_PANNING -1.0f
 
-	constexpr float UAUDIO_MAX_VOLUME = 1.0f;
-	constexpr float UAUDIO_MIN_VOLUME = -1.0f;
+	#define UAUDIO_MAX_VOLUME 1.0f
+	#define UAUDIO_MIN_VOLUME -1.0f
 
 #if !defined(UAUDIO_DEFAULT_VOLUME)
 
-	constexpr float UAUDIO_DEFAULT_VOLUME = UAUDIO_MAX_VOLUME;
+	#define UAUDIO_DEFAULT_VOLUME UAUDIO_MAX_VOLUME
 
 #endif
 
 #if !defined(UAUDIO_DEFAULT_PANNING)
 
-	constexpr float UAUDIO_DEFAULT_PANNING = 0.0f;
+	#define UAUDIO_DEFAULT_PANNING 0.0f
 
 #endif
 }

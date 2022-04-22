@@ -138,16 +138,16 @@ namespace uaudio
 	constexpr auto FMT_CHUNK_FORMAT = "WAVE";
 	struct FMT_Chunk
 	{
-		FMT_Chunk(FMT_Chunk *a_Data)
+		FMT_Chunk(FMT_Chunk *a_DataBuffer)
 		{
-			if (a_Data != nullptr)
+			if (a_DataBuffer != nullptr)
 			{
-				audioFormat = a_Data->audioFormat;
-				numChannels = a_Data->numChannels;
-				sampleRate = a_Data->sampleRate;
-				byteRate = a_Data->byteRate;
-				blockAlign = a_Data->blockAlign;
-				bitsPerSample = a_Data->bitsPerSample;
+				audioFormat = a_DataBuffer->audioFormat;
+				numChannels = a_DataBuffer->numChannels;
+				sampleRate = a_DataBuffer->sampleRate;
+				byteRate = a_DataBuffer->byteRate;
+				blockAlign = a_DataBuffer->blockAlign;
+				bitsPerSample = a_DataBuffer->bitsPerSample;
 			}
 		}
 		uint16_t audioFormat = 0;
@@ -182,11 +182,11 @@ namespace uaudio
 	constexpr auto DATA_CHUNK_ID = "data";
 	struct DATA_Chunk
 	{
-		DATA_Chunk(DATA_Chunk *a_Data)
+		DATA_Chunk(DATA_Chunk *a_DataBuffer)
 		{
-			if (a_Data != nullptr)
+			if (a_DataBuffer != nullptr)
 			{
-				data = reinterpret_cast<unsigned char *>(a_Data);
+				data = reinterpret_cast<unsigned char *>(a_DataBuffer);
 			}
 		}
 		unsigned char *data = nullptr;
@@ -235,18 +235,18 @@ namespace uaudio
 	constexpr auto ACID_CHUNK_ID = "acid";
 	struct ACID_Chunk
 	{
-		ACID_Chunk(ACID_Chunk *a_Data)
+		ACID_Chunk(ACID_Chunk *a_DataBuffer)
 		{
-			if (a_Data != nullptr)
+			if (a_DataBuffer != nullptr)
 			{
-				type_of_file = a_Data->type_of_file;
-				root_note = a_Data->root_note;
-				unknown1 = a_Data->unknown1;
-				unknown2 = a_Data->unknown2;
-				num_of_beats = a_Data->num_of_beats;
-				meter_denominator = a_Data->meter_denominator;
-				meter_numerator = a_Data->meter_numerator;
-				tempo = a_Data->tempo;
+				type_of_file = a_DataBuffer->type_of_file;
+				root_note = a_DataBuffer->root_note;
+				unknown1 = a_DataBuffer->unknown1;
+				unknown2 = a_DataBuffer->unknown2;
+				num_of_beats = a_DataBuffer->num_of_beats;
+				meter_denominator = a_DataBuffer->meter_denominator;
+				meter_numerator = a_DataBuffer->meter_numerator;
+				tempo = a_DataBuffer->tempo;
 			}
 		}
 		uint32_t type_of_file = 0x5;
@@ -350,25 +350,25 @@ namespace uaudio
 	constexpr auto BEXT_CHUNK_ID = "bext";
 	struct BEXT_Chunk
 	{
-		BEXT_Chunk(BEXT_Chunk *a_Data)
+		BEXT_Chunk(BEXT_Chunk *a_DataBuffer)
 		{
-			if (a_Data != nullptr)
+			if (a_DataBuffer != nullptr)
 			{
-				UAUDIO_DEFAULT_MEMCPY(description, a_Data->description, sizeof(description));
-				UAUDIO_DEFAULT_MEMCPY(originator, a_Data->originator, sizeof(originator));
-				UAUDIO_DEFAULT_MEMCPY(originator_reference, a_Data->originator_reference, sizeof(originator_reference));
-				UAUDIO_DEFAULT_MEMCPY(origination_date, a_Data->origination_date, sizeof(origination_date));
-				UAUDIO_DEFAULT_MEMCPY(origination_time, a_Data->origination_time, sizeof(origination_time));
-				time_reference_low = a_Data->time_reference_low;
-				time_reference_high = a_Data->time_reference_high;
-				version = a_Data->version;
-				UAUDIO_DEFAULT_MEMCPY(umid, a_Data->umid, sizeof(umid));
-				loudness_value = a_Data->loudness_value;
-				loudness_range = a_Data->loudness_range;
-				max_true_peak_level = a_Data->max_true_peak_level;
-				max_momentary_loudness = a_Data->max_momentary_loudness;
-				max_short_term_loudness = a_Data->max_short_term_loudness;
-				UAUDIO_DEFAULT_MEMCPY(reserved, a_Data->reserved, sizeof(reserved));
+				UAUDIO_DEFAULT_MEMCPY(description, a_DataBuffer->description, sizeof(description));
+				UAUDIO_DEFAULT_MEMCPY(originator, a_DataBuffer->originator, sizeof(originator));
+				UAUDIO_DEFAULT_MEMCPY(originator_reference, a_DataBuffer->originator_reference, sizeof(originator_reference));
+				UAUDIO_DEFAULT_MEMCPY(origination_date, a_DataBuffer->origination_date, sizeof(origination_date));
+				UAUDIO_DEFAULT_MEMCPY(origination_time, a_DataBuffer->origination_time, sizeof(origination_time));
+				time_reference_low = a_DataBuffer->time_reference_low;
+				time_reference_high = a_DataBuffer->time_reference_high;
+				version = a_DataBuffer->version;
+				UAUDIO_DEFAULT_MEMCPY(umid, a_DataBuffer->umid, sizeof(umid));
+				loudness_value = a_DataBuffer->loudness_value;
+				loudness_range = a_DataBuffer->loudness_range;
+				max_true_peak_level = a_DataBuffer->max_true_peak_level;
+				max_momentary_loudness = a_DataBuffer->max_momentary_loudness;
+				max_short_term_loudness = a_DataBuffer->max_short_term_loudness;
+				UAUDIO_DEFAULT_MEMCPY(reserved, a_DataBuffer->reserved, sizeof(reserved));
 			}
 		}
 		char description[256] = {};
@@ -407,11 +407,11 @@ namespace uaudio
 	constexpr auto FACT_CHUNK_ID = "fact";
 	struct FACT_Chunk
 	{
-		FACT_Chunk(FACT_Chunk *a_Data)
+		FACT_Chunk(FACT_Chunk *a_DataBuffer)
 		{
-			if (a_Data != nullptr)
+			if (a_DataBuffer != nullptr)
 			{
-				sample_length = a_Data->sample_length;
+				sample_length = a_DataBuffer->sample_length;
 			}
 		}
 		uint32_t sample_length = 0;
@@ -480,12 +480,12 @@ namespace uaudio
 	constexpr auto CUE_CHUNK_ID = "cue ";
 	struct CUE_Chunk
 	{
-		CUE_Chunk(CUE_Chunk *a_Data)
+		CUE_Chunk(CUE_Chunk *a_DataBuffer)
 		{
-			if (a_Data != nullptr)
+			if (a_DataBuffer != nullptr)
 			{
-				num_cue_points = a_Data->num_cue_points;
-				cue_points = reinterpret_cast<CUE_Point *>(utils::add(a_Data, sizeof(CUE_Chunk) - sizeof(cue_points)));
+				num_cue_points = a_DataBuffer->num_cue_points;
+				cue_points = reinterpret_cast<CUE_Point *>(utils::add(a_DataBuffer, sizeof(CUE_Chunk) - sizeof(cue_points)));
 			}
 		}
 
@@ -681,20 +681,20 @@ namespace uaudio
 	constexpr auto SMPL_CHUNK_ID = "smpl";
 	struct SMPL_Chunk
 	{
-		SMPL_Chunk(SMPL_Chunk *a_Data)
+		SMPL_Chunk(SMPL_Chunk *a_DataBuffer)
 		{
-			if (a_Data != nullptr)
+			if (a_DataBuffer != nullptr)
 			{
-				manufacturer = a_Data->manufacturer;
-				product = a_Data->product;
-				sample_period = a_Data->sample_period;
-				midi_unity_node = a_Data->midi_unity_node;
-				midi_pitch_fraction = a_Data->midi_pitch_fraction;
-				smpte_format = a_Data->smpte_format;
-				smpte_offset = a_Data->smpte_offset;
-				num_sample_loops = a_Data->num_sample_loops;
-				sampler_data = a_Data->sampler_data;
-				samples = reinterpret_cast<SMPL_Sample_Loop *>(utils::add(a_Data, sizeof(SMPL_Chunk) - sizeof(samples)));
+				manufacturer = a_DataBuffer->manufacturer;
+				product = a_DataBuffer->product;
+				sample_period = a_DataBuffer->sample_period;
+				midi_unity_node = a_DataBuffer->midi_unity_node;
+				midi_pitch_fraction = a_DataBuffer->midi_pitch_fraction;
+				smpte_format = a_DataBuffer->smpte_format;
+				smpte_offset = a_DataBuffer->smpte_offset;
+				num_sample_loops = a_DataBuffer->num_sample_loops;
+				sampler_data = a_DataBuffer->sampler_data;
+				samples = reinterpret_cast<SMPL_Sample_Loop *>(utils::add(a_DataBuffer, sizeof(SMPL_Chunk) - sizeof(samples)));
 			}
 		}
 
@@ -714,20 +714,20 @@ namespace uaudio
 	constexpr auto TLST_CHUNK_ID = "tlst";
 	struct TLST_Chunk
 	{
-		TLST_Chunk(TLST_Chunk *a_Data)
+		TLST_Chunk(TLST_Chunk *a_DataBuffer)
 		{
-			if (a_Data != nullptr)
+			if (a_DataBuffer != nullptr)
 			{
-				list = a_Data->list;
-				UAUDIO_DEFAULT_MEMCPY(name, a_Data->name, CHUNK_ID_SIZE);
-				type = a_Data->type;
-				trigger_on_1 = a_Data->trigger_on_1;
-				trigger_on_2 = a_Data->trigger_on_2;
-				trigger_on_3 = a_Data->trigger_on_3;
-				trigger_on_4 = a_Data->trigger_on_4;
-				func = a_Data->func;
-				extra = a_Data->extra;
-				extra_data = a_Data->extra_data;
+				list = a_DataBuffer->list;
+				UAUDIO_DEFAULT_MEMCPY(name, a_DataBuffer->name, CHUNK_ID_SIZE);
+				type = a_DataBuffer->type;
+				trigger_on_1 = a_DataBuffer->trigger_on_1;
+				trigger_on_2 = a_DataBuffer->trigger_on_2;
+				trigger_on_3 = a_DataBuffer->trigger_on_3;
+				trigger_on_4 = a_DataBuffer->trigger_on_4;
+				func = a_DataBuffer->func;
+				extra = a_DataBuffer->extra;
+				extra_data = a_DataBuffer->extra_data;
 			}
 		}
 

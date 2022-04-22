@@ -23,14 +23,14 @@ void SoundsTool::Render()
 void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
 {
     uaudio::WaveFile *a_WaveFile = m_SoundSystem.FindSound(a_SoundHash);
-    ImGui::Text("%s", a_WaveFile->GetSoundTitle());
+    ImGui::Text("%s", a_WaveFile->GetWaveFormat().m_FilePath.c_str());
 
-    std::string play_button_text = std::string(PLAY) + " Play##Play_Sound_" + a_WaveFile->GetSoundTitle();
+    std::string play_button_text = std::string(PLAY) + " Play##Play_Sound_" + a_WaveFile->GetWaveFormat().m_FilePath;
     if (ImGui::Button(play_button_text.c_str()))
         m_AudioSystem.Play(*a_WaveFile);
 
     ImGui::SameLine();
-    std::string remove_sound_text = std::string(MINUS) + " Unload##Unload_Sound_" + a_WaveFile->GetSoundTitle();
+    std::string remove_sound_text = std::string(MINUS) + " Unload##Unload_Sound_" + a_WaveFile->GetWaveFormat().m_FilePath;
     if (ImGui::Button(remove_sound_text.c_str()))
     {
         for (uint32_t i = 0; i < m_AudioSystem.ChannelSize(); i++)
@@ -44,7 +44,7 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
     }
 
     ImGui::SameLine();
-    std::string save_sound_text = std::string(SAVE) + " Save##Save_Sound_" + a_WaveFile->GetSoundTitle();
+    std::string save_sound_text = std::string(SAVE) + " Save##Save_Sound_" + a_WaveFile->GetWaveFormat().m_FilePath;
     if (ImGui::Button(save_sound_text.c_str()))
         SaveFile(a_WaveFile);
 
@@ -63,9 +63,9 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
         float start_position = static_cast<float>(a_WaveFile->GetStartPosition());
         float end_position = static_cast<float>(a_WaveFile->GetEndPosition());
         ImGui::Text("%s", std::string(
-                              uaudio::WaveFile::FormatDuration(uaudio::utils::PosToSeconds(a_WaveFile->GetStartPosition(), fmt_chunk.byteRate), false) +
+								uaudio::utils::FormatDuration(uaudio::utils::PosToSeconds(a_WaveFile->GetStartPosition(), fmt_chunk.byteRate), false) +
                               "/" +
-                              uaudio::WaveFile::FormatDuration(uaudio::utils::PosToSeconds(a_WaveFile->GetEndPosition(), fmt_chunk.byteRate), false))
+								uaudio::utils::FormatDuration(uaudio::utils::PosToSeconds(a_WaveFile->GetEndPosition(), fmt_chunk.byteRate), false))
                               .c_str());
         const uint32_t start_position_temp = static_cast<uint32_t>(start_position), end_position_temp = static_cast<uint32_t>(end_position);
         std::string range_slider_sound_name_text = "##Range_Slider_Sound_" + std::to_string(a_SoundHash);
@@ -320,11 +320,11 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
                         ShowValue("Type: ", std::to_string(smpl_chunk.samples[i].type).c_str());
                         ShowValue("Start: ", std::to_string(smpl_chunk.samples[i].start).c_str());
                         ShowValue("Start in time: ", std::string(
-                            uaudio::WaveFile::FormatDuration(uaudio::utils::PosToSeconds(smpl_chunk.samples[i].start * 2, fmt_chunk.byteRate), true))
+                            uaudio::utils::FormatDuration(uaudio::utils::PosToSeconds(smpl_chunk.samples[i].start * 2, fmt_chunk.byteRate), true))
                             .c_str());
                         ShowValue("End: ", std::to_string(smpl_chunk.samples[i].end).c_str());
                         ShowValue("End in time: ", std::string(
-                            uaudio::WaveFile::FormatDuration(uaudio::utils::PosToSeconds(smpl_chunk.samples[i].end * 2, fmt_chunk.byteRate), true))
+                            uaudio::utils::FormatDuration(uaudio::utils::PosToSeconds(smpl_chunk.samples[i].end * 2, fmt_chunk.byteRate), true))
                             .c_str());
                         ShowValue("Fraction: ", std::to_string(smpl_chunk.samples[i].fraction).c_str());
                         ShowValue("Play Count: ", std::to_string(smpl_chunk.samples[i].play_count).c_str());

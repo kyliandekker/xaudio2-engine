@@ -1,13 +1,12 @@
-﻿#include <wave/WaveConverter.h>
+﻿#include <uaudio/wave/low_level/WaveConverter.h>
 #include <array>
 #include <vector>
 
 #include "doctest.h"
-#include "utils/Logger.h"
-#include "wave/WaveChunks.h"
-#include "wave/WaveEffects.h"
-#include "wave/WaveFile.h"
-#include "wave/WaveReader.h"
+#include <uaudio/utils/Logger.h>
+#include <uaudio/wave/high_level/WaveChunks.h>
+#include <uaudio/wave/high_level/WaveFile.h>
+#include <uaudio/wave/low_level/WaveReader.h>
 
 void PRINT_ARRAY(const char *text, std::vector<unsigned char> dat)
 {
@@ -36,6 +35,8 @@ void random_mono_to_stereo(uint16_t block_align)
 	uint32_t size = (rand() % 10) + 1;
 	size *= block_align;
 
+	unsigned char* new_data = reinterpret_cast<unsigned char*>(malloc(uaudio::conversion::CalculateMonoToStereoSize(size)));
+
 	for (uint32_t i = 0; i < size; i++)
 		dat.push_back(rand() % 100);
 
@@ -63,11 +64,11 @@ void random_mono_to_stereo(uint16_t block_align)
 	PRINT_ARRAY("EXPECTED: ", EXPECTED);
 
 	CHECK(size == dat.size());
-	data = uaudio::conversion::ConvertMonoToStereo(data, size, block_align);
+	uaudio::conversion::ConvertMonoToStereo(new_data, data, size, block_align);
 	CHECK(size == EXPECTED.size());
 
 	for (uint32_t i = 0; i < size; i++)
-		CHECK(data[i] == EXPECTED[i]);
+		CHECK(new_data[i] == EXPECTED[i]);
 
 	PRINT_ARRAY("RESULT: ", EXPECTED);
 
@@ -83,6 +84,8 @@ void random_stereo_to_mono(uint16_t block_align)
 	std::vector<unsigned char> dat;
 	uint32_t size = (rand() % 10) + 1;
 	size *= block_align;
+
+	unsigned char* new_data = reinterpret_cast<unsigned char*>(malloc(uaudio::conversion::CalculateStereoToMonoSize(size)));
 
 	for (uint32_t i = 0; i < size; i++)
 		dat.push_back(rand() % 100);
@@ -106,11 +109,11 @@ void random_stereo_to_mono(uint16_t block_align)
 	PRINT_ARRAY("EXPECTED: ", EXPECTED);
 
 	CHECK(size == dat.size());
-	data = uaudio::conversion::ConvertStereoToMono(data, size, block_align);
+	uaudio::conversion::ConvertStereoToMono(new_data, data, size, block_align);
 	CHECK(size == EXPECTED.size());
 
 	for (uint32_t i = 0; i < size; i++)
-		CHECK(data[i] == EXPECTED[i]);
+		CHECK(new_data[i] == EXPECTED[i]);
 
 	PRINT_ARRAY("RESULT: ", EXPECTED);
 
@@ -126,9 +129,9 @@ TEST_CASE("Testing Hash Function")
 	{
 		uaudio::logger::log_info("%s[LOWERCASE AND UPPERCASE IN HASH FUNCTION]%s", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 
-		UAUDIO_DEFAULT_HASH stdStringA = UAUDIO_DEFAULT_HASH_FUNCTION(_stringLit.c_str());
-		UAUDIO_DEFAULT_HASH stdStringB = UAUDIO_DEFAULT_HASH_FUNCTION(_stringLit.c_str());
-		UAUDIO_DEFAULT_HASH charPtrA = UAUDIO_DEFAULT_HASH_FUNCTION(_charptr);
+		uaudio::UAUDIO_DEFAULT_HASH stdStringA = uaudio::UAUDIO_DEFAULT_HASH_FUNCTION(_stringLit.c_str());
+		uaudio::UAUDIO_DEFAULT_HASH stdStringB = uaudio::UAUDIO_DEFAULT_HASH_FUNCTION(_stringLit.c_str());
+		uaudio::UAUDIO_DEFAULT_HASH charPtrA = uaudio::UAUDIO_DEFAULT_HASH_FUNCTION(_charptr);
 
 		CHECK(stdStringA == stdStringB);
 		CHECK(stdStringB != charPtrA);
@@ -216,12 +219,12 @@ TEST_CASE("Testing Hash Function")
 			"Code Red & D'ort feat. Ceros - Chainsaw (Extended Mix).wav",
 		};
 
-		std::vector<UAUDIO_DEFAULT_HASH> hashes;
+		std::vector<uaudio::UAUDIO_DEFAULT_HASH> hashes;
 
 		hashes.reserve(tests.size());
 
 		for (size_t i = 0; i < tests.size(); i++)
-			hashes.push_back(UAUDIO_DEFAULT_HASH_FUNCTION(tests[i]));
+			hashes.push_back(uaudio::GetHash(tests[i]));
 
 		for (size_t i = 0; i < tests.size(); i++)
 		{
@@ -256,6 +259,8 @@ TEST_CASE("Audio Conversion")
 
 			uint32_t size = static_cast<uint32_t>(dat.size());
 
+			unsigned char* new_data = reinterpret_cast<unsigned char*>(malloc(uaudio::conversion::CalculateMonoToStereoSize(size)));
+
 			std::vector<unsigned char> EXPECTED = {
 				2,
 				0,
@@ -266,11 +271,11 @@ TEST_CASE("Audio Conversion")
 			PRINT_ARRAY("EXPECTED: ", EXPECTED);
 
 			CHECK(size == dat.size());
-			data = uaudio::conversion::ConvertMonoToStereo(data, size, block_align);
+			uaudio::conversion::ConvertMonoToStereo(new_data, data, size, block_align);
 			CHECK(size == EXPECTED.size());
 
 			for (uint32_t i = 0; i < size; i++)
-				CHECK(data[i] == EXPECTED[i]);
+				CHECK(new_data[i] == EXPECTED[i]);
 
 			PRINT_ARRAY("RESULT: ", EXPECTED);
 
@@ -294,6 +299,8 @@ TEST_CASE("Audio Conversion")
 
 			uint32_t size = static_cast<uint32_t>(dat.size());
 
+			unsigned char* new_data = reinterpret_cast<unsigned char*>(malloc(uaudio::conversion::CalculateMonoToStereoSize(size)));
+
 			std::vector<unsigned char> EXPECTED = {
 				2,
 				0,
@@ -306,11 +313,11 @@ TEST_CASE("Audio Conversion")
 			PRINT_ARRAY("EXPECTED: ", EXPECTED);
 
 			CHECK(size == dat.size());
-			data = uaudio::conversion::ConvertMonoToStereo(data, size, block_align);
+			uaudio::conversion::ConvertMonoToStereo(new_data, data, size, block_align);
 			CHECK(size == EXPECTED.size());
 
 			for (uint32_t i = 0; i < size; i++)
-				CHECK(data[i] == EXPECTED[i]);
+				CHECK(new_data[i] == EXPECTED[i]);
 
 			PRINT_ARRAY("RESULT: ", EXPECTED);
 
@@ -335,6 +342,8 @@ TEST_CASE("Audio Conversion")
 
 			uint32_t size = static_cast<uint32_t>(dat.size());
 
+			unsigned char* new_data = reinterpret_cast<unsigned char*>(malloc(uaudio::conversion::CalculateMonoToStereoSize(size)));
+
 			std::vector<unsigned char> EXPECTED = {
 				2,
 				0,
@@ -349,11 +358,11 @@ TEST_CASE("Audio Conversion")
 			PRINT_ARRAY("EXPECTED: ", EXPECTED);
 
 			CHECK(size == dat.size());
-			data = uaudio::conversion::ConvertMonoToStereo(data, size, block_align);
+			uaudio::conversion::ConvertMonoToStereo(new_data, data, size, block_align);
 			CHECK(size == EXPECTED.size());
 
 			for (uint32_t i = 0; i < size; i++)
-				CHECK(data[i] == EXPECTED[i]);
+				CHECK(new_data[i] == EXPECTED[i]);
 
 			PRINT_ARRAY("RESULT: ", EXPECTED);
 
@@ -396,6 +405,8 @@ TEST_CASE("Audio Conversion")
 
 			uint32_t size = static_cast<uint32_t>(dat.size());
 
+			unsigned char* new_data = reinterpret_cast<unsigned char*>(malloc(uaudio::conversion::CalculateStereoToMonoSize(size)));
+
 			std::vector<unsigned char> EXPECTED = {
 				2,
 				0,
@@ -404,11 +415,11 @@ TEST_CASE("Audio Conversion")
 			PRINT_ARRAY("EXPECTED: ", EXPECTED);
 
 			CHECK(size == dat.size());
-			data = uaudio::conversion::ConvertStereoToMono(data, size, block_align);
+			uaudio::conversion::ConvertStereoToMono(new_data, data, size, block_align);
 			CHECK(size == EXPECTED.size());
 
 			for (uint32_t i = 0; i < size; i++)
-				CHECK(data[i] == EXPECTED[i]);
+				CHECK(new_data[i] == EXPECTED[i]);
 
 			PRINT_ARRAY("RESULT: ", EXPECTED);
 
@@ -435,6 +446,8 @@ TEST_CASE("Audio Conversion")
 
 			uint32_t size = static_cast<uint32_t>(dat.size());
 
+			unsigned char* new_data = reinterpret_cast<unsigned char*>(malloc(uaudio::conversion::CalculateStereoToMonoSize(size)));
+
 			std::vector<unsigned char> EXPECTED = {
 				2,
 				0,
@@ -444,11 +457,11 @@ TEST_CASE("Audio Conversion")
 			PRINT_ARRAY("EXPECTED: ", EXPECTED);
 
 			CHECK(size == dat.size());
-			data = uaudio::conversion::ConvertStereoToMono(data, size, block_align);
+			uaudio::conversion::ConvertStereoToMono(new_data, data, size, block_align);
 			CHECK(size == EXPECTED.size());
 
 			for (uint32_t i = 0; i < size; i++)
-				CHECK(data[i] == EXPECTED[i]);
+				CHECK(new_data[i] == EXPECTED[i]);
 
 			PRINT_ARRAY("RESULT: ", EXPECTED);
 
@@ -477,6 +490,8 @@ TEST_CASE("Audio Conversion")
 
 			uint32_t size = static_cast<uint32_t>(dat.size());
 
+			unsigned char* new_data = reinterpret_cast<unsigned char*>(malloc(uaudio::conversion::CalculateStereoToMonoSize(size)));
+
 			std::vector<unsigned char> EXPECTED = {
 				2,
 				0,
@@ -487,11 +502,11 @@ TEST_CASE("Audio Conversion")
 			PRINT_ARRAY("EXPECTED: ", EXPECTED);
 
 			CHECK(size == dat.size());
-			data = uaudio::conversion::ConvertStereoToMono(data, size, block_align);
+			uaudio::conversion::ConvertStereoToMono(new_data, data, size, block_align);
 			CHECK(size == EXPECTED.size());
 
 			for (uint32_t i = 0; i < size; i++)
-				CHECK(data[i] == EXPECTED[i]);
+				CHECK(new_data[i] == EXPECTED[i]);
 
 			PRINT_ARRAY("RESULT: ", EXPECTED);
 

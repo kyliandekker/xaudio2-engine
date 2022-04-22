@@ -21,12 +21,8 @@ namespace uaudio
 
         ~WaveFile() = default;
 
-        const char *GetSoundTitle() const;
+        void Read(uint32_t a_StartingPoint, uint32_t &a_ElementCount, unsigned char *&a_DataBuffer) const;
 
-        void Read(uint32_t a_StartingPoint, uint32_t &a_ElementCount, unsigned char *&a_Buffer) const;
-
-        static float GetDuration(uint32_t a_ChunkSize, uint32_t a_ByteRate);
-        static std::string FormatDuration(float a_Duration, bool a_Milliseconds = true);
         bool IsEndOfBuffer(uint32_t a_StartingPoint) const;
 
         bool IsLooping() const;
@@ -44,10 +40,10 @@ namespace uaudio
         const WaveFormat &GetWaveFormat() const;
 
     protected:
-        void ConvertLoadedSound(const Wave_Config& a_WaveConfig);
-        void MonoStereoConfig(const Wave_Config& a_WaveConfig);
-        void LoopPositionsConfig(const Wave_Config& a_WaveConfig);
-        void BitsPerSampleConfig(const Wave_Config& a_WaveConfig);
+        void ConvertLoadedSound(const Wave_Config &a_WaveConfig);
+        void MonoStereoConfig(const Wave_Config &a_WaveConfig);
+        void LoopPositionsConfig(const Wave_Config &a_WaveConfig);
+        void BitsPerSampleConfig(const Wave_Config &a_WaveConfig);
 
         bool m_Looping = false;
         float m_Volume = UAUDIO_DEFAULT_VOLUME;

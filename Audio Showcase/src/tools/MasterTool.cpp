@@ -6,8 +6,6 @@
 #include <imgui/imgui_stdlib.h>
 #include <imgui/imgui_helpers.h>
 
-#include <uaudio/utils/Utils.h>
-
 MasterTool::MasterTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &a_SoundSystem) : BaseTool(0, "Actions", "Master Actions"), m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
 {
     const uaudio::BUFFERSIZE buffer_size = m_AudioSystem.GetBufferSize();
@@ -20,7 +18,7 @@ MasterTool::MasterTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &
         if (m_WaveConfig.bitsPerSample == m_BitsPerSampleOptions[i])
             m_SelectedBitsPerSample = i;
 
-    m_WaveConfig.numChannels = uaudio::UAUDIO_DEFAULT_CHANNELS;
+    m_WaveConfig.numChannels = 0;
 
     m_ChunkIds.push_back({uaudio::ACID_CHUNK_ID, false, false});
     m_ChunkIds.push_back({uaudio::BEXT_CHUNK_ID, false, false});

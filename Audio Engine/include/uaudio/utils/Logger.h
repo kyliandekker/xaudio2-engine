@@ -3,17 +3,19 @@
 #include <cassert>
 #include <stdio.h>
 
+#include <uaudio/Includes.h>
+
 namespace uaudio::logger
 {
 #if !defined(UAUDIO_COLOR_LOGGING)
 
-	constexpr uint16_t MAX_BUFFER_LOGGER = 256;
+	#define MAX_BUFFER_LOGGER 256
 
 #endif
 
 #if !defined(UAUDIO_COLOR_LOGGING)
 
-	constexpr bool UAUDIO_COLOR_LOGGING = true;
+	#define UAUDIO_COLOR_LOGGING true
 
 #endif
 

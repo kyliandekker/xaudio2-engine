@@ -9,7 +9,7 @@ namespace uaudio
 	/// </summary>
 	/// <param name="a_String">The string which will be counted.</param>
 	/// <returns>Sum of each character inside the string.</returns>
-	constexpr inline Hash GetHash(const char *a_String)
+	inline Hash GetHash(const char *a_String)
 	{
 		unsigned int value = 0;
 		const char *next = a_String;
@@ -24,7 +24,7 @@ namespace uaudio
 	/// </summary>
 	/// <param name="a_String">The string which will be counted.</param>
 	/// <returns>Sum of each character inside the string.</returns>
-	constexpr inline Hash GetHash(unsigned char *a_String)
+	inline Hash GetHash(unsigned char *a_String)
 	{
 		unsigned int value = 0;
 		unsigned char *next = a_String;

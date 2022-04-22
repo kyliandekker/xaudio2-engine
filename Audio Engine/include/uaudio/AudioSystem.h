@@ -17,7 +17,7 @@ namespace uaudio
 {
 #if !defined(UAUDIO_DEFAULT_NUM_CHANNELS)
 
-	constexpr uint32_t UAUDIO_DEFAULT_NUM_CHANNELS = 20;
+	#define UAUDIO_DEFAULT_NUM_CHANNELS 20
 
 #endif
 

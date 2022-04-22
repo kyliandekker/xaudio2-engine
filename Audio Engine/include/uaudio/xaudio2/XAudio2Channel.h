@@ -43,7 +43,7 @@ namespace uaudio
 			float GetPos(TIMEUNIT a_TimeUnit) const;
 			uint32_t GetBufferSize() const;
 			void PlayRanged(uint32_t a_StartPos, uint32_t a_Size);
-			void PlayBuffer(const unsigned char *a_Buffer, uint32_t a_Size) const;
+			void PlayBuffer(const unsigned char *a_DataBuffer, uint32_t a_Size) const;
 			void ResetPos();
 			void RemoveSound();
 
@@ -62,7 +62,7 @@ namespace uaudio
 			bool IsLooping() const;
 			void SetLooping(bool a_Looping);
 
-			void ApplyEffects(unsigned char *&a_Data, uint32_t a_BufferSize) const;
+			void ApplyEffects(unsigned char *&a_DataBuffer, uint32_t a_BufferSize) const;
 
 			const WaveFile &GetSound() const;
 

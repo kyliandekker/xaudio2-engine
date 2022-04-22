@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <string>
 
 namespace uaudio::utils
 {
@@ -28,4 +29,6 @@ namespace uaudio::utils
 	float MillisecondsToSeconds(float m_Milliseconds);
 	uint32_t SecondsToHours(float m_Seconds);
 	uint32_t SecondsToMinutes(float m_Seconds);
+	float GetDuration(uint32_t a_ChunkSize, uint32_t a_ByteRate);
+	std::string FormatDuration(float a_Duration, bool a_Milliseconds = true);
 }
