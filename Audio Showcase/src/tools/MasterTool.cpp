@@ -25,7 +25,6 @@ MasterTool::MasterTool(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &
     m_ChunkIds.push_back({uaudio::FACT_CHUNK_ID, false, false});
     m_ChunkIds.push_back({uaudio::CUE_CHUNK_ID, false, false});
     m_ChunkIds.push_back({uaudio::SMPL_CHUNK_ID, false, false});
-    m_ChunkIds.push_back({uaudio::TLST_CHUNK_ID, false, false});
 }
 
 void MasterTool::Render()

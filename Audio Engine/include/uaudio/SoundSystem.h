@@ -12,7 +12,7 @@ namespace uaudio
 	class SoundSystem
 	{
 	public:
-		UAUDIO_DEFAULT_HASH LoadSound(const char *a_Path, const char *a_Name, Wave_Config &a_WaveConfig);
+		UAUDIO_DEFAULT_HASH LoadSound(const char *a_Path, const char *a_Name, WaveConfig &a_WaveConfig);
 		void UnloadSound(const UAUDIO_DEFAULT_HASH hash);
 		WaveFile *FindSound(const UAUDIO_DEFAULT_HASH a_Hash);
 		bool DoesSoundExist(const UAUDIO_DEFAULT_HASH a_Hash) const;

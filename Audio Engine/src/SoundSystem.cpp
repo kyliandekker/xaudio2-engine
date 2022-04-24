@@ -13,7 +13,7 @@ namespace uaudio
 	/// <param name="a_Name">The name which will be hashed.</param>
 	/// <param name="a_WaveConfig">The config to load the file with.</param>
 	/// <returns>Returns a hash to the sound.</returns>
-	UAUDIO_DEFAULT_HASH SoundSystem::LoadSound(const char *a_Path, const char *a_Name, Wave_Config& a_WaveConfig)
+	UAUDIO_DEFAULT_HASH SoundSystem::LoadSound(const char *a_Path, const char *a_Name, WaveConfig &a_WaveConfig)
 	{
 		UAUDIO_DEFAULT_HASH hash = UAUDIO_DEFAULT_HASH_FUNCTION(a_Name);
 
@@ -44,7 +44,7 @@ namespace uaudio
 			return &m_Sounds[a_Hash];
 
 		logger::ASSERT(false, "Hash %i not found.", a_Hash);
-		logger::log_warning("<ResourceManager> Could not find requested sound with hash number %i. Using default sound instead.", a_Hash);
+		logger::log_warning("<SoundSystem> Could not find requested sound with hash number %i. Using default sound instead.", a_Hash);
 
 		return nullptr;
 	}
@@ -75,7 +75,7 @@ namespace uaudio
 	std::vector<WaveFile *, UAUDIO_DEFAULT_ALLOCATOR<WaveFile *>> SoundSystem::GetSounds()
 	{
 		std::vector<WaveFile *, UAUDIO_DEFAULT_ALLOCATOR<WaveFile *>> sounds;
-		for (auto & [hash, sound] : m_Sounds)
+		for (auto &[hash, sound] : m_Sounds)
 			sounds.push_back(&sound);
 
 		return sounds;
@@ -88,7 +88,7 @@ namespace uaudio
 	std::vector<UAUDIO_DEFAULT_HASH, UAUDIO_DEFAULT_ALLOCATOR<UAUDIO_DEFAULT_HASH>> SoundSystem::GetSoundHashes()
 	{
 		std::vector<UAUDIO_DEFAULT_HASH, UAUDIO_DEFAULT_ALLOCATOR<UAUDIO_DEFAULT_HASH>> sounds;
-		for (auto & [hash, sound] : m_Sounds)
+		for (auto &[hash, sound] : m_Sounds)
 			sounds.push_back(hash);
 
 		return sounds;

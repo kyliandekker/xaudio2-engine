@@ -24,7 +24,7 @@ void SoundsTool::Render()
 void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
 {
     uaudio::WaveFile *a_WaveFile = m_SoundSystem.FindSound(a_SoundHash);
-    ImGui::Text("%s", a_WaveFile->GetWaveFormat().m_FilePath.c_str());
+    ImGui::Text("%s", a_WaveFile->GetWaveFormat().m_FilePath);
 
     RenderPlot(a_SoundHash);
 
@@ -187,8 +187,8 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
         }
         if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::DATA_CHUNK_ID))
         {
-            const std::string chunk_data_text = "DATA##DATA_" + std::to_string(a_SoundHash);
-            if (ImGui::CollapsingHeader(chunk_data_text.c_str()))
+            const std::string WaveChunkData_text = "DATA##DATA_" + std::to_string(a_SoundHash);
+            if (ImGui::CollapsingHeader(WaveChunkData_text.c_str()))
             {
                 ImGui::Indent(IMGUI_INDENT);
                 ShowValue("Chunk ID: ", uaudio::DATA_CHUNK_ID);
@@ -343,29 +343,6 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
                         ImGui::Unindent(IMGUI_INDENT);
                     }
                 }
-                ImGui::Unindent(IMGUI_INDENT);
-            }
-        }
-        if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::TLST_CHUNK_ID))
-        {
-            const std::string chunk_smpl_text = "TLST##TLST_" + std::to_string(a_SoundHash);
-            if (ImGui::CollapsingHeader(chunk_smpl_text.c_str()))
-            {
-                ImGui::Indent(IMGUI_INDENT);
-                ShowValue("Chunk ID: ", uaudio::TLST_CHUNK_ID);
-                ShowValue("Chunk Size: ", std::to_string(a_WaveFile->GetWaveFormat().GetChunkSize(uaudio::TLST_CHUNK_ID)).c_str());
-
-                uaudio::TLST_Chunk tlst_chunk = a_WaveFile->GetWaveFormat().GetChunkFromData<uaudio::TLST_Chunk>(uaudio::TLST_CHUNK_ID);
-                ShowValue("List: ", std::to_string(tlst_chunk.list).c_str());
-                ShowValue("Name: ", std::string(reinterpret_cast<const char *>(tlst_chunk.name)).c_str());
-                ShowValue("Type: ", std::to_string(tlst_chunk.type).c_str());
-                ShowValue("Trigger on 1: ", std::to_string(tlst_chunk.trigger_on_1).c_str());
-                ShowValue("Trigger on 2: ", std::to_string(tlst_chunk.trigger_on_2).c_str());
-                ShowValue("Trigger on 3: ", std::to_string(tlst_chunk.trigger_on_3).c_str());
-                ShowValue("Trigger on 4: ", std::to_string(tlst_chunk.trigger_on_4).c_str());
-                ShowValue("Func: ", std::to_string(tlst_chunk.func).c_str());
-                ShowValue("Extra: ", std::to_string(tlst_chunk.extra).c_str());
-                ShowValue("Extra Data: ", std::to_string(tlst_chunk.extra_data).c_str());
                 ImGui::Unindent(IMGUI_INDENT);
             }
         }

@@ -74,7 +74,7 @@ private:
 		"Load Start & End Point"
 	};
 
-	uaudio::Wave_Config m_WaveConfig;
+	uaudio::WaveConfig m_WaveConfig;
 
 	std::vector<chunk_select> m_ChunkIds;
 	chunk_select m_SelectedChunk = { "", false, true };

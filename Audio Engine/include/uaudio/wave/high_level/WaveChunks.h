@@ -8,6 +8,27 @@
 
 #include <uaudio/utils/Utils.h>
 
+/*
+ * WHAT IS THIS FILE?
+ * This file contains default definitions for chunks that have been tested before.
+ * These are the chunks that the engine has default support for, meaning no user
+ * definitions are required for these chunks. Users can still define their own custom
+ * chunks in their own files. In order for that to work, the class needs a constructor with
+ * a pointer to the class type as argument:
+ *
+ * class Type
+ * {
+ *		Type(Type* type);
+ * }
+ *
+ * From there, the data can be read and processed accordingly.
+ */
+
+
+/*
+ * These are some sources I used for the chunks here.
+ */
+
 // http://soundfile.sapp.org/doc/WaveFormat/
 // https://www.kvraudio.com/forum/viewtopic.php?t=172636
 // https://tech.ebu.ch/docs/tech/tech3285.pdf
@@ -125,13 +146,13 @@ namespace uaudio
 	** signed values. For example a 16-bit sample can range from -32,768 to +32,767 with a mid-point (silence)
 	** at 0.
 	**
-	** 4 bytes						Chunk ID.
+	** 4 bytes (char array)			Chunk ID.
 	**									Char array saying 'data' (0x64617461).
 
 	** 4 bytes (long)				Chunk Size.
 	**									Length of chunk starting at next byte.
 	**
-	** ? bytes (?)					Data:
+	** ? bytes (unsigned char)		Data:
 	**									can be 24-bit integers, 16-bit integers, 8-bit integers or floats.
 	**
 	*/
@@ -142,6 +163,7 @@ namespace uaudio
 		{
 			if (a_DataBuffer != nullptr)
 			{
+				// data is a pointer to everything after the data header.
 				data = reinterpret_cast<unsigned char *>(a_DataBuffer);
 			}
 		}
@@ -151,7 +173,7 @@ namespace uaudio
 	/*
 	** The acid chunk goes a little something like this: TOTAL SIZE: 24 + 8 (chunkid and chunksize)
 	**
-	** 4 bytes						Chunk ID.
+	** 4 bytes (char array)			Chunk ID.
 	**									Char array saying 'acid'.
 
 	** 4 bytes (long)				Chunk Size.
@@ -218,22 +240,22 @@ namespace uaudio
 	** The bext chunk goes a little something like this: TOTAL SIZE: 602/604 + 8 (chunkid and chunksize)
 	** Broadcast Wave Format (BWF) Broadcast Extension Chunk
 	**
-	** 4 bytes						Chunk ID.
+	** 4 bytes (char array)			Chunk ID.
 	**									Char array saying 'bext'.
 
 	** 4 bytes (long)				Chunk Size.
 	**									Length of chunk starting at next byte.
 	**
-	** 256 bytes (char * 256)		Description.
+	** 256 bytes (char array)		Description.
 	**									Description of the file.
 	**
-	** 32 bytes (char * 32)			Originator/Producer.
+	** 32 bytes (char array)		Originator/Producer.
 	**									Contains the name of the originator/ producer of the audio file.
 	**
-	** 32 bytes (char * 32)			Originator Reference.
+	** 32 bytes (char array)		Originator Reference.
 	**									Unambiguous reference allocated by the originating organization.
 	**
-	** 10 bytes (char * 10)			Origination date/date.
+	** 10 bytes (char array)		Origination date/date.
 	**									The date of creation of the audio sequence.
 	**										The format shall be « ‘,year’,-,’month,’-‘,day,’»
 	**										with 4 characters for the year and 2 characters per other item.
@@ -244,7 +266,7 @@ namespace uaudio
 	**												that one of the following characters be used:
 	**												‘-’ hyphen ‘_’ underscore ‘:’ colon ‘ ’ space ‘.’ stop
 	**
-	** 8 bytes (char * 8)			Origination time/time.
+	** 8 bytes (char array)			Origination time/time.
 	**									Contains the time of creation of the audio sequence.
 	**										The format shall be « ‘hour’-‘minute’-‘second’» with 2 characters per item.
 	**											Hour is defined from 0 to 23.
@@ -271,7 +293,7 @@ namespace uaudio
 	**									information. For Version 1 it shall be set to 0001h and for Version 2 it
 	**									shall be set to 0002h.
 	**
-	** 64 bytes (uchar * 64)		UMID/Unique Material Identifier.
+	** 64 bytes (uchar array)		UMID/Unique Material Identifier.
 	**									Contains a UMID (Unique Material Identifier) to standard
 	**									SMPTE 330M [1]. If only a 32 byte "basic UMID" is used, the last 32 bytes
 	**									should be set to zero. (The length of the UMID is given internally.)
@@ -296,7 +318,7 @@ namespace uaudio
 	**									A 16-bit signed integer, equal to round(100x the highest value of the
 	**									Short-term Loudness Level of the file in LUFS).
 	**
-	** 180 bytes (char * 180)		Reserved.
+	** 180 bytes (char array)		Reserved.
 	** 									180 bytes reserved for extension. If the Version field is set to 0001h or
 	**									0002h, these 180 bytes shall be set to a NULL (zero) value.
 	**
@@ -345,7 +367,7 @@ namespace uaudio
 	/*
 	** The fact chunk goes a little something like this: TOTAL SIZE: 4 + 8 (chunkid and chunksize)
 	**
-	** 4 bytes						Chunk ID.
+	** 4 bytes (char array)			Chunk ID.
 	**									Char array saying 'fact' (0x66616374).
 
 	** 4 bytes (long)				Chunk Size.
@@ -420,7 +442,7 @@ namespace uaudio
 	/*
 	**
 	**
-	** 4 bytes						Chunk ID.
+	** 4 bytes (char array)			Chunk ID.
 	**									Char array saying 'cue ' (0x63756520).
 	** 4 bytes (long)				Chunk Size.
 	**									Length of chunk starting at next byte.
@@ -437,6 +459,8 @@ namespace uaudio
 			if (a_DataBuffer != nullptr)
 			{
 				num_cue_points = a_DataBuffer->num_cue_points;
+
+				// cue_points is a pointer to everything after the cue_chunk header and the num_cue_points field.
 				cue_points = reinterpret_cast<CUE_Point *>(utils::add(a_DataBuffer, sizeof(CUE_Chunk) - sizeof(cue_points)));
 			}
 		}
@@ -494,7 +518,7 @@ namespace uaudio
 	/*
 	**
 	**
-	** 4 bytes						Chunk ID.
+	** 4 bytes (char array)			Chunk ID.
 	**									Char array saying 'smpl' (0x736D706C).
 	** 4 bytes (long)				Chunk Size (36 + (Num Sample Loops * 24) + Sampler Data).
 	**									Length of chunk starting at next byte.
@@ -645,6 +669,8 @@ namespace uaudio
 				smpte_offset = a_DataBuffer->smpte_offset;
 				num_sample_loops = a_DataBuffer->num_sample_loops;
 				sampler_data = a_DataBuffer->sampler_data;
+
+				// samples is a pointer to the smpl_chunk header and everything before the samples field.
 				samples = reinterpret_cast<SMPL_Sample_Loop *>(utils::add(a_DataBuffer, sizeof(SMPL_Chunk) - sizeof(samples)));
 			}
 		}
@@ -660,37 +686,6 @@ namespace uaudio
 		uint32_t sampler_data = 0;
 
 		SMPL_Sample_Loop *samples = nullptr;
-	};
-
-	struct TLST_Chunk
-	{
-		TLST_Chunk(TLST_Chunk *a_DataBuffer)
-		{
-			if (a_DataBuffer != nullptr)
-			{
-				list = a_DataBuffer->list;
-				UAUDIO_DEFAULT_MEMCPY(name, a_DataBuffer->name, CHUNK_ID_SIZE);
-				type = a_DataBuffer->type;
-				trigger_on_1 = a_DataBuffer->trigger_on_1;
-				trigger_on_2 = a_DataBuffer->trigger_on_2;
-				trigger_on_3 = a_DataBuffer->trigger_on_3;
-				trigger_on_4 = a_DataBuffer->trigger_on_4;
-				func = a_DataBuffer->func;
-				extra = a_DataBuffer->extra;
-				extra_data = a_DataBuffer->extra_data;
-			}
-		}
-
-		uint32_t list = 0;
-		unsigned char name[CHUNK_ID_SIZE] = {};
-		uint32_t type = 0;
-		uint8_t trigger_on_1 = 0;
-		uint8_t trigger_on_2 = 0;
-		uint8_t trigger_on_3 = 0;
-		uint8_t trigger_on_4 = 0;
-		uint32_t func = 0;
-		uint32_t extra = 0;
-		uint32_t extra_data = 0;
 	};
 #pragma pack(pop)
 }

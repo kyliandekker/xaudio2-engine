@@ -43,6 +43,7 @@
     <ClInclude Include="include\uaudio\wave\high_level\WaveChunks.h" />
     <ClInclude Include="include\uaudio\wave\high_level\WaveConfig.h" />
     <ClInclude Include="include\uaudio\wave\high_level\WaveFile.h" />
+    <ClInclude Include="include\uaudio\wave\low_level\WaveChunkData.h" />
     <ClInclude Include="include\uaudio\wave\low_level\WaveConverter.h" />
     <ClInclude Include="include\uaudio\wave\low_level\WaveEffects.h" />
     <ClInclude Include="include\uaudio\wave\low_level\WaveFormat.h" />

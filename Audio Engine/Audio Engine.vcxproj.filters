@@ -119,5 +119,8 @@
     <ClInclude Include="include\uaudio\Defines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\uaudio\wave\low_level\WaveChunkData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

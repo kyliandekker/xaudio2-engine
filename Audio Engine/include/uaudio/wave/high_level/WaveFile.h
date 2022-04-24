@@ -14,7 +14,7 @@ namespace uaudio
     {
     public:
         WaveFile();
-        WaveFile(const char *a_FilePath, const Wave_Config &a_WaveConfig);
+        WaveFile(const char *a_FilePath, const WaveConfig &a_WaveConfig);
         WaveFile(const WaveFile &rhs);
 
         WaveFile &operator=(const WaveFile &rhs);
@@ -40,11 +40,6 @@ namespace uaudio
         const WaveFormat &GetWaveFormat() const;
 
     protected:
-        void ConvertLoadedSound(const Wave_Config &a_WaveConfig);
-        void MonoStereoConfig(const Wave_Config &a_WaveConfig);
-        void LoopPositionsConfig(const Wave_Config &a_WaveConfig);
-        void BitsPerSampleConfig(const Wave_Config &a_WaveConfig);
-
         bool m_Looping = false;
         float m_Volume = UAUDIO_DEFAULT_VOLUME;
 

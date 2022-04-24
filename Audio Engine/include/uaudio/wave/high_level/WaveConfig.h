@@ -31,12 +31,22 @@ namespace uaudio
 
 #endif
 
-	struct Wave_Config
+	/*
+	 * WHAT IS THIS FILE?
+	 * This wave config is used in the wave reader. It contains settings related to the wave loading.
+	 * Currently there are these settings:
+		* Which chunks to load (in a vector of const char*)
+		* How many channels the file should have (stereo or mono)
+		* How many bits per sample the file should have (16-bit, 24-bit, 32-bit)
+		* If the file needs to load loop points and set them automatically.
+	 * Conversion will take place if a file does not have these settings present.
+	 */
+	struct WaveConfig
 	{
-		Wave_Config();
-		Wave_Config(const Wave_Config &rhs);
+		WaveConfig();
+		WaveConfig(const WaveConfig &rhs);
 
-		Wave_Config &operator=(const Wave_Config &rhs);
+		WaveConfig &operator=(const WaveConfig &rhs);
 
 		std::vector<const char *, UAUDIO_DEFAULT_ALLOCATOR<const char *>> chunksToLoad = {UAUDIO_DEFAULT_CHUNKS};
 		uint16_t numChannels = UAUDIO_DEFAULT_CHANNELS;

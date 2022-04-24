@@ -4,12 +4,12 @@
 
 namespace uaudio
 {
-	Wave_Config::Wave_Config() = default;
+	WaveConfig::WaveConfig() = default;
 
-	Wave_Config::Wave_Config(const Wave_Config& rhs) : chunksToLoad(rhs.chunksToLoad), numChannels(rhs.numChannels), bitsPerSample(rhs.bitsPerSample), setLoopPoints(rhs.setLoopPoints)
+	WaveConfig::WaveConfig(const WaveConfig& rhs) : chunksToLoad(rhs.chunksToLoad), numChannels(rhs.numChannels), bitsPerSample(rhs.bitsPerSample), setLoopPoints(rhs.setLoopPoints)
 	{ }
 
-	Wave_Config& Wave_Config::operator=(const Wave_Config& rhs)
+	WaveConfig& WaveConfig::operator=(const WaveConfig& rhs)
 	{
 		if (&rhs != this)
 		{

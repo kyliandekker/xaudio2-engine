@@ -53,5 +53,4 @@ namespace uaudio
 	constexpr auto FACT_CHUNK_ID = "fact";
 	constexpr auto CUE_CHUNK_ID = "cue ";
 	constexpr auto SMPL_CHUNK_ID = "smpl";
-	constexpr auto TLST_CHUNK_ID = "tlst";
 }

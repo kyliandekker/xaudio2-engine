@@ -621,12 +621,12 @@ mng_LoadFromMemoryHandle(FIMEMORY *hmem, int flags = 0)
 /**
 Write a chunk in a PNG stream from the current position.
 @param chunk_name Name of the chunk
-@param chunk_data Chunk array
+@param WaveChunkData Chunk array
 @param length Chunk length
 @param hPngMemory PNG stream handle
 */
 static void
-mng_WriteChunk(BYTE *chunk_name, BYTE *chunk_data, DWORD length, FIMEMORY *hPngMemory)
+mng_WriteChunk(BYTE *chunk_name, BYTE *WaveChunkData, DWORD length, FIMEMORY *hPngMemory)
 {
 	DWORD crc_file = 0;
 	// write a PNG chunk ...
@@ -636,13 +636,13 @@ mng_WriteChunk(BYTE *chunk_name, BYTE *chunk_data, DWORD length, FIMEMORY *hPngM
 	mng_SwapLong(&length);
 	// - chunk name
 	FreeImage_WriteMemory(chunk_name, 1, 4, hPngMemory);
-	if (chunk_data && length)
+	if (WaveChunkData && length)
 	{
 		// - chunk data
-		FreeImage_WriteMemory(chunk_data, 1, length, hPngMemory);
+		FreeImage_WriteMemory(WaveChunkData, 1, length, hPngMemory);
 		// - crc
 		crc_file = FreeImage_ZLibCRC32(0, chunk_name, 4);
-		crc_file = FreeImage_ZLibCRC32(crc_file, chunk_data, length);
+		crc_file = FreeImage_ZLibCRC32(crc_file, WaveChunkData, length);
 		mng_SwapLong(&crc_file);
 		FreeImage_WriteMemory(&crc_file, 1, 4, hPngMemory);
 	}

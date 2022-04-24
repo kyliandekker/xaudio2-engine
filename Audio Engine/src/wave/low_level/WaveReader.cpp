@@ -14,13 +14,13 @@ namespace uaudio
 	/// <param name="a_File">The pointer to the file.</param>
 	/// <param name="a_WaveConfig">The config containing specific loading instructions.</param>
 	/// <returns>WAVE loading status.</returns>
-	WAVE_LOADING_STATUS WaveReader::LoadSound(const char *a_FilePath, WaveFormat &a_WaveFormat, FILE *&a_File, Wave_Config a_WaveConfig)
+	WAVE_LOADING_STATUS WaveReader::LoadSound(const char *a_FilePath, WaveFormat &a_WaveFormat, FILE *&a_File, WaveConfig a_WaveConfig)
 	{
 		// Ensure these chunks are always there.
 		a_WaveConfig.chunksToLoad.push_back(DATA_CHUNK_ID);
 		a_WaveConfig.chunksToLoad.push_back(FMT_CHUNK_ID);
 
-		a_WaveFormat.m_FilePath = a_FilePath;
+		a_WaveFormat.SetFileName(a_FilePath);
 
 		// Check if the file that has been passed is opened in some way.
 		if (a_File != nullptr)
@@ -60,7 +60,7 @@ namespace uaudio
 				return WAVE_LOADING_STATUS::STATUS_FAILED_LOADING_CHUNK;
 			}
 
-			memcpy(previous_chunk_id, chunk_id, sizeof(chunk_id));
+			UAUDIO_DEFAULT_MEMCPY(previous_chunk_id, chunk_id, sizeof(chunk_id));
 
 			uint32_t chunk_size = 0;
 
@@ -85,13 +85,13 @@ namespace uaudio
 			{
 				logger::log_info(R"(<WaveReader> Found %s"%.4s"%s chunk with size %s"%i"%s.)", logger::COLOR_YELLOW, chunk_id, logger::COLOR_WHITE, logger::COLOR_YELLOW, chunk_size, logger::COLOR_WHITE);
 
-				Chunk_Data *chunk_data = reinterpret_cast<Chunk_Data *>(UAUDIO_DEFAULT_ALLOC(chunk_size + sizeof(Chunk_Data)));
+				WaveChunkData *chunk_data = reinterpret_cast<WaveChunkData *>(UAUDIO_DEFAULT_ALLOC(chunk_size + sizeof(WaveChunkData)));
 
 				if (chunk_data != nullptr)
 				{
-					memcpy(chunk_data->chunk_id, chunk_id, sizeof(chunk_id));
+					UAUDIO_DEFAULT_MEMCPY(chunk_data->chunk_id, chunk_id, sizeof(chunk_id));
 					chunk_data->chunkSize = chunk_size;
-					fread(utils::add(chunk_data, sizeof(Chunk_Data)), 1, chunk_size, a_File);
+					fread(utils::add(chunk_data, sizeof(WaveChunkData)), 1, chunk_size, a_File);
 				}
 				else
 					fseek(a_File, static_cast<long>(chunk_size), SEEK_CUR);
@@ -104,6 +104,8 @@ namespace uaudio
 				fseek(a_File, static_cast<long>(chunk_size), SEEK_CUR);
 			}
 		}
+
+		a_WaveFormat.ConfigConversion(a_WaveConfig);
 
 		fclose(a_File);
 		a_File = nullptr;
@@ -133,7 +135,7 @@ namespace uaudio
 		fwrite("RIFF", CHUNK_ID_SIZE, 1, file);
 		uint32_t chunk_size = CHUNK_ID_SIZE;
 		for (auto &m_Chunk : a_WaveFormat.m_Chunks)
-			chunk_size += m_Chunk->chunkSize + sizeof(Chunk_Data);
+			chunk_size += m_Chunk->chunkSize + sizeof(WaveChunkData);
 		fwrite(reinterpret_cast<char *>(&chunk_size), sizeof(chunk_size), 1, file);
 		fwrite(FMT_CHUNK_FORMAT, CHUNK_ID_SIZE, 1, file);
 
@@ -141,7 +143,7 @@ namespace uaudio
 		{
 			fwrite(reinterpret_cast<char *>(&m_Chunk->chunk_id), CHUNK_ID_SIZE, 1, file);
 			fwrite(reinterpret_cast<char *>(&m_Chunk->chunkSize), sizeof(m_Chunk->chunkSize), 1, file);
-			fwrite(reinterpret_cast<char *>(utils::add(m_Chunk, sizeof(Chunk_Data))), m_Chunk->chunkSize, 1, file);
+			fwrite(reinterpret_cast<char *>(utils::add(m_Chunk, sizeof(WaveChunkData))), m_Chunk->chunkSize, 1, file);
 			logger::log_info(R"(<WaveReader> Saved chunk %s"%.4s"%s with size %s"%i"%s to file: (%s"%s%s").)", logger::COLOR_YELLOW, m_Chunk->chunk_id, logger::COLOR_WHITE, logger::COLOR_YELLOW, m_Chunk->chunkSize, logger::COLOR_WHITE, logger::COLOR_YELLOW, a_FilePath, logger::COLOR_WHITE);
 		}
 
