@@ -48,29 +48,11 @@
     <ClCompile Include="src\wave\high_level\WaveConfig.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\wave\high_level\WaveFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\xaudio2\XAudio2Channel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AudioSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\SoundSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\uaudio\xaudio2\XAudio2Callback.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\uaudio\xaudio2\XAudio2Channel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\uaudio\wave\high_level\WaveFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\uaudio\wave\high_level\WaveConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -87,12 +69,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\uaudio\wave\low_level\WaveReader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\uaudio\AudioSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\uaudio\Handle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\uaudio\Hash.h">

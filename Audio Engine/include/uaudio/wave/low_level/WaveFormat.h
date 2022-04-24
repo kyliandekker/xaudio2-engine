@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include <cstdint>
-#include <string>
 #include <vector>
 
 #include <uaudio/wave/low_level/WaveReader.h>
@@ -42,8 +41,12 @@ namespace uaudio
 		void MonoStereoConvert(WaveConfig &a_WaveConfig);
 
 		friend class WaveReader;
-
 	public:
+
+		/// <summary>
+		/// Removes all chunks that share the chunk id.
+		/// </summary>
+		/// <param name="a_ChunkID">The chunk id (must be a length of 4 characters).</param>
 		void RemoveChunk(const char *a_ChunkID)
 		{
 			for (size_t i = 0; i < m_Chunks.size(); i++)
@@ -54,11 +57,19 @@ namespace uaudio
 				}
 		}
 
+		/// <summary>
+		/// Adds a chunk to the chunk list.
+		/// </summary>
+		/// <param name="a_WaveChunkData">The chunk that needs to be added.</param>
 		void AddChunk(WaveChunkData *a_WaveChunkData)
 		{
 			m_Chunks.push_back(a_WaveChunkData);
 		}
 
+		/// <summary>
+		/// Gets the chunk size of the first chunk that shares the chunk id.
+		/// </summary>
+		/// <param name="a_ChunkID">The chunk id (must be a length of 4 characters).</param>
 		uint32_t GetChunkSize(const char *a_ChunkID) const
 		{
 			for (auto *m_Chunk : m_Chunks)
@@ -68,16 +79,24 @@ namespace uaudio
 			return 0;
 		}
 
+		/// <summary>
+		/// Returns the first chunk that shares the chunk id.
+		/// </summary>
+		/// <param name="a_ChunkID">The chunk id (must be a length of 4 characters).</param>
 		template <class T>
 		T GetChunkFromData(const char *a_ChunkID) const
 		{
 			for (auto *m_Chunk : m_Chunks)
 				if (strncmp(&a_ChunkID[0], &reinterpret_cast<char *>(m_Chunk->chunk_id)[0], CHUNK_ID_SIZE) == 0)
-					return T(reinterpret_cast<T *>(utils::add(m_Chunk, sizeof(WaveChunkData))));
+					return T(reinterpret_cast<T*>(utils::add(m_Chunk, sizeof(WaveChunkData))));
 
 			return T(nullptr);
 		}
 
+		/// <summary>
+		/// Checks whether a chunk that shares the chunk id exists.
+		/// </summary>
+		/// <param name="a_ChunkID">The chunk id (must be a length of 4 characters).</param>
 		bool HasChunk(const char *a_ChunkID) const
 		{
 			for (auto *m_Chunk : m_Chunks)

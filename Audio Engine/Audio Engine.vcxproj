@@ -19,20 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\AudioSystem.cpp" />
     <ClCompile Include="src\SoundSystem.cpp" />
     <ClCompile Include="src\utils\Utils.cpp" />
     <ClCompile Include="src\wave\low_level\WaveConverter.cpp" />
     <ClCompile Include="src\wave\low_level\WaveFormat.cpp" />
     <ClCompile Include="src\wave\low_level\WaveReader.cpp" />
     <ClCompile Include="src\wave\high_level\WaveConfig.cpp" />
-    <ClCompile Include="src\wave\high_level\WaveFile.cpp" />
-    <ClCompile Include="src\xaudio2\XAudio2Channel.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\uaudio\AudioSystem.h" />
     <ClInclude Include="include\uaudio\Defines.h" />
-    <ClInclude Include="include\uaudio\Handle.h" />
     <ClInclude Include="include\uaudio\Hash.h" />
     <ClInclude Include="include\uaudio\Includes.h" />
     <ClInclude Include="include\uaudio\SoundSystem.h" />
@@ -42,14 +37,11 @@
     <ClInclude Include="include\uaudio\utils\Utils.h" />
     <ClInclude Include="include\uaudio\wave\high_level\WaveChunks.h" />
     <ClInclude Include="include\uaudio\wave\high_level\WaveConfig.h" />
-    <ClInclude Include="include\uaudio\wave\high_level\WaveFile.h" />
     <ClInclude Include="include\uaudio\wave\low_level\WaveChunkData.h" />
     <ClInclude Include="include\uaudio\wave\low_level\WaveConverter.h" />
     <ClInclude Include="include\uaudio\wave\low_level\WaveEffects.h" />
     <ClInclude Include="include\uaudio\wave\low_level\WaveFormat.h" />
     <ClInclude Include="include\uaudio\wave\low_level\WaveReader.h" />
-    <ClInclude Include="include\uaudio\xaudio2\XAudio2Callback.h" />
-    <ClInclude Include="include\uaudio\xaudio2\XAudio2Channel.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

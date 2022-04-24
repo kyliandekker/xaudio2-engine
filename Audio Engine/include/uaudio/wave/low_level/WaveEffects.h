@@ -4,6 +4,8 @@
 
 #include <uaudio/utils/Utils.h>
 
+#include <uaudio/Includes.h>
+
 namespace uaudio
 {
 	namespace effects

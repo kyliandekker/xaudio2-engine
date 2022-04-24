@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <cstdint>
-
 namespace uaudio
 {
 	constexpr int INT24_MAX = (1 << 23) - 1;
@@ -10,7 +8,7 @@ namespace uaudio
 	class uint24_t
 	{
 	protected:
-		uint8_t byt[3] = {
+		unsigned char byt[3] = {
 			0,
 			0,
 			0
@@ -25,9 +23,9 @@ namespace uaudio
 
 		uint24_t& operator=(int val)
 		{
-			byt[0] = reinterpret_cast<uint8_t*>(&val)[0];
-			byt[1] = reinterpret_cast<uint8_t*>(&val)[1];
-			byt[2] = reinterpret_cast<uint8_t*>(&val)[2];
+			byt[0] = reinterpret_cast<unsigned char*>(&val)[0];
+			byt[1] = reinterpret_cast<unsigned char*>(&val)[1];
+			byt[2] = reinterpret_cast<unsigned char*>(&val)[2];
 			return *this;
 		}
 

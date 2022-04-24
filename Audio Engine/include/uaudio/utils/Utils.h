@@ -1,8 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <cstring>
-#include <string>
 
 namespace uaudio::utils
 {
@@ -16,10 +14,7 @@ namespace uaudio::utils
 		return value;
 	}
 
-	inline void* add(void* ptr, size_t size)
-	{
-		return reinterpret_cast<unsigned char *>(ptr) + size;
-	}
+	inline void* add(void* a_Ptr, size_t a_Size);
 
 	float PosToMilliseconds(uint32_t m_Pos, uint32_t a_ByteRate);
 	float PosToSeconds(uint32_t m_Pos, uint32_t a_ByteRate);
@@ -30,5 +25,4 @@ namespace uaudio::utils
 	uint32_t SecondsToHours(float m_Seconds);
 	uint32_t SecondsToMinutes(float m_Seconds);
 	float GetDuration(uint32_t a_ChunkSize, uint32_t a_ByteRate);
-	std::string FormatDuration(float a_Duration, bool a_Milliseconds = true);
 }

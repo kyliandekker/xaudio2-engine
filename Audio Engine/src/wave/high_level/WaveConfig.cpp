@@ -1,5 +1,3 @@
-#include <utility>
-
 #include <uaudio/wave/high_level/WaveConfig.h>
 
 namespace uaudio

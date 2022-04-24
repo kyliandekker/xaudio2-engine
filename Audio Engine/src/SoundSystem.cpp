@@ -13,13 +13,15 @@ namespace uaudio
 	/// <param name="a_Name">The name which will be hashed.</param>
 	/// <param name="a_WaveConfig">The config to load the file with.</param>
 	/// <returns>Returns a hash to the sound.</returns>
-	UAUDIO_DEFAULT_HASH SoundSystem::LoadSound(const char *a_Path, const char *a_Name, WaveConfig &a_WaveConfig)
+	UAUDIO_DEFAULT_HASH SoundSystem::LoadSound(const char *a_Path, const char *a_Name, const WaveConfig &a_WaveConfig)
 	{
 		UAUDIO_DEFAULT_HASH hash = UAUDIO_DEFAULT_HASH_FUNCTION(a_Name);
 
-		WaveFile wave_file = WaveFile(a_Path, a_WaveConfig);
+		WaveFormat wave_format;
+		FILE* file = nullptr;
+		WaveReader::LoadSound(a_Path, wave_format, file, a_WaveConfig);
 		if (!DoesSoundExist(hash))
-			m_Sounds.insert(std::make_pair(hash, wave_file));
+			m_Sounds.insert(std::make_pair(hash, wave_format));
 
 		return hash;
 	}
@@ -38,13 +40,12 @@ namespace uaudio
 	/// </summary>
 	/// <param name="a_Hash">The sound hash.</param>
 	/// <returns>Returns the sound, returns nullptr if it did not exist.</returns>
-	WaveFile *SoundSystem::FindSound(const UAUDIO_DEFAULT_HASH a_Hash)
+	WaveFormat* SoundSystem::FindSound(const UAUDIO_DEFAULT_HASH a_Hash)
 	{
 		if (DoesSoundExist(a_Hash))
 			return &m_Sounds[a_Hash];
 
 		logger::ASSERT(false, "Hash %i not found.", a_Hash);
-		logger::log_warning("<SoundSystem> Could not find requested sound with hash number %i. Using default sound instead.", a_Hash);
 
 		return nullptr;
 	}
@@ -72,9 +73,9 @@ namespace uaudio
 	/// Collects all the sounds and returns them.
 	/// </summary>
 	/// <returns>Returns all the sounds in a vector.</returns>
-	std::vector<WaveFile *, UAUDIO_DEFAULT_ALLOCATOR<WaveFile *>> SoundSystem::GetSounds()
+	std::vector<WaveFormat*, UAUDIO_DEFAULT_ALLOCATOR<WaveFormat*>> SoundSystem::GetSounds()
 	{
-		std::vector<WaveFile *, UAUDIO_DEFAULT_ALLOCATOR<WaveFile *>> sounds;
+		std::vector<WaveFormat*, UAUDIO_DEFAULT_ALLOCATOR<WaveFormat*>> sounds;
 		for (auto &[hash, sound] : m_Sounds)
 			sounds.push_back(&sound);
 

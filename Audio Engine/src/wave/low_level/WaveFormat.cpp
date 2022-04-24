@@ -2,7 +2,6 @@
 
 #include <uaudio/Includes.h>
 
-#include "uaudio/utils/uint24_t.h"
 #include "uaudio/wave/high_level/WaveChunks.h"
 #include "uaudio/wave/low_level/WaveConverter.h"
 

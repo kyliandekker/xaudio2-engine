@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <cstdint>
+
 namespace uaudio
 {
 	constexpr auto CHUNK_ID_SIZE = 4;
