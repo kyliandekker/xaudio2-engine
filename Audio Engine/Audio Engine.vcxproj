@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\allocator\UAudioAllocator.cpp" />
     <ClCompile Include="src\AudioSystem.cpp" />
     <ClCompile Include="src\SoundSystem.cpp" />
     <ClCompile Include="src\utils\Utils.cpp" />
@@ -31,7 +30,6 @@
     <ClCompile Include="src\xaudio2\XAudio2Channel.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\uaudio\allocator\UAudioAllocator.h" />
     <ClInclude Include="include\uaudio\AudioSystem.h" />
     <ClInclude Include="include\uaudio\Defines.h" />
     <ClInclude Include="include\uaudio\Handle.h" />

@@ -99,10 +99,11 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)external\lib\$(PlatformShortName);$(SolutionDir)Audio Engine\lib\$(Configuration)\$(PlatformShortName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;Audio Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;Audio Engine.lib;libfftw3-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /d /y "$(SolutionDir)external\lib\$(PlatformShortName)" "$(SolutionDir)Build\$(PlatformShortname)\$(Configuration)\"</Command>
+      <Command>xcopy /d /y "$(SolutionDir)external\lib\$(PlatformShortName)" "$(SolutionDir)Build\$(PlatformShortname)\$(Configuration)\"
+xcopy /d /y "$(SolutionDir)external\bin\$(PlatformShortName)" "$(SolutionDir)Build\$(PlatformShortname)\$(Configuration)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -122,10 +123,11 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)external\lib\$(PlatformShortName);$(SolutionDir)Audio Engine\lib\$(Configuration)\$(PlatformShortName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;Audio Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;Audio Engine.lib;libfftw3-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /d /y "$(SolutionDir)external\lib\$(PlatformShortName)" "$(SolutionDir)Build\$(PlatformShortname)\$(Configuration)\"</Command>
+      <Command>xcopy /d /y "$(SolutionDir)external\lib\$(PlatformShortName)" "$(SolutionDir)Build\$(PlatformShortname)\$(Configuration)\"
+xcopy /d /y "$(SolutionDir)external\bin\$(PlatformShortName)" "$(SolutionDir)Build\$(PlatformShortname)\$(Configuration)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -141,10 +143,11 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)external\lib\$(PlatformShortName);$(SolutionDir)Audio Engine\lib\$(Configuration)\$(PlatformShortName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;Audio Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;Audio Engine.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /d /y "$(SolutionDir)external\lib\$(PlatformShortName)" "$(SolutionDir)Build\$(PlatformShortname)\$(Configuration)\"</Command>
+      <Command>xcopy /d /y "$(SolutionDir)external\lib\$(PlatformShortName)" "$(SolutionDir)Build\$(PlatformShortname)\$(Configuration)\"
+xcopy /d /y "$(SolutionDir)external\bin\$(PlatformShortName)" "$(SolutionDir)Build\$(PlatformShortname)\$(Configuration)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -164,10 +167,11 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)external\lib\$(PlatformShortName);$(SolutionDir)Audio Engine\lib\$(Configuration)\$(PlatformShortName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;Audio Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;Audio Engine.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /d /y "$(SolutionDir)external\lib\$(PlatformShortName)" "$(SolutionDir)Build\$(PlatformShortname)\$(Configuration)\"</Command>
+      <Command>xcopy /d /y "$(SolutionDir)external\lib\$(PlatformShortName)" "$(SolutionDir)Build\$(PlatformShortname)\$(Configuration)\"
+xcopy /d /y "$(SolutionDir)external\bin\$(PlatformShortName)" "$(SolutionDir)Build\$(PlatformShortname)\$(Configuration)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -181,6 +185,8 @@
     <ClCompile Include="..\external\src\imgui\imgui_stdlib.cpp" />
     <ClCompile Include="..\external\src\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\external\src\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\external\src\imgui\implot.cpp" />
+    <ClCompile Include="..\external\src\imgui\implot_items.cpp" />
     <ClCompile Include="..\external\src\imgui\piano.cpp" />
     <ClCompile Include="src\AudioImGuiWindow.cpp" />
     <ClCompile Include="src\AudioSDLWindow.cpp" />

@@ -14,6 +14,7 @@ public:
 
 private:
 	void RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash);
+	void RenderPlot(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash);
 
 	uaudio::AudioSystem &m_AudioSystem;
 	uaudio::SoundSystem &m_SoundSystem;

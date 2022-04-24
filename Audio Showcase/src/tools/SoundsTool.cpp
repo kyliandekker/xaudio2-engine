@@ -3,6 +3,7 @@
 #include <uaudio/wave/high_level/WaveFile.h>
 
 #include <imgui/imgui.h>
+#include <imgui/implot.h>
 #include <imgui/imgui_helpers.h>
 
 #include <uaudio/utils/Utils.h>
@@ -24,6 +25,8 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
 {
     uaudio::WaveFile *a_WaveFile = m_SoundSystem.FindSound(a_SoundHash);
     ImGui::Text("%s", a_WaveFile->GetWaveFormat().m_FilePath.c_str());
+
+    RenderPlot(a_SoundHash);
 
     std::string play_button_text = std::string(PLAY) + " Play##Play_Sound_" + a_WaveFile->GetWaveFormat().m_FilePath;
     if (ImGui::Button(play_button_text.c_str()))
@@ -63,9 +66,9 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
         float start_position = static_cast<float>(a_WaveFile->GetStartPosition());
         float end_position = static_cast<float>(a_WaveFile->GetEndPosition());
         ImGui::Text("%s", std::string(
-								uaudio::utils::FormatDuration(uaudio::utils::PosToSeconds(a_WaveFile->GetStartPosition(), fmt_chunk.byteRate), false) +
+                              uaudio::utils::FormatDuration(uaudio::utils::PosToSeconds(a_WaveFile->GetStartPosition(), fmt_chunk.byteRate), false) +
                               "/" +
-								uaudio::utils::FormatDuration(uaudio::utils::PosToSeconds(a_WaveFile->GetEndPosition(), fmt_chunk.byteRate), false))
+                              uaudio::utils::FormatDuration(uaudio::utils::PosToSeconds(a_WaveFile->GetEndPosition(), fmt_chunk.byteRate), false))
                               .c_str());
         const uint32_t start_position_temp = static_cast<uint32_t>(start_position), end_position_temp = static_cast<uint32_t>(end_position);
         std::string range_slider_sound_name_text = "##Range_Slider_Sound_" + std::to_string(a_SoundHash);
@@ -165,8 +168,8 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
     if (ImGui::CollapsingHeader(chunk_specific_info_text.c_str()))
     {
         ImGui::Indent(IMGUI_INDENT);
-	    if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::FMT_CHUNK_ID))
-	    {
+        if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::FMT_CHUNK_ID))
+        {
             const std::string chunk_fmt_text = "FMT##FMT_" + std::to_string(a_SoundHash);
             if (ImGui::CollapsingHeader(chunk_fmt_text.c_str()))
             {
@@ -181,9 +184,9 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
                 ShowValue("Bits per Sample: ", std::to_string(fmt_chunk.bitsPerSample).c_str());
                 ImGui::Unindent(IMGUI_INDENT);
             }
-	    }
-	    if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::DATA_CHUNK_ID))
-	    {
+        }
+        if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::DATA_CHUNK_ID))
+        {
             const std::string chunk_data_text = "DATA##DATA_" + std::to_string(a_SoundHash);
             if (ImGui::CollapsingHeader(chunk_data_text.c_str()))
             {
@@ -192,9 +195,9 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
                 ShowValue("Chunk Size: ", std::to_string(a_WaveFile->GetWaveFormat().GetChunkSize(uaudio::DATA_CHUNK_ID)).c_str());
                 ImGui::Unindent(IMGUI_INDENT);
             }
-	    }
-	    if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::ACID_CHUNK_ID))
-	    {
+        }
+        if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::ACID_CHUNK_ID))
+        {
             const std::string chunk_acid_text = "ACID##ACID_" + std::to_string(a_SoundHash);
             if (ImGui::CollapsingHeader(chunk_acid_text.c_str()))
             {
@@ -219,9 +222,9 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
                 ShowValue("Tempo: ", std::to_string(acid_chunk.tempo).c_str());
                 ImGui::Unindent(IMGUI_INDENT);
             }
-	    }
-	    if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::BEXT_CHUNK_ID))
-	    {
+        }
+        if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::BEXT_CHUNK_ID))
+        {
             const std::string chunk_bext_text = "BEXT##BEXT_" + std::to_string(a_SoundHash);
             if (ImGui::CollapsingHeader(chunk_bext_text.c_str()))
             {
@@ -238,18 +241,18 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
                 ShowValue("Time Reference Low: ", std::to_string(bext_chunk.time_reference_low).c_str());
                 ShowValue("Time Reference High: ", std::to_string(bext_chunk.time_reference_high).c_str());
                 ShowValue("Version: ", std::to_string(bext_chunk.version).c_str());
-                ShowValue("UMID: ", std::string(reinterpret_cast<const char*>(bext_chunk.umid)).c_str());
+                ShowValue("UMID: ", std::string(reinterpret_cast<const char *>(bext_chunk.umid)).c_str());
                 ShowValue("Loudness Value: ", std::to_string(bext_chunk.loudness_value).c_str());
                 ShowValue("Loudness Range: ", std::to_string(bext_chunk.loudness_range).c_str());
                 ShowValue("Max True Peak Level: ", std::to_string(bext_chunk.max_true_peak_level).c_str());
                 ShowValue("Max Momentary Loudness: ", std::to_string(bext_chunk.max_momentary_loudness).c_str());
                 ShowValue("Max Short Term Loudness: ", std::to_string(bext_chunk.max_short_term_loudness).c_str());
-                ShowValue("Reserved: ", std::string(reinterpret_cast<const char*>(bext_chunk.reserved)).c_str());
+                ShowValue("Reserved: ", std::string(reinterpret_cast<const char *>(bext_chunk.reserved)).c_str());
                 ImGui::Unindent(IMGUI_INDENT);
             }
-	    }
-	    if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::FACT_CHUNK_ID))
-	    {
+        }
+        if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::FACT_CHUNK_ID))
+        {
             const std::string chunk_fact_text = "FACT##FACT_" + std::to_string(a_SoundHash);
             if (ImGui::CollapsingHeader(chunk_fact_text.c_str()))
             {
@@ -261,9 +264,9 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
                 ShowValue("Sample Length: ", std::to_string(fact_chunk.sample_length).c_str());
                 ImGui::Unindent(IMGUI_INDENT);
             }
-	    }
-	    if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::CUE_CHUNK_ID))
-	    {
+        }
+        if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::CUE_CHUNK_ID))
+        {
             const std::string chunk_cue_text = "CUE##CUE_" + std::to_string(a_SoundHash);
             if (ImGui::CollapsingHeader(chunk_cue_text.c_str()))
             {
@@ -281,7 +284,7 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
                         ImGui::Indent(IMGUI_INDENT);
                         ShowValue("ID: ", std::to_string(cue_chunk.cue_points[i].id).c_str());
                         ShowValue("Position: ", std::to_string(cue_chunk.cue_points[i].position).c_str());
-                        ShowValue("Data Chunk ID: ", std::string(reinterpret_cast<const char*>(cue_chunk.cue_points[i].data_chunk_id)).c_str());
+                        ShowValue("Data Chunk ID: ", std::string(reinterpret_cast<const char *>(cue_chunk.cue_points[i].data_chunk_id)).c_str());
                         ShowValue("Chunk Start: ", std::to_string(cue_chunk.cue_points[i].chunk_start).c_str());
                         ShowValue("Block Start: ", std::to_string(cue_chunk.cue_points[i].block_start).c_str());
                         ShowValue("Block Offset: ", std::to_string(cue_chunk.cue_points[i].sample_offset).c_str());
@@ -290,9 +293,9 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
                 }
                 ImGui::Unindent(IMGUI_INDENT);
             }
-	    }
-	    if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::SMPL_CHUNK_ID))
-	    {
+        }
+        if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::SMPL_CHUNK_ID))
+        {
             const std::string chunk_smpl_text = "SMPL##SMPL_" + std::to_string(a_SoundHash);
             if (ImGui::CollapsingHeader(chunk_smpl_text.c_str()))
             {
@@ -320,31 +323,31 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
                         ShowValue("Type: ", std::to_string(smpl_chunk.samples[i].type).c_str());
                         ShowValue("Start: ", std::to_string(smpl_chunk.samples[i].start).c_str());
                         ShowValue("Start in time: ", std::string(
-                            uaudio::utils::FormatDuration(uaudio::utils::PosToSeconds(smpl_chunk.samples[i].start * 2, fmt_chunk.byteRate), true))
-                            .c_str());
+                                                         uaudio::utils::FormatDuration(uaudio::utils::PosToSeconds(smpl_chunk.samples[i].start * (fmt_chunk.blockAlign / fmt_chunk.numChannels), fmt_chunk.byteRate), true))
+                                                         .c_str());
                         ShowValue("End: ", std::to_string(smpl_chunk.samples[i].end).c_str());
                         ShowValue("End in time: ", std::string(
-                            uaudio::utils::FormatDuration(uaudio::utils::PosToSeconds(smpl_chunk.samples[i].end * 2, fmt_chunk.byteRate), true))
-                            .c_str());
+                                                       uaudio::utils::FormatDuration(uaudio::utils::PosToSeconds(smpl_chunk.samples[i].end * (fmt_chunk.blockAlign / fmt_chunk.numChannels), fmt_chunk.byteRate), true))
+                                                       .c_str());
                         ShowValue("Fraction: ", std::to_string(smpl_chunk.samples[i].fraction).c_str());
                         ShowValue("Play Count: ", std::to_string(smpl_chunk.samples[i].play_count).c_str());
 
                         const std::string chunk_smpl_loop_button_start_text = "Set As Start Position##Start_Position_" + std::to_string(i) + "_SMPL_" + std::to_string(a_SoundHash);
                         if (ImGui::Button(chunk_smpl_loop_button_start_text.c_str()))
-                            a_WaveFile->SetStartPosition(smpl_chunk.samples[i].start * 2);
+                            a_WaveFile->SetStartPosition(smpl_chunk.samples[i].start * (fmt_chunk.blockAlign / fmt_chunk.numChannels));
 
                         const std::string chunk_smpl_loop_button_end_text = "Set As End Position##End_Position_" + std::to_string(i) + "_SMPL_" + std::to_string(a_SoundHash);
                         if (ImGui::Button(chunk_smpl_loop_button_end_text.c_str()))
-                            a_WaveFile->SetEndPosition(smpl_chunk.samples[i].end * 2);
+                            a_WaveFile->SetEndPosition(smpl_chunk.samples[i].end * (fmt_chunk.blockAlign / fmt_chunk.numChannels));
 
                         ImGui::Unindent(IMGUI_INDENT);
                     }
                 }
                 ImGui::Unindent(IMGUI_INDENT);
             }
-	    }
-	    if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::TLST_CHUNK_ID))
-	    {
+        }
+        if (a_WaveFile->GetWaveFormat().HasChunk(uaudio::TLST_CHUNK_ID))
+        {
             const std::string chunk_smpl_text = "TLST##TLST_" + std::to_string(a_SoundHash);
             if (ImGui::CollapsingHeader(chunk_smpl_text.c_str()))
             {
@@ -354,7 +357,7 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
 
                 uaudio::TLST_Chunk tlst_chunk = a_WaveFile->GetWaveFormat().GetChunkFromData<uaudio::TLST_Chunk>(uaudio::TLST_CHUNK_ID);
                 ShowValue("List: ", std::to_string(tlst_chunk.list).c_str());
-                ShowValue("Name: ", std::string(reinterpret_cast<const char*>(tlst_chunk.name)).c_str());
+                ShowValue("Name: ", std::string(reinterpret_cast<const char *>(tlst_chunk.name)).c_str());
                 ShowValue("Type: ", std::to_string(tlst_chunk.type).c_str());
                 ShowValue("Trigger on 1: ", std::to_string(tlst_chunk.trigger_on_1).c_str());
                 ShowValue("Trigger on 2: ", std::to_string(tlst_chunk.trigger_on_2).c_str());
@@ -365,10 +368,14 @@ void SoundsTool::RenderSound(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
                 ShowValue("Extra Data: ", std::to_string(tlst_chunk.extra_data).c_str());
                 ImGui::Unindent(IMGUI_INDENT);
             }
-	    }
+        }
         ImGui::Unindent(IMGUI_INDENT);
     }
     ImGui::Separator();
+}
+
+void SoundsTool::RenderPlot(uaudio::UAUDIO_DEFAULT_HASH a_SoundHash)
+{
 }
 
 /// <summary>

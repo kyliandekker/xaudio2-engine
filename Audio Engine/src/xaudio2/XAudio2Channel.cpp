@@ -5,10 +5,8 @@
 
 #include <uaudio/wave/low_level/WaveEffects.h>
 #include <uaudio/utils/Logger.h>
-#include <algorithm>
 
 #include <uaudio/wave/high_level/WaveChunks.h>
-#include <uaudio/wave/low_level/WaveConverter.h>
 
 namespace uaudio::xaudio2
 {
@@ -186,6 +184,9 @@ namespace uaudio::xaudio2
 	/// <returns></returns>
 	float XAudio2Channel::GetPos(TIMEUNIT a_TimeUnit) const
 	{
+		if (!IsInUse())
+			return 0.0f;
+
 		const FMT_Chunk fmt_chunk = m_CurrentSound->GetWaveFormat().GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
 		switch (a_TimeUnit)
 		{

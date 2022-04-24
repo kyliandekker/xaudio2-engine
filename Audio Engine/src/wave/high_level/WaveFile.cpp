@@ -5,6 +5,7 @@
 #include <uaudio/wave/low_level/WaveConverter.h>
 #include <uaudio/wave/low_level/WaveReader.h>
 
+#include "uaudio/utils/uint24_t.h"
 #include "uaudio/wave/high_level/WaveChunks.h"
 
 namespace uaudio
@@ -223,21 +224,21 @@ namespace uaudio
     /// Sets looping points if that has been stated in the config.
     /// </summary>
     /// <param name="a_WaveConfig">The config containing specific loading instructions.</param>
-    void WaveFile::LoopPositionsConfig(const Wave_Config &)
+    void WaveFile::LoopPositionsConfig(const Wave_Config & a_WaveConfig)
     {
         SetStartPosition(0);
         SetEndPosition(m_WaveFormat.GetChunkSize(DATA_CHUNK_ID));
-        // if (a_WaveConfig.setLoopPoints != LOOP_POINT_SETTING::LOOP_POINT_SETTING_NONE)
-        //{
-        //     const SMPL_Chunk smpl_chunk = m_WaveFormat.GetChunkFromData<SMPL_Chunk>(SMPL_CHUNK_ID);
-        //     if (smpl_chunk.num_sample_loops > 0)
-        //     {
-        //         if (a_WaveConfig.setLoopPoints == LOOP_POINT_SETTING::LOOP_POINT_SETTING_BOTH || a_WaveConfig.setLoopPoints == LOOP_POINT_SETTING::LOOP_POINT_SETTING_START)
-        //             SetStartPosition(smpl_chunk.samples[0].start * 2);
-        //         if (a_WaveConfig.setLoopPoints == LOOP_POINT_SETTING::LOOP_POINT_SETTING_BOTH || a_WaveConfig.setLoopPoints == LOOP_POINT_SETTING::LOOP_POINT_SETTING_END)
-        //             SetEndPosition(smpl_chunk.samples[0].end * 2);
-        //     }
-        // }
+         if (a_WaveConfig.setLoopPoints != LOOP_POINT_SETTING::LOOP_POINT_SETTING_NONE)
+        {
+             const SMPL_Chunk smpl_chunk = m_WaveFormat.GetChunkFromData<SMPL_Chunk>(SMPL_CHUNK_ID);
+             if (smpl_chunk.num_sample_loops > 0)
+             {
+                 if (a_WaveConfig.setLoopPoints == LOOP_POINT_SETTING::LOOP_POINT_SETTING_BOTH || a_WaveConfig.setLoopPoints == LOOP_POINT_SETTING::LOOP_POINT_SETTING_START)
+                     SetStartPosition(smpl_chunk.samples[0].start * 2);
+                 if (a_WaveConfig.setLoopPoints == LOOP_POINT_SETTING::LOOP_POINT_SETTING_BOTH || a_WaveConfig.setLoopPoints == LOOP_POINT_SETTING::LOOP_POINT_SETTING_END)
+                     SetEndPosition(smpl_chunk.samples[0].end * 2);
+             }
+         }
     }
 
     /// <summary>
@@ -258,25 +259,35 @@ namespace uaudio
 
                 switch (a_WaveConfig.bitsPerSample)
                 {
-                case WAVE_BITS_PER_SAMPLE_16:
-                {
-                    if (fmt_chunk.bitsPerSample == WAVE_BITS_PER_SAMPLE_24)
-                    {
-                        data_chunk_data = reinterpret_cast<Chunk_Data *>(UAUDIO_DEFAULT_ALLOC(conversion::Calculate24To16Size(data_chunk_size) + sizeof(Chunk_Data)));
-                        conversion::Convert24To16(reinterpret_cast<unsigned char *>(utils::add(data_chunk_data, sizeof(Chunk_Data))), data_chunk.data, data_chunk_size);
-                        break;
-                    }
-                    else if (fmt_chunk.bitsPerSample == WAVE_BITS_PER_SAMPLE_32)
-                    {
-                        data_chunk_data = reinterpret_cast<Chunk_Data *>(UAUDIO_DEFAULT_ALLOC(conversion::Calculate32To16Size(data_chunk_size) + sizeof(Chunk_Data)));
-                        conversion::Convert32To16(reinterpret_cast<unsigned char *>(utils::add(data_chunk_data, sizeof(Chunk_Data))), data_chunk.data, data_chunk_size);
-                        break;
-                    }
-                    break;
+	                case WAVE_BITS_PER_SAMPLE_16:
+	                {
+	                    if (fmt_chunk.bitsPerSample == WAVE_BITS_PER_SAMPLE_24)
+	                    {
+	                        data_chunk_data = reinterpret_cast<Chunk_Data *>(UAUDIO_DEFAULT_ALLOC(conversion::Calculate24To16Size(data_chunk_size) + sizeof(Chunk_Data)));
+	                        conversion::Convert24To16(reinterpret_cast<unsigned char *>(utils::add(data_chunk_data, sizeof(Chunk_Data))), data_chunk.data, data_chunk_size);
+
+                            const SMPL_Chunk smpl_chunk = m_WaveFormat.GetChunkFromData<SMPL_Chunk>(SMPL_CHUNK_ID);
+	                        m_StartPosition = conversion::Calculate24To16Size(smpl_chunk.samples[0].start) * sizeof(uint24_t);
+                            m_EndPosition = conversion::Calculate24To16Size(smpl_chunk.samples[0].end) * sizeof(uint24_t);
+	                        break;
+	                    }
+	                    else if (fmt_chunk.bitsPerSample == WAVE_BITS_PER_SAMPLE_32)
+	                    {
+	                        data_chunk_data = reinterpret_cast<Chunk_Data *>(UAUDIO_DEFAULT_ALLOC(conversion::Calculate32To16Size(data_chunk_size) + sizeof(Chunk_Data)));
+	                        conversion::Convert32To16(reinterpret_cast<unsigned char *>(utils::add(data_chunk_data, sizeof(Chunk_Data))), data_chunk.data, data_chunk_size);
+
+                            const SMPL_Chunk smpl_chunk = m_WaveFormat.GetChunkFromData<SMPL_Chunk>(SMPL_CHUNK_ID);
+	                        m_StartPosition = conversion::Calculate32To16Size(smpl_chunk.samples[0].start) * sizeof(uint32_t);
+	                        m_EndPosition = conversion::Calculate32To16Size(smpl_chunk.samples[0].end) * sizeof(uint32_t);
+	                        break;
+	                    }
+	                    break;
+	                }
+	                default:
+	                    return;
                 }
-                default:
-                    return;
-                }
+
+                // TODO: Maybe go through all chunks to update positions in loop points?
 
                 if (data_chunk_data != nullptr)
                 {

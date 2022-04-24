@@ -38,6 +38,7 @@
 - [X] Fix crash when unload while playing.
 - [X] Loop point in config.
 - [X] Clean up the conversion code (maybe move it elsewhere).
-- [ ] Fix loop points now not being set because of conversion.
+- [X] Fix loop points now not being set because of conversion.
 - [ ] Fix memory leak somewhere in removing.
 - [ ] Unit tests for size calculations in conversion.
+- [ ] Fix multi thread issue when wanting to play multiple channels.

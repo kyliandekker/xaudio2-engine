@@ -4,6 +4,7 @@
 
 #include <uaudio/utils/Logger.h>
 #include <glad/glad.h>
+#include <imgui/implot.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 
 AudioSDLWindow::AudioSDLWindow(uaudio::AudioSystem &a_AudioSystem, uaudio::SoundSystem &a_SoundSystem) : m_AudioSystem(a_AudioSystem), m_SoundSystem(a_SoundSystem)
@@ -83,6 +84,7 @@ int32_t AudioSDLWindow::CreateImGui()
 	// setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
+	ImPlot::CreateContext();
 
 	// setup platform/renderer bindings
 	ImGui_ImplSDL2_InitForOpenGL(m_Window, m_glContext);
@@ -160,8 +162,8 @@ void AudioSDLWindow::RenderWindow()
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL2_NewFrame(m_Window);
-		m_AudioWindow->Render();
 		m_AudioSystem.UpdateNonExtraThread();
+		m_AudioWindow->Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		SDL_GL_SwapWindow(m_Window);
