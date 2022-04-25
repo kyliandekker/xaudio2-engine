@@ -20,6 +20,13 @@ namespace uaudio
 		LOOP_POINT_SETTING_END,
 		LOOP_POINT_SETTING_BOTH,
 	};
+
+	enum class TIMEUNIT
+	{
+		TIMEUNIT_MS,
+		TIMEUNIT_S,
+		TIMEUNIT_POS
+	};
 }
 
 // Necessary to override all the default settings.

@@ -16,11 +16,12 @@ namespace uaudio
 	struct SoundData
 	{
 		SoundData() = default;
-		SoundData(float vol, float pan, bool loop) : volume(vol), panning(pan), looping(loop),
+		SoundData(UAUDIO_DEFAULT_HASH hash, float vol, float pan, bool loop) : soundHash(hash), volume(vol), panning(pan), looping(loop),
 			prev(SOUND_STATE::SOUND_STATE_CREATED), current(prev)  {}
 
 		void SetState(SOUND_STATE soundState) { prev = current; current = soundState; }
 
+		UAUDIO_DEFAULT_HASH soundHash = 0;
 		float volume = UAUDIO_DEFAULT_VOLUME;
 		float panning = UAUDIO_DEFAULT_PANNING;
 		bool looping = false;

@@ -1,4 +1,5 @@
-﻿#include <uaudio/wave/low_level/WaveConverter.h>
+﻿#include <cstring>
+#include <uaudio/wave/low_level/WaveConverter.h>
 
 #include <uaudio/utils/uint24_t.h>
 
@@ -95,13 +96,21 @@ namespace uaudio
 		/// <param name="a_DataBuffer">The new data buffer.</param>
 		/// <param name="a_OriginalDataBuffer">The original data buffer.</param>
 		/// <param name="a_Size">The data size (will get changed)</param>
-		void Convert24To16(unsigned char *a_DataBuffer, unsigned char *a_OriginalDataBuffer, uint32_t &a_Size)
+		UAUDIO_RESULT Convert24To16(unsigned char *a_DataBuffer, unsigned char *a_OriginalDataBuffer, uint32_t &a_Size)
 		{
+			// Check if the original data buffer has the defined chunk size.
+			if (strlen(reinterpret_cast<const char*>(a_OriginalDataBuffer)) < a_Size)
+				return UAUDIO_RESULT::UAUDIO_ERR_NOT_ENOUGH_BUFFER_SPACE;
+
 			// Determine the size of a 16bit data array.
 			// Chunk size divided by the size of a 24bit int (3) multiplied by the size of a 16bit int (2).
-			const uint32_t newSize = Calculate24To16Size(a_Size);
+			const uint32_t new_size = Calculate24To16Size(a_Size);
 
-			uint16_t *array_16 = reinterpret_cast<uint16_t *>(a_DataBuffer);
+			// Check if the new data buffer has the calculated buffer size.
+			if (strlen(reinterpret_cast<const char*>(a_DataBuffer)) < new_size)
+				return UAUDIO_RESULT::UAUDIO_ERR_NOT_ENOUGH_BUFFER_SPACE;
+
+			uint16_t *array_16 = reinterpret_cast<uint16_t*>(a_DataBuffer);
 
 			int i = 0;
 			for (uint32_t a = 0; a < a_Size; a += sizeof(uint24_t), i++)
@@ -109,7 +118,8 @@ namespace uaudio
 				// Skip 1 bit every time since we go from 24bit to 16bit.
 				array_16[i] = *reinterpret_cast<uint16_t *>(a_OriginalDataBuffer + a + 1);
 			}
-			a_Size = newSize;
+			a_Size = new_size;
+			return UAUDIO_RESULT::UAUDIO_OK;
 		}
 
 		/// <summary>
@@ -118,11 +128,19 @@ namespace uaudio
 		/// <param name="a_DataBuffer">The new data buffer.</param>
 		/// <param name="a_OriginalDataBuffer">The original data buffer.</param>
 		/// <param name="a_Size">The data size (will get changed)</param>
-		void Convert32To16(unsigned char *a_DataBuffer, unsigned char *a_OriginalDataBuffer, uint32_t &a_Size)
+		UAUDIO_RESULT Convert32To16(unsigned char *a_DataBuffer, unsigned char *a_OriginalDataBuffer, uint32_t &a_Size)
 		{
+			// Check if the original data buffer has the defined chunk size.
+			if (strlen(reinterpret_cast<const char*>(a_OriginalDataBuffer)) < a_Size)
+				return UAUDIO_RESULT::UAUDIO_ERR_NOT_ENOUGH_BUFFER_SPACE;
+
 			// Determine the size of a 16bit data array.
 			// Chunk size divided by the size of a 32bit int (4) multiplied by the size of a 16bit int (2).
 			uint32_t new_size = Calculate32To16Size(a_Size);
+
+			// Check if the new data buffer has the calculated buffer size.
+			if (strlen(reinterpret_cast<const char*>(a_DataBuffer)) < new_size)
+				return UAUDIO_RESULT::UAUDIO_ERR_NOT_ENOUGH_BUFFER_SPACE;
 
 			uint16_t *array_16 = reinterpret_cast<uint16_t *>(a_DataBuffer);
 
@@ -139,6 +157,7 @@ namespace uaudio
 				array_16[i] = static_cast<uint16_t>(converted_value);
 			}
 			a_Size = new_size;
+			return UAUDIO_RESULT::UAUDIO_OK;
 		}
 
 		/// <summary>
@@ -148,13 +167,21 @@ namespace uaudio
 		/// <param name="a_OriginalDataBuffer">The original data buffer.</param>
 		/// <param name="a_Size">The data size (will get changed)</param>
 		/// <param name="a_BlockAlign">The alignment of 1 sample.</param>
-		void ConvertMonoToStereo(unsigned char *a_DataBuffer, unsigned char *a_OriginalDataBuffer, uint32_t &a_Size, uint16_t a_BlockAlign)
+		UAUDIO_RESULT ConvertMonoToStereo(unsigned char *a_DataBuffer, unsigned char *a_OriginalDataBuffer, uint32_t &a_Size, uint16_t a_BlockAlign)
 		{
+			// Check if the original data buffer has the defined chunk size.
+			if (strlen(reinterpret_cast<const char*>(a_OriginalDataBuffer)) < a_Size)
+				return UAUDIO_RESULT::UAUDIO_ERR_NOT_ENOUGH_BUFFER_SPACE;
+
 			if (a_Size % a_BlockAlign != 0)
-				return;
+				return UAUDIO_RESULT::UAUDIO_ERR_NOT_ENOUGH_BUFFER_SPACE;
 
 			// Double the size.
 			a_Size = CalculateMonoToStereoSize(a_Size);
+
+			// Check if the new data buffer has the calculated buffer size.
+			if (strlen(reinterpret_cast<const char*>(a_DataBuffer)) < a_Size)
+				return UAUDIO_RESULT::UAUDIO_ERR_NOT_ENOUGH_BUFFER_SPACE;
 
 			int newIndex = 0;
 			for (uint32_t i = 0; i <= a_Size / 2 - a_BlockAlign; i += a_BlockAlign)
@@ -170,6 +197,7 @@ namespace uaudio
 					echo++;
 				}
 			}
+			return UAUDIO_RESULT::UAUDIO_OK;
 		}
 
 		/// <summary>
@@ -179,13 +207,21 @@ namespace uaudio
 		/// <param name="a_OriginalDataBuffer">The original data buffer.</param>
 		/// <param name="a_Size">The data size (will get changed)</param>
 		/// <param name="a_BlockAlign">The alignment of 1 sample.</param>
-		void ConvertStereoToMono(unsigned char *a_DataBuffer, unsigned char *a_OriginalDataBuffer, uint32_t &a_Size, uint16_t a_BlockAlign)
+		UAUDIO_RESULT ConvertStereoToMono(unsigned char *a_DataBuffer, unsigned char *a_OriginalDataBuffer, uint32_t &a_Size, uint16_t a_BlockAlign)
 		{
+			// Check if the original data buffer has the defined chunk size.
+			if (strlen(reinterpret_cast<const char*>(a_OriginalDataBuffer)) < a_Size)
+				return UAUDIO_RESULT::UAUDIO_ERR_NOT_ENOUGH_BUFFER_SPACE;
+
 			if (a_Size % a_BlockAlign != 0)
-				return;
+				return UAUDIO_RESULT::UAUDIO_ERR_NOT_ENOUGH_BUFFER_SPACE;
 
 			// Double the size.
 			a_Size = CalculateStereoToMonoSize(a_Size);
+
+			// Check if the new data buffer has the calculated buffer size.
+			if (strlen(reinterpret_cast<const char*>(a_DataBuffer)) < a_Size)
+				return UAUDIO_RESULT::UAUDIO_ERR_NOT_ENOUGH_BUFFER_SPACE;
 
 			uint32_t newIndex = 0;
 			for (uint32_t i = 0; i <= a_Size * 2 - a_BlockAlign; i += a_BlockAlign)
@@ -194,9 +230,10 @@ namespace uaudio
 					a_DataBuffer[newIndex] = a_OriginalDataBuffer[i + j];
 					newIndex++;
 				}
+			return UAUDIO_RESULT::UAUDIO_OK;
 		}
 
-		void ConvertToSamples(float* a_OutSamples, unsigned char* a_DataBuffer, uint32_t a_SampleCount)
+		UAUDIO_RESULT ConvertToSamples(float* a_OutSamples, unsigned char* a_DataBuffer, uint32_t a_SampleCount)
 		{
 			for (uint32_t i = 0; i < a_SampleCount; ++i, a_DataBuffer += 4, ++a_OutSamples)
 			{
@@ -204,6 +241,7 @@ namespace uaudio
 				short rSample = *(const short*)(a_DataBuffer + 2);
 				*a_OutSamples = ((float)lSample + (float)rSample) / 65536.f;
 			}
+			return UAUDIO_RESULT::UAUDIO_OK;
 		}
 	}
 }

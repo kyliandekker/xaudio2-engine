@@ -83,15 +83,18 @@ namespace uaudio
     /// <param name="a_WaveConfig">The config containing specific loading instructions.</param>
     void WaveFormat::BitsPerSampleConvert(WaveConfig &a_WaveConfig)
     {
-        FMT_Chunk fmt_chunk = GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
+        FMT_Chunk fmt_chunk;
+    	GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID, fmt_chunk);
 
         if (a_WaveConfig.bitsPerSample == WAVE_BITS_PER_SAMPLE_16 || a_WaveConfig.bitsPerSample == WAVE_BITS_PER_SAMPLE_24 || a_WaveConfig.bitsPerSample == WAVE_BITS_PER_SAMPLE_32)
             if (fmt_chunk.bitsPerSample != a_WaveConfig.bitsPerSample)
             {
                 WaveChunkData *data_WaveChunkData = nullptr;
 
-                const DATA_Chunk data_chunk = GetChunkFromData<DATA_Chunk>(DATA_CHUNK_ID);
-                uint32_t data_chunk_size = GetChunkSize(DATA_CHUNK_ID);
+                DATA_Chunk data_chunk;
+            	GetChunkFromData<DATA_Chunk>(DATA_CHUNK_ID, data_chunk);
+                uint32_t data_chunk_size;
+            	GetChunkSize(DATA_CHUNK_ID, data_chunk_size);
 
                 switch (a_WaveConfig.bitsPerSample)
                 {
@@ -139,7 +142,7 @@ namespace uaudio
                 if (fmt_WaveChunkData != nullptr)
                 {
                     UAUDIO_DEFAULT_MEMCPY(fmt_WaveChunkData->chunk_id, FMT_CHUNK_ID, CHUNK_ID_SIZE);
-                    fmt_WaveChunkData->chunkSize = GetChunkSize(FMT_CHUNK_ID);
+                    GetChunkSize(FMT_CHUNK_ID, fmt_WaveChunkData->chunkSize);
                     UAUDIO_DEFAULT_MEMCPY(utils::add(fmt_WaveChunkData, sizeof(WaveChunkData)), reinterpret_cast<const char *>(&fmt_chunk), sizeof(FMT_Chunk));
                 }
 
@@ -160,7 +163,8 @@ namespace uaudio
     /// <param name="a_WaveConfig">The config containing specific loading instructions.</param>
     void WaveFormat::MonoStereoConvert(WaveConfig &a_WaveConfig)
     {
-        FMT_Chunk fmt_chunk = GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID);
+        FMT_Chunk fmt_chunk;
+    	GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID, fmt_chunk);
 
         // Check if the number of channels in the config is mono or stereo (anything other than 1 or 2 means unspecified)
         if (a_WaveConfig.numChannels == WAVE_CHANNELS_STEREO || a_WaveConfig.numChannels == WAVE_CHANNELS_MONO)
@@ -168,8 +172,10 @@ namespace uaudio
             if (fmt_chunk.numChannels != a_WaveConfig.numChannels)
             {
                 WaveChunkData *data_WaveChunkData = nullptr;
-                const DATA_Chunk data_chunk = GetChunkFromData<DATA_Chunk>(DATA_CHUNK_ID);
-                uint32_t data_chunk_size = GetChunkSize(DATA_CHUNK_ID);
+                DATA_Chunk data_chunk;
+            	GetChunkFromData<DATA_Chunk>(DATA_CHUNK_ID, data_chunk);
+                uint32_t data_chunk_size;
+            	GetChunkSize(DATA_CHUNK_ID, data_chunk_size);
 
                 if (a_WaveConfig.numChannels == WAVE_CHANNELS_STEREO)
                 {
@@ -196,7 +202,7 @@ namespace uaudio
                 if (fmt_WaveChunkData != nullptr)
                 {
                     UAUDIO_DEFAULT_MEMCPY(fmt_WaveChunkData->chunk_id, FMT_CHUNK_ID, CHUNK_ID_SIZE);
-                    fmt_WaveChunkData->chunkSize = GetChunkSize(FMT_CHUNK_ID);
+                    GetChunkSize(FMT_CHUNK_ID, fmt_WaveChunkData->chunkSize);
                     UAUDIO_DEFAULT_MEMCPY(utils::add(fmt_WaveChunkData, sizeof(WaveChunkData)), reinterpret_cast<const char *>(&fmt_chunk), sizeof(FMT_Chunk));
                 }
 

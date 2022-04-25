@@ -116,6 +116,7 @@ namespace uaudio
 #pragma pack(push, 1)
 	struct FMT_Chunk
 	{
+		FMT_Chunk() = default;
 		FMT_Chunk(FMT_Chunk *a_DataBuffer)
 		{
 			if (a_DataBuffer != nullptr)
@@ -159,6 +160,7 @@ namespace uaudio
 
 	struct DATA_Chunk
 	{
+		DATA_Chunk() = default;
 		DATA_Chunk(DATA_Chunk *a_DataBuffer)
 		{
 			if (a_DataBuffer != nullptr)
@@ -212,6 +214,7 @@ namespace uaudio
 
 	struct ACID_Chunk
 	{
+		ACID_Chunk() = default;
 		ACID_Chunk(ACID_Chunk *a_DataBuffer)
 		{
 			if (a_DataBuffer != nullptr)
@@ -326,6 +329,7 @@ namespace uaudio
 
 	struct BEXT_Chunk
 	{
+		BEXT_Chunk() = default;
 		BEXT_Chunk(BEXT_Chunk *a_DataBuffer)
 		{
 			if (a_DataBuffer != nullptr)
@@ -382,6 +386,7 @@ namespace uaudio
 
 	struct FACT_Chunk
 	{
+		FACT_Chunk() = default;
 		FACT_Chunk(FACT_Chunk *a_DataBuffer)
 		{
 			if (a_DataBuffer != nullptr)
@@ -454,6 +459,7 @@ namespace uaudio
 
 	struct CUE_Chunk
 	{
+		CUE_Chunk() = default;
 		CUE_Chunk(CUE_Chunk *a_DataBuffer)
 		{
 			if (a_DataBuffer != nullptr)
@@ -656,6 +662,7 @@ namespace uaudio
 
 	struct SMPL_Chunk
 	{
+		SMPL_Chunk() = default;
 		SMPL_Chunk(SMPL_Chunk *a_DataBuffer)
 		{
 			if (a_DataBuffer != nullptr)

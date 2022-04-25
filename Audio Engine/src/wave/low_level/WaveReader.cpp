@@ -14,7 +14,7 @@ namespace uaudio
 	/// <param name="a_File">The pointer to the file.</param>
 	/// <param name="a_WaveConfig">The config containing specific loading instructions.</param>
 	/// <returns>WAVE loading status.</returns>
-	WAVE_LOADING_STATUS WaveReader::LoadSound(const char *a_FilePath, WaveFormat &a_WaveFormat, FILE *&a_File, WaveConfig a_WaveConfig)
+	UAUDIO_RESULT WaveReader::LoadSound(const char *a_FilePath, WaveFormat &a_WaveFormat, FILE *&a_File, WaveConfig a_WaveConfig)
 	{
 		// Ensure these chunks are always there.
 		a_WaveConfig.chunksToLoad.push_back(DATA_CHUNK_ID);
@@ -34,7 +34,7 @@ namespace uaudio
 		if (a_File == nullptr)
 		{
 			logger::log_warning("<WaveReader> Failed opening file: (%s\"%s%s\").", logger::COLOR_YELLOW, a_FilePath, logger::COLOR_WHITE);
-			return WAVE_LOADING_STATUS::STATUS_FAILED_OPENING_FILE;
+			return UAUDIO_RESULT::UAUDIO_ERR_FILE_NOTFOUND;
 		}
 
 		fseek(a_File, 0, SEEK_END);
@@ -57,7 +57,7 @@ namespace uaudio
 			if (strncmp(&chunk_id[0], &previous_chunk_id[0], CHUNK_ID_SIZE) == 0)
 			{
 				logger::log_warning("<WaveReader> Failed to load wave a_File (\"%s\").", a_FilePath);
-				return WAVE_LOADING_STATUS::STATUS_FAILED_LOADING_CHUNK;
+				return UAUDIO_RESULT::UAUDIO_ERR_FILE_BAD;
 			}
 
 			UAUDIO_DEFAULT_MEMCPY(previous_chunk_id, chunk_id, sizeof(chunk_id));
@@ -111,7 +111,7 @@ namespace uaudio
 		a_File = nullptr;
 
 		logger::log_success("<WaveReader> Opened file successfully: (%s\"%s\"%s).", logger::COLOR_YELLOW, a_FilePath, logger::COLOR_WHITE);
-		return WAVE_LOADING_STATUS::STATUS_SUCCESSFUL;
+		return UAUDIO_RESULT::UAUDIO_OK;
 	}
 
 	/// <summary>
@@ -120,7 +120,7 @@ namespace uaudio
 	/// <param name="a_FilePath">The path to save to.</param>
 	/// <param name="a_WaveFormat">The format with all the chunks.</param>
 	/// <returns>WAVE saving status.</returns>
-	WAVE_SAVING_STATUS WaveReader::SaveSound(const char *a_FilePath, const WaveFormat &a_WaveFormat)
+	UAUDIO_RESULT WaveReader::SaveSound(const char *a_FilePath, const WaveFormat &a_WaveFormat)
 	{
 		FILE *file;
 
@@ -129,7 +129,7 @@ namespace uaudio
 		if (file == nullptr)
 		{
 			logger::log_warning("<WaveReader> Failed saving file: (%s\"%s%s\").", logger::COLOR_YELLOW, a_FilePath, logger::COLOR_WHITE);
-			return WAVE_SAVING_STATUS::STATUS_FAILED_OPENING_FILE;
+			return UAUDIO_RESULT::UAUDIO_ERR_FILE_BAD;
 		}
 
 		fwrite("RIFF", CHUNK_ID_SIZE, 1, file);
@@ -150,6 +150,6 @@ namespace uaudio
 		fclose(file);
 		file = nullptr;
 		logger::log_success(R"(<WaveReader> Saved file: (%s"%s%s").)", logger::COLOR_YELLOW, a_FilePath, logger::COLOR_WHITE);
-		return WAVE_SAVING_STATUS::STATUS_SUCCESSFUL;
+		return UAUDIO_RESULT::UAUDIO_OK;
 	}
 }

@@ -98,5 +98,14 @@
     <ClInclude Include="include\uaudio\wave\low_level\WaveChunkData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\uaudio\generic\SoundData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\generic\UserAudioCallback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\generic\UaudioResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
