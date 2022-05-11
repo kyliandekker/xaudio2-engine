@@ -27,6 +27,10 @@ namespace uaudio
 		TIMEUNIT_S,
 		TIMEUNIT_POS
 	};
+
+#define UAUDIO_BACKEND_NONE 0
+#define UAUDIO_BACKEND_XAUDIO2 1
+#define UAUDIO_BACKEND_OPENAL 2
 }
 
 // Necessary to override all the default settings.
@@ -38,6 +42,7 @@ namespace uaudio
 
 #if !defined(UAUDIO_DEFAULT_ALLOCATOR)
 #include <cstdlib>
+#include <uaudio/allocation/Allocator.h>
 #endif
 
 #if !defined(UAUDIO_DEFAULT_ALLOC)
@@ -61,11 +66,15 @@ namespace uaudio
 #endif
 
 #if !defined(UAUDIO_DEFAULT_ALLOCATOR)
-#define UAUDIO_DEFAULT_ALLOCATOR std::allocator
+#define UAUDIO_DEFAULT_ALLOCATOR UAUDIO_Allocator
 #endif
 
 #if !defined(UAUDIO_DEFAULT_ALLOC)
 #define UAUDIO_DEFAULT_ALLOC malloc
+#endif
+
+#if !defined(UAUDIO_DEFAULT_REALLOC)
+#define UAUDIO_DEFAULT_REALLOC realloc
 #endif
 
 #if !defined(UAUDIO_DEFAULT_FREE)
@@ -74,6 +83,10 @@ namespace uaudio
 
 #if !defined(UAUDIO_DEFAULT_MEMCPY)
 #define UAUDIO_DEFAULT_MEMCPY memcpy
+#endif
+
+#if !defined(UAUDIO_DEFAULT_NEW)
+#define UAUDIO_DEFAULT_NEW memcpy
 #endif
 
 #if !defined(UAUDIO_DEFAULT_BUFFERSIZE)
@@ -86,7 +99,7 @@ namespace uaudio
 	#define UAUDIO_MIN_PANNING -1.0f
 
 	#define UAUDIO_MAX_VOLUME 1.0f
-	#define UAUDIO_MIN_VOLUME -1.0f
+	#define UAUDIO_MIN_VOLUME 0.0f
 
 #if !defined(UAUDIO_DEFAULT_VOLUME)
 
@@ -97,6 +110,12 @@ namespace uaudio
 #if !defined(UAUDIO_DEFAULT_PANNING)
 
 	#define UAUDIO_DEFAULT_PANNING 0.0f
+
+#endif
+
+#if !defined(UAUDIO_DEFAULT_BACKEND)
+
+	#define UAUDIO_DEFAULT_BACKEND UAUDIO_BACKEND_XAUDIO2
 
 #endif
 }

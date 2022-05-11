@@ -3,8 +3,7 @@
 #include <complex>
 
 #include <uaudio/wave/high_level/WaveConfig.h>
-
-#include <uaudio/generic/UaudioResult.h>
+#include <uaudio/system/high_level/UaudioResult.h>
 
 namespace uaudio
 {
@@ -19,7 +18,7 @@ namespace uaudio
     class WaveReader
     {
     public:
-        static UAUDIO_RESULT LoadSound(const char* a_FilePath, WaveFormat& a_WaveFormat, FILE*& a_File, WaveConfig a_WaveConfig = WaveConfig());
-        static UAUDIO_RESULT SaveSound(const char* a_FilePath, const WaveFormat& a_WaveFormat);
+        static UAUDIO_RESULT LoadSound(const char* a_FilePath, WaveFormat& a_WaveFormat, WaveConfig a_WaveConfig = WaveConfig());
+        static UAUDIO_RESULT SaveSound(const char* a_FilePath, WaveFormat& a_WaveFormat);
     };
 }

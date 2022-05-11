@@ -3,8 +3,8 @@
 #include <cstdint>
 
 #include <uaudio/utils/Utils.h>
-
 #include <uaudio/Includes.h>
+#include <uaudio/utils/uint24_t.h>
 
 namespace uaudio
 {
@@ -32,17 +32,19 @@ namespace uaudio
 		/// <param name="a_Size">The data size.</param>
 		/// <param name="a_Volume">The volume.</param>
 		/// <returns></returns>
-		template <class T>
-		inline void ChangeVolume(unsigned char *&a_DataBuffer, uint32_t a_Size, float a_Volume, uint16_t, uint16_t)
+		inline void ChangeVolume(unsigned char* a_DataBuffer, uint32_t a_Size, float a_Volume, uint16_t , uint16_t )
 		{
 			// Clamp the volume to 0.0 min and 1.0 max.
 			a_Volume = utils::clamp(a_Volume, UAUDIO_MIN_VOLUME, UAUDIO_MAX_VOLUME);
 
-			T *array_16 = reinterpret_cast<T *>(a_DataBuffer);
-			for (uint32_t i = 0; i < (a_Size / sizeof(T)); i++)
-				array_16[i] = ChangeByteVolume<T>(array_16[i], a_Volume);
+			int16_t* array_16 = reinterpret_cast<int16_t*>(a_DataBuffer);
+			for (uint32_t i = 0; i < a_Size / sizeof(int16_t); i++)
+			{
+				float converted_value = static_cast<float>(array_16[i]);
+				converted_value *= a_Volume;
 
-			a_DataBuffer = reinterpret_cast<unsigned char *>(array_16);
+				array_16[i] = static_cast<int16_t>(converted_value);
+			}
 		}
 
 		/// <summary>
@@ -53,7 +55,6 @@ namespace uaudio
 		/// <param name="a_Amount">The panning amount (-1 is fully left, 1 is fully right, 0 is middle).</param>
 		/// <param name="a_NumChannels">The number of channels (mono or stereo).</param>
 		/// <returns></returns>
-		template <class T>
 		inline void ChangePanning(unsigned char *&a_DataBuffer, uint32_t a_Size, float a_Amount, uint16_t a_NumChannels)
 		{
 			if (a_NumChannels == 1)
@@ -80,11 +81,11 @@ namespace uaudio
 				left = utils::clamp(left, UAUDIO_MIN_VOLUME, UAUDIO_MAX_VOLUME);
 			}
 
-			T *array_16 = reinterpret_cast<T *>(a_DataBuffer);
-			for (uint32_t i = 0; i < (a_Size / sizeof(T)); i += a_NumChannels)
+			int16_t*array_16 = reinterpret_cast<int16_t*>(a_DataBuffer);
+			for (uint32_t i = 0; i < (a_Size / sizeof(int16_t)); i += a_NumChannels)
 			{
-				array_16[i] = ChangeByteVolume<T>(array_16[i], left);
-				array_16[i + 1] = ChangeByteVolume<T>(array_16[i + 1], right);
+				array_16[i] = ChangeByteVolume<int16_t>(array_16[i], left);
+				array_16[i + 1] = ChangeByteVolume<int16_t>(array_16[i + 1], right);
 			}
 
 			a_DataBuffer = reinterpret_cast<unsigned char *>(array_16);

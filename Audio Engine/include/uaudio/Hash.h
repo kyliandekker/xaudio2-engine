@@ -4,6 +4,8 @@ namespace uaudio
 {
 	typedef unsigned int Hash;
 
+#define HASH_INVALID 0
+
 	/// <summary>
 	/// Returns a hash from a given string.
 	/// </summary>

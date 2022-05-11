@@ -13,53 +13,51 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\utils">
-      <UniqueIdentifier>{edb6ccd4-192f-4639-8c80-7669d66b36fa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\xaudio2">
-      <UniqueIdentifier>{cfad7fda-fc20-42fe-9fad-7836601cfeef}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\wav">
-      <UniqueIdentifier>{b4312b1d-83ff-420c-b391-2a50f4b75ba1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\xaudio2">
-      <UniqueIdentifier>{dea17335-ece9-4e89-a7b1-15741ef82bc1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\wav">
-      <UniqueIdentifier>{1e9af1ea-bcb8-43ca-8acc-19b18fcaee96}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\utils">
-      <UniqueIdentifier>{0c6091eb-7245-42be-9a62-1e48a4508e8d}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\utils\Utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\wave\low_level\WaveConverter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\wave\low_level\WaveFormat.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\wave\low_level\WaveReader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\wave\high_level\WaveConfig.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SoundSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\uaudio\wave\high_level\WaveConfig.h">
+    <ClInclude Include="include\uaudio\system\high_level\AudioComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\uaudio\wave\low_level\WaveConverter.h">
+    <ClInclude Include="include\uaudio\system\high_level\AudioSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\system\high_level\Channel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\system\high_level\SoundSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\system\high_level\UaudioResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\system\low_level\backends\xaudio2\XAudio2Backend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\system\low_level\backends\xaudio2\XAudio2Callback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\system\low_level\backends\xaudio2\XAudio2Channel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\system\low_level\AudioBackend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\system\low_level\SoundData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\system\low_level\UserAudioCallback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\uaudio\wave\high_level\WaveChunks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\wave\high_level\WaveConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\wave\low_level\WaveChunkData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\uaudio\wave\low_level\WaveConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\uaudio\wave\low_level\WaveEffects.h">
@@ -71,41 +69,70 @@
     <ClInclude Include="include\uaudio\wave\low_level\WaveReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\uaudio\Defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\uaudio\Hash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\uaudio\Includes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\uaudio\SoundSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\uaudio\UserInclude.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\uaudio\utils\Utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\uaudio\utils\uint24_t.h">
+    <ClInclude Include="include\uaudio\allocation\Allocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\uaudio\utils\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\uaudio\Defines.h">
+    <ClInclude Include="include\uaudio\utils\uint24_t.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\uaudio\wave\low_level\WaveChunkData.h">
+    <ClInclude Include="include\uaudio\utils\Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\uaudio\generic\SoundData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\uaudio\generic\UserAudioCallback.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\uaudio\generic\UaudioResult.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\allocation\Allocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\system\high_level\AudioComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\system\high_level\AudioSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\system\high_level\Channel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\system\high_level\SoundSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\system\low_level\backends\xaudio2\XAudio2Backend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\system\low_level\backends\xaudio2\XAudio2Channel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\system\low_level\SoundData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wave\high_level\WaveConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wave\low_level\WaveReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wave\low_level\WaveConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wave\low_level\WaveFormat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

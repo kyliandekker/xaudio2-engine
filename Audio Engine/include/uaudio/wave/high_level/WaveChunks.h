@@ -58,6 +58,20 @@ namespace uaudio
 	**
 	*/
 
+#pragma pack(push, 1)
+	struct RIFF_Chunk
+	{
+		RIFF_Chunk() = default;
+		RIFF_Chunk(RIFF_Chunk* a_DataBuffer)
+		{
+			if (a_DataBuffer != nullptr)
+			{
+				UAUDIO_DEFAULT_MEMCPY(format, a_DataBuffer->format, sizeof(format));
+			}
+		}
+		unsigned char format[CHUNK_ID_SIZE] = {};
+	};
+
 	/*
 	** The fmt chunk goes a little something like this: TOTAL SIZE: 16 + 8 (chunkid and chunksize)
 	**
@@ -113,7 +127,6 @@ namespace uaudio
 	**
 	*/
 
-#pragma pack(push, 1)
 	struct FMT_Chunk
 	{
 		FMT_Chunk() = default;

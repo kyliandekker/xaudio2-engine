@@ -5,8 +5,9 @@
 #include "doctest.h"
 #include <uaudio/utils/Logger.h>
 #include <uaudio/wave/high_level/WaveChunks.h>
-#include <uaudio/wave/high_level/WaveFile.h>
 #include <uaudio/wave/low_level/WaveReader.h>
+
+#include <uaudio/wave/low_level/WaveFormat.h>
 
 void PRINT_ARRAY(const char *text, std::vector<unsigned char> dat)
 {
@@ -658,14 +659,21 @@ TEST_CASE("Audio Loading")
 		uaudio::logger::log_info("%s[OPENING EXISTING VALID FILE]%s", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 
 		uaudio::WaveFormat format;
-		FILE *file = nullptr;
-		uaudio::WaveReader::LoadSound("3 Steps Ahead - Drop It (Happy Mix).wav", format, file);
+		uaudio::WaveConfig config;
+		config.chunksToLoad.push_back(uaudio::FMT_CHUNK_ID);
+		config.chunksToLoad.push_back(uaudio::DATA_CHUNK_ID);
+		uaudio::WaveReader::LoadSound("3 Steps Ahead - Drop It (Happy Mix).wav", format, config);
 
-		CHECK(format.HasChunk(uaudio::FMT_CHUNK_ID));
+		bool hasChunk = false;
+		format.HasChunk(hasChunk, uaudio::FMT_CHUNK_ID);
+		CHECK(hasChunk);
 
-		uaudio::FMT_Chunk fmt_chunk = format.GetChunkFromData<uaudio::FMT_Chunk>(uaudio::FMT_CHUNK_ID);
+		uaudio::FMT_Chunk fmt_chunk;
+		format.GetChunkFromData<uaudio::FMT_Chunk>(fmt_chunk, uaudio::FMT_CHUNK_ID);
 
-		CHECK(format.GetChunkSize(uaudio::FMT_CHUNK_ID) == 16);
+		uint32_t size = 0;
+		format.GetChunkSize(size, uaudio::FMT_CHUNK_ID);
+		CHECK(size == 16);
 		CHECK(fmt_chunk.audioFormat == uaudio::WAV_FORMAT_PCM);
 		CHECK(fmt_chunk.numChannels == uaudio::WAVE_CHANNELS_STEREO);
 		CHECK(fmt_chunk.sampleRate == uaudio::WAVE_SAMPLE_RATE_44100);
@@ -673,11 +681,28 @@ TEST_CASE("Audio Loading")
 		CHECK(fmt_chunk.blockAlign == uaudio::BLOCK_ALIGN_16_BIT_STEREO);
 		CHECK(fmt_chunk.bitsPerSample == uaudio::WAVE_BITS_PER_SAMPLE_16);
 
-		CHECK(format.HasChunk(uaudio::DATA_CHUNK_ID));
+		format.HasChunk(hasChunk, uaudio::DATA_CHUNK_ID);
+		CHECK(hasChunk);
 
-		CHECK(format.GetChunkSize(uaudio::DATA_CHUNK_ID) == 39962928);
+		format.GetChunkSize(size, uaudio::DATA_CHUNK_ID);
+		CHECK(size == 39962928);
 
 		uaudio::logger::log_success("%s[OPENING EXISTING VALID FILE]%s\n", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
+	}
+	SUBCASE("Existing file with custom chunk")
+	{
+		uaudio::logger::log_info("%s[OPENING EXISTING VALID FILE WITH CUSTOM CHUNK]%s", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
+
+		uaudio::WaveFormat format;
+		uaudio::WaveConfig config;
+		config.chunksToLoad.push_back("gudf");
+		uaudio::WaveReader::LoadSound("gudf.wav", format, config);
+
+		bool hasChunk = false;
+		format.HasChunk(hasChunk, "gudf");
+		CHECK(hasChunk);
+
+		uaudio::logger::log_success("%s[OPENING EXISTING VALID FILE WITH CUSTOM CHUNK]%s\n", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 	}
 	SUBCASE("Existing invalid file")
 	{
@@ -685,7 +710,7 @@ TEST_CASE("Audio Loading")
 
 		uaudio::WaveFormat format;
 		FILE *file = nullptr;
-		uaudio::WaveReader::LoadSound("Broken.wav", format, file);
+		uaudio::WaveReader::LoadSound("Broken.wav", format);
 
 		uaudio::logger::log_success("%s[OPENING EXISTING INVALID FILE]%s\n", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 	}
@@ -695,7 +720,7 @@ TEST_CASE("Audio Loading")
 
 		uaudio::WaveFormat format;
 		FILE *file = nullptr;
-		uaudio::WaveReader::LoadSound("Confused File.wav", format, file);
+		uaudio::WaveReader::LoadSound("Confused File.wav", format);
 
 		uaudio::logger::log_success("%s[OPENING EXISTING INVALID FILE 2]%s\n", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 	}
@@ -705,7 +730,7 @@ TEST_CASE("Audio Loading")
 
 		uaudio::WaveFormat format;
 		FILE *file = nullptr;
-		uaudio::WaveReader::LoadSound("test.wav", format, file);
+		uaudio::WaveReader::LoadSound("test.wav", format);
 
 		uaudio::logger::log_success("%s[OPENING NON-EXISTENT FILE]%s\n", uaudio::logger::COLOR_CYAN, uaudio::logger::COLOR_WHITE);
 	}

@@ -19,21 +19,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\SoundSystem.cpp" />
-    <ClCompile Include="src\utils\Utils.cpp" />
-    <ClCompile Include="src\wave\low_level\WaveConverter.cpp" />
-    <ClCompile Include="src\wave\low_level\WaveFormat.cpp" />
-    <ClCompile Include="src\wave\low_level\WaveReader.cpp" />
-    <ClCompile Include="src\wave\high_level\WaveConfig.cpp" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="include\uaudio\allocation\Allocator.h" />
     <ClInclude Include="include\uaudio\Defines.h" />
-    <ClInclude Include="include\uaudio\generic\SoundData.h" />
-    <ClInclude Include="include\uaudio\generic\UaudioResult.h" />
-    <ClInclude Include="include\uaudio\generic\UserAudioCallback.h" />
     <ClInclude Include="include\uaudio\Hash.h" />
     <ClInclude Include="include\uaudio\Includes.h" />
-    <ClInclude Include="include\uaudio\SoundSystem.h" />
+    <ClInclude Include="include\uaudio\system\high_level\AudioComponent.h" />
+    <ClInclude Include="include\uaudio\system\high_level\AudioSystem.h" />
+    <ClInclude Include="include\uaudio\system\high_level\Channel.h" />
+    <ClInclude Include="include\uaudio\system\high_level\SoundSystem.h" />
+    <ClInclude Include="include\uaudio\system\high_level\UaudioResult.h" />
+    <ClInclude Include="include\uaudio\system\low_level\AudioBackend.h" />
+    <ClInclude Include="include\uaudio\system\low_level\backends\xaudio2\XAudio2Backend.h" />
+    <ClInclude Include="include\uaudio\system\low_level\backends\xaudio2\XAudio2Callback.h" />
+    <ClInclude Include="include\uaudio\system\low_level\backends\xaudio2\XAudio2Channel.h" />
+    <ClInclude Include="include\uaudio\system\low_level\SoundData.h" />
+    <ClInclude Include="include\uaudio\system\low_level\UserAudioCallback.h" />
     <ClInclude Include="include\uaudio\UserInclude.h" />
     <ClInclude Include="include\uaudio\utils\Logger.h" />
     <ClInclude Include="include\uaudio\utils\uint24_t.h" />
@@ -45,6 +45,21 @@
     <ClInclude Include="include\uaudio\wave\low_level\WaveEffects.h" />
     <ClInclude Include="include\uaudio\wave\low_level\WaveFormat.h" />
     <ClInclude Include="include\uaudio\wave\low_level\WaveReader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\allocation\Allocator.cpp" />
+    <ClCompile Include="src\system\high_level\AudioComponent.cpp" />
+    <ClCompile Include="src\system\high_level\AudioSystem.cpp" />
+    <ClCompile Include="src\system\high_level\Channel.cpp" />
+    <ClCompile Include="src\system\high_level\SoundSystem.cpp" />
+    <ClCompile Include="src\system\low_level\backends\xaudio2\XAudio2Backend.cpp" />
+    <ClCompile Include="src\system\low_level\backends\xaudio2\XAudio2Channel.cpp" />
+    <ClCompile Include="src\system\low_level\SoundData.cpp" />
+    <ClCompile Include="src\utils\Utils.cpp" />
+    <ClCompile Include="src\wave\high_level\WaveConfig.cpp" />
+    <ClCompile Include="src\wave\low_level\WaveConverter.cpp" />
+    <ClCompile Include="src\wave\low_level\WaveFormat.cpp" />
+    <ClCompile Include="src\wave\low_level\WaveReader.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -13,6 +13,7 @@ namespace uaudio
 	 */
 	// #define UAUDIO_DEFAULT_ALLOC malloc
 	// #define UAUDIO_DEFAULT_FREE free
+	// #define UAUDIO_DEFAULT_REALLOC realloc
 
 	/*
 	 * If for whatever reason you want the volume to be lower on start-up or the panning to be different, you can override these.

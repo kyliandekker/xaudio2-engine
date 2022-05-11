@@ -1,18 +1,9 @@
 #include <uaudio/utils/Utils.h>
 
+#include "uaudio/Defines.h"
+
 namespace uaudio::utils
 {
-	/// <summary>
-	/// Adds a specified size to a pointer.
-	/// </summary>
-	/// <param name="a_Ptr">The pointer</param>
-	/// <param name="a_Size">The size that needs to be added.</param>
-	/// <returns></returns>
-	void* add(void* a_Ptr, size_t a_Size)
-	{
-		return reinterpret_cast<unsigned char*>(a_Ptr) + a_Size;
-	}
-
 	/// <summary>
 	/// Converts byte position to milliseconds.
 	/// </summary>
@@ -115,5 +106,37 @@ namespace uaudio::utils
 	float GetDuration(uint32_t a_ChunkSize, uint32_t a_ByteRate)
 	{
 		return static_cast<float>(a_ChunkSize) / static_cast<float>(a_ByteRate);
+	}
+
+	/// <summary>
+	/// Formats a string with the hours, minutes, seconds and (optional) milliseconds.
+	/// </summary>
+	/// <param name="a_Duration">Duration in seconds.</param>
+	/// <param name="a_Milliseconds">Whether or not milliseconds should be shown.</param>
+	/// <returns>Returns the duration in minute:seconds.</returns>
+	std::string FormatDuration(float a_Duration, bool a_Milliseconds)
+	{
+		const uint32_t hours = utils::SecondsToHours(a_Duration);
+		const uint32_t minutes = utils::SecondsToMinutes(a_Duration);
+		const uint32_t seconds = static_cast<uint32_t>(a_Duration) % 60;
+		const uint32_t total = (hours * 3600) + (minutes * 60) + seconds;
+		const float milliseconds_float = a_Duration - static_cast<float>(total);
+		const uint32_t milliseconds = static_cast<uint32_t>(milliseconds_float * 1000);
+
+		char hours_string[32], minutes_string[32], seconds_string[32], milliseconds_string[32];
+		sprintf_s(hours_string, "%02d", hours);
+		sprintf_s(minutes_string, "%02d", minutes);
+		sprintf_s(seconds_string, "%02d", seconds);
+		sprintf_s(milliseconds_string, "%03d", milliseconds);
+		return std::string(hours_string) +
+			":" +
+			std::string(minutes_string) +
+			":" +
+			std::string(seconds_string) + (a_Milliseconds ? ":" + std::string(milliseconds_string) : "");
+	}
+
+	bool chunkcmp(const char* a_ChunkID1, const char* a_ChunkID2)
+	{
+		return (strncmp(a_ChunkID1, a_ChunkID2, uaudio::CHUNK_ID_SIZE) == 0);
 	}
 }

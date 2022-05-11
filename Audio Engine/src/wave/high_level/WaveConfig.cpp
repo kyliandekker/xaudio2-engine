@@ -2,7 +2,8 @@
 
 namespace uaudio
 {
-	WaveConfig::WaveConfig() = default;
+	WaveConfig::WaveConfig()
+	{ }
 
 	WaveConfig::WaveConfig(const WaveConfig& rhs) : chunksToLoad(rhs.chunksToLoad), numChannels(rhs.numChannels), bitsPerSample(rhs.bitsPerSample), setLoopPoints(rhs.setLoopPoints)
 	{ }

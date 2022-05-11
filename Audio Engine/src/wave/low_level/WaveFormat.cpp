@@ -1,15 +1,15 @@
 #include <uaudio/wave/low_level/WaveFormat.h>
-
 #include <uaudio/Includes.h>
-
-#include "uaudio/wave/high_level/WaveChunks.h"
-#include "uaudio/wave/low_level/WaveConverter.h"
+#include <uaudio/wave/high_level/WaveConfig.h>
+#include <uaudio/wave/high_level/WaveChunks.h>
+#include <uaudio/wave/low_level/WaveConverter.h>
 
 namespace uaudio
 {
     WaveFormat::WaveFormat(const WaveFormat &rhs)
     {
-        SetFileName(rhs.m_FilePath);
+        m_FilePath = rhs.m_FilePath;
+        m_Chunks.clear();
         for (auto *chunk : rhs.m_Chunks)
         {
             WaveChunkData *chunk_data = reinterpret_cast<WaveChunkData *>(UAUDIO_DEFAULT_ALLOC(chunk->chunkSize + sizeof(WaveChunkData)));
@@ -19,6 +19,9 @@ namespace uaudio
                 m_Chunks.push_back(chunk_data);
             }
         }
+        m_StartPosition = rhs.m_StartPosition;
+        m_EndPosition = rhs.m_EndPosition;
+        m_HasLoaded = rhs.m_HasLoaded;
     }
 
     WaveFormat::~WaveFormat()
@@ -26,15 +29,14 @@ namespace uaudio
         for (int32_t i = static_cast<uint32_t>(m_Chunks.size()) - 1; i > -1; i--)
             UAUDIO_DEFAULT_FREE(m_Chunks[i]);
         m_Chunks.clear();
-
-        UAUDIO_DEFAULT_FREE(m_FilePath);
     }
 
     WaveFormat &WaveFormat::operator=(const WaveFormat &rhs)
     {
         if (&rhs != this)
         {
-            SetFileName(rhs.m_FilePath);
+            m_FilePath = rhs.m_FilePath;
+            m_Chunks.clear();
             for (auto *chunk : rhs.m_Chunks)
             {
                 WaveChunkData *chunk_data = reinterpret_cast<WaveChunkData *>(UAUDIO_DEFAULT_ALLOC(chunk->chunkSize + sizeof(WaveChunkData)));
@@ -44,47 +46,32 @@ namespace uaudio
                     m_Chunks.push_back(chunk_data);
                 }
             }
+            m_StartPosition = rhs.m_StartPosition;
+            m_EndPosition = rhs.m_EndPosition;
+            m_HasLoaded = rhs.m_HasLoaded;
         }
         return *this;
-    }
-
-    /// <summary>
-    /// Sets the file path.
-    /// </summary>
-    /// <param name="a_FilePath">The file path it needs to be set to.</param>
-    void WaveFormat::SetFileName(const char *a_FilePath)
-    {
-        UAUDIO_DEFAULT_FREE(m_FilePath);
-        if (a_FilePath != nullptr)
-        {
-            const size_t len = strlen(a_FilePath);
-            m_FilePath = reinterpret_cast<char *>(UAUDIO_DEFAULT_ALLOC(len + 1));
-            if (m_FilePath != nullptr)
-            {
-                strcpy_s(m_FilePath, len + 1, a_FilePath);
-                m_FilePath[len] = '\0';
-            }
-        }
     }
 
     /// <summary>
     /// Converts the sound according to the wave config.
     /// </summary>
     /// <param name="a_WaveConfig">The config containing specific loading instructions.</param>
-    void WaveFormat::ConfigConversion(WaveConfig &a_WaveConfig)
+    void WaveFormat::ConfigConversion(const WaveConfig &a_WaveConfig)
     {
         BitsPerSampleConvert(a_WaveConfig);
         MonoStereoConvert(a_WaveConfig);
+        SetLoopPositions(a_WaveConfig);
     }
 
     /// <summary>
     /// Converts the bits per sample if that has been stated in the config.
     /// </summary>
     /// <param name="a_WaveConfig">The config containing specific loading instructions.</param>
-    void WaveFormat::BitsPerSampleConvert(WaveConfig &a_WaveConfig)
+    void WaveFormat::BitsPerSampleConvert(const WaveConfig &a_WaveConfig)
     {
         FMT_Chunk fmt_chunk;
-    	GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID, fmt_chunk);
+    	GetChunkFromData<FMT_Chunk>(fmt_chunk, FMT_CHUNK_ID);
 
         if (a_WaveConfig.bitsPerSample == WAVE_BITS_PER_SAMPLE_16 || a_WaveConfig.bitsPerSample == WAVE_BITS_PER_SAMPLE_24 || a_WaveConfig.bitsPerSample == WAVE_BITS_PER_SAMPLE_32)
             if (fmt_chunk.bitsPerSample != a_WaveConfig.bitsPerSample)
@@ -92,9 +79,9 @@ namespace uaudio
                 WaveChunkData *data_WaveChunkData = nullptr;
 
                 DATA_Chunk data_chunk;
-            	GetChunkFromData<DATA_Chunk>(DATA_CHUNK_ID, data_chunk);
+            	GetChunkFromData<DATA_Chunk>(data_chunk, DATA_CHUNK_ID);
                 uint32_t data_chunk_size;
-            	GetChunkSize(DATA_CHUNK_ID, data_chunk_size);
+            	GetChunkSize(data_chunk_size, DATA_CHUNK_ID);
 
                 switch (a_WaveConfig.bitsPerSample)
                 {
@@ -142,7 +129,7 @@ namespace uaudio
                 if (fmt_WaveChunkData != nullptr)
                 {
                     UAUDIO_DEFAULT_MEMCPY(fmt_WaveChunkData->chunk_id, FMT_CHUNK_ID, CHUNK_ID_SIZE);
-                    GetChunkSize(FMT_CHUNK_ID, fmt_WaveChunkData->chunkSize);
+                    GetChunkSize(fmt_WaveChunkData->chunkSize, FMT_CHUNK_ID);
                     UAUDIO_DEFAULT_MEMCPY(utils::add(fmt_WaveChunkData, sizeof(WaveChunkData)), reinterpret_cast<const char *>(&fmt_chunk), sizeof(FMT_Chunk));
                 }
 
@@ -161,10 +148,10 @@ namespace uaudio
     /// Converts the audio data to the right channel setting if that has been stated in the config.
     /// </summary>
     /// <param name="a_WaveConfig">The config containing specific loading instructions.</param>
-    void WaveFormat::MonoStereoConvert(WaveConfig &a_WaveConfig)
+    void WaveFormat::MonoStereoConvert(const WaveConfig &a_WaveConfig)
     {
         FMT_Chunk fmt_chunk;
-    	GetChunkFromData<FMT_Chunk>(FMT_CHUNK_ID, fmt_chunk);
+    	GetChunkFromData<FMT_Chunk>(fmt_chunk, FMT_CHUNK_ID);
 
         // Check if the number of channels in the config is mono or stereo (anything other than 1 or 2 means unspecified)
         if (a_WaveConfig.numChannels == WAVE_CHANNELS_STEREO || a_WaveConfig.numChannels == WAVE_CHANNELS_MONO)
@@ -173,9 +160,9 @@ namespace uaudio
             {
                 WaveChunkData *data_WaveChunkData = nullptr;
                 DATA_Chunk data_chunk;
-            	GetChunkFromData<DATA_Chunk>(DATA_CHUNK_ID, data_chunk);
+            	GetChunkFromData<DATA_Chunk>(data_chunk, DATA_CHUNK_ID);
                 uint32_t data_chunk_size;
-            	GetChunkSize(DATA_CHUNK_ID, data_chunk_size);
+            	GetChunkSize(data_chunk_size, DATA_CHUNK_ID);
 
                 if (a_WaveConfig.numChannels == WAVE_CHANNELS_STEREO)
                 {
@@ -202,7 +189,7 @@ namespace uaudio
                 if (fmt_WaveChunkData != nullptr)
                 {
                     UAUDIO_DEFAULT_MEMCPY(fmt_WaveChunkData->chunk_id, FMT_CHUNK_ID, CHUNK_ID_SIZE);
-                    GetChunkSize(FMT_CHUNK_ID, fmt_WaveChunkData->chunkSize);
+                    GetChunkSize(fmt_WaveChunkData->chunkSize, FMT_CHUNK_ID);
                     UAUDIO_DEFAULT_MEMCPY(utils::add(fmt_WaveChunkData, sizeof(WaveChunkData)), reinterpret_cast<const char *>(&fmt_chunk), sizeof(FMT_Chunk));
                 }
 
@@ -215,5 +202,100 @@ namespace uaudio
                     AddChunk(data_WaveChunkData);
                 }
             }
+    }
+
+    /// <summary>
+    /// Sets the loop positions.
+    /// </summary>
+    /// <param name="a_WaveConfig">The config containing specific loading instructions.</param>
+    void WaveFormat::SetLoopPositions(const WaveConfig& a_WaveConfig)
+    {
+        bool hasChunk = false;
+        HasChunk(hasChunk, SMPL_CHUNK_ID);
+        if (hasChunk)
+        {
+            if (a_WaveConfig.setLoopPoints != LOOP_POINT_SETTING::LOOP_POINT_SETTING_NONE)
+            {
+                if (a_WaveConfig.setLoopPoints != LOOP_POINT_SETTING::LOOP_POINT_SETTING_NONE)
+                {
+                    SMPL_Chunk smpl_chunk;
+                    GetChunkFromData<SMPL_Chunk>(smpl_chunk, SMPL_CHUNK_ID);
+                    if (smpl_chunk.num_sample_loops > 0)
+                    {
+                        if (a_WaveConfig.setLoopPoints == LOOP_POINT_SETTING::LOOP_POINT_SETTING_BOTH || a_WaveConfig.setLoopPoints == LOOP_POINT_SETTING::LOOP_POINT_SETTING_START)
+                            SetStartPosition(smpl_chunk.samples[0].start * 2);
+                        if (a_WaveConfig.setLoopPoints == LOOP_POINT_SETTING::LOOP_POINT_SETTING_BOTH || a_WaveConfig.setLoopPoints == LOOP_POINT_SETTING::LOOP_POINT_SETTING_END)
+                            SetEndPosition(smpl_chunk.samples[0].end * 2);
+                    }
+                }
+            }
+        }
+        else
+        {
+            SetStartPosition(0);
+            uint32_t size = 0;
+            GetChunkSize(size, DATA_CHUNK_ID);
+            SetEndPosition(size);
+        }
+    }
+
+    /// <summary>
+    /// Returns the start position of the wave format.
+    /// </summary>
+    /// <returns></returns>
+    UAUDIO_RESULT WaveFormat::GetStartPosition(uint32_t& a_StartPosition) const
+    {
+        a_StartPosition = m_StartPosition;
+        return UAUDIO_RESULT::UAUDIO_OK;
+    }
+
+    /// <summary>
+    /// Returns the end position of the wave format.
+    /// </summary>
+    /// <returns></returns>
+    UAUDIO_RESULT WaveFormat::GetEndPosition(uint32_t& a_EndPosition) const
+    {
+        a_EndPosition = m_EndPosition;
+        return UAUDIO_RESULT::UAUDIO_OK;
+    }
+
+    /// <summary>
+    /// Sets the start position of the wave format.
+    /// </summary>
+    /// <param name="a_StartPosition"></param>
+    /// <returns></returns>
+    UAUDIO_RESULT WaveFormat::SetStartPosition(uint32_t a_StartPosition)
+    {
+        uint32_t size = 0;
+        GetChunkSize(size, DATA_CHUNK_ID);
+        a_StartPosition = utils::clamp<uint32_t>(a_StartPosition, 0, size);
+        m_StartPosition = a_StartPosition;
+        return UAUDIO_RESULT::UAUDIO_OK;
+    }
+
+    /// <summary>
+    /// Sets the end position of the wave format.
+    /// </summary>
+    /// <param name="a_EndPosition"></param>
+    /// <returns></returns>
+    UAUDIO_RESULT WaveFormat::SetEndPosition(uint32_t a_EndPosition)
+    {
+        uint32_t size = 0;
+        GetChunkSize(size, DATA_CHUNK_ID);
+        a_EndPosition = utils::clamp<uint32_t>(a_EndPosition, 0, size);
+        m_EndPosition = a_EndPosition;
+        return UAUDIO_RESULT::UAUDIO_OK;
+    }
+
+    UAUDIO_RESULT WaveFormat::IsLooping(bool& a_Looping) const
+    {
+        a_Looping = m_Looping;
+        return UAUDIO_RESULT::UAUDIO_OK;
+    }
+
+    UAUDIO_RESULT WaveFormat::SetLooping(bool a_Looping)
+    {
+        m_Looping = a_Looping;
+        return UAUDIO_RESULT::UAUDIO_OK;
     }
 }
